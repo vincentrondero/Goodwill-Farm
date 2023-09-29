@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="col py-3 custom-padX gap-5" style="height: 15rem;">
+  <div class="row py-3 gap-4">
+      <div class="bg-primary card px-2" style="width: 22rem;">
+          <div class="card-body card-font">
+            <img src="{% static 'img/pig_logo.png' %}" style="height: 120px;" alt="...">
+              <p class="px-3"> Pigs </p>
+          </div>
+      </div>
+      <div class="bg-warning card px-2" style="width: 22rem;">
+          <div class="card-body">
+            <img src="{% static 'img/piglets.png' %}" style="height: 120px;" alt="...">
+              <p class="px-3"> Piglets </p>
+          </div>
+      </div>
+      <div class="bg-danger card px-2" style="width: 22rem;">
+          <div class="card-body">
+            <img src="{% static 'img/feeds_logo.png' %}" style="height: 120px;" alt="...">
+              <p class="px-3"> Feed Stock </p>
+          </div>
+      </div>
+      <div class="card px-2 custom_sched_box" id="scheduleToday">
+        <div class="mt-2 schedule_header">SCHEDULE TODAY:</div>
+        {% if today_tasks %}
+            {% for task in today_tasks %}
+                <div class="mt-2 p-2 custom_sched_tab">
+                    {{ task.task_name }}
+                    <label class="checkbox-container">
+                        <input
+                            type="checkbox"
+                            data-task-id="{{ task.id }}"
+                            {% if task.is_done %}checked{% endif %}
+                            onchange="updateTaskStatus(this)"
+                        >
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            {% endfor %}
+        {% else %}
+          <img src="{% static 'img/No_Task.png' %}" alt="No Tasks Today Image" class="no-task-img">
+          <p class="no-tasks-text">No Tasks Today.</p>
+        {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

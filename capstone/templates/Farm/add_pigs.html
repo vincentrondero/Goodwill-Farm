@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div>Manage Pigs</div>
+<div class="navbar mb-2">
+    <button id="openOverlayButton" >Add Pigs</button>
+    <div class="search-container">
+        <input type="text" placeholder="Search...">
+        <button type="submit">Search</button>
+    </div>
+</div>
+<div class="row px-3 py-1 gap-auto">
+    <div class="col-4 py-1">
+        <div class="bg-warning card d-flex">
+            <div class="d-flex justify-content-between">
+                <div class="mx-2 mt-1">
+                    <span class="text-white p-0 fw-bold"> <img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="..."> Patener </span>
+                </div>
+                <div class="m-3">
+                    <span class="text-white p-0 fw-bold"> number here </span>
+                </div>
+            </div>
+            <hr class="hr-shadow">
+            <ul class="d-flex flex-column">
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-4 py-1">
+        <div class="bg-warning card d-flex">
+            <div class="d-flex justify-content-between">
+                <div class="mx-2 mt-1">
+                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="..."> Grower </span>
+                </div>
+                <div class="m-3">
+                    <span class="text-white p-0 fw-bold"> number here </span>
+                </div>
+            </div>
+            <hr class="hr-shadow">
+            <ul class="d-flex flex-column">
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-4 py-1">
+        <div class="bg-success card d-flex ctm-grid" style="height: 300px;">
+            <div class="d-flex justify-content-between">
+                <div class="mx-2 mt-1">
+                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="..."> Sow </span>
+                </div>
+                <div class="m-3">
+                    <span class="text-white p-0 fw-bold"> number here </span>
+                </div>
+            </div>
+            <hr class="hr-shadow">
+            <ul class="d-flex flex-column">
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>            
+<div class="row px-3 gap-auto">
+    <div class="col-4 py-1">
+        <div class="bg-primary card d-flex">
+            <div class="d-flex justify-content-between">
+                <div class="mx-2 mt-1">
+                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="..."> Nursery </span>
+                </div>
+                <div class="m-3">
+                    <span class="text-white p-0 fw-bold"> number here </span>
+                </div>
+            </div>
+            <hr class="hr-shadow">
+            <ul class="d-flex flex-column">
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-4 py-1">
+        <div class="bg-primary card d-flex">
+            <div class="d-flex justify-content-between">
+                <div class="mx-2 mt-1">
+                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="..."> Suckling </span>
+                </div>
+                <div class="m-3">
+                    <span class="text-white p-0 fw-bold"> number here </span>
+                </div>
+            </div>
+            <hr class="hr-shadow">
+            <ul class="d-flex flex-column">
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+                    <div>
+                        <span> Pig Name </span> 
+                        <p class="m-0 p-0"> Status: Taena </p>
+                    </div>
+                    <div>
+                        <button class="ctm-btn">
+                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>            
+</div>
+</div>
+</div>
+<div id="overlay">
+    <div id="formContainer">
+        <h2>Pig Registration</h2>
+        <div class="registration-container">
+            <form>
+                <div class="flex1">
+                    <label for="pigID" class="LPigID">Pig ID:</label>
+                    <input type="text" class="InPigID" id="pigID" name="pigID"><br><br>
+        
+                    <label for="dam" class="LDam">DAM:</label>
+                    <input type="text" class="InDam" id="dam" name="dam"><br><br>
+                </div>
+        
+                <div class="flex2">
+                    <label for="dob" class="LDOB">DOB:</label>
+                    <input type="text" class="InDOB" id="dob" name="dob"><br><br>
+        
+                    <label for="sire" class="LSire">SIRE:</label>
+                    <input type="text" class="InSire" id="sire" name="sire"><br><br>
+                </div>
+        
+                <div class="flex3">
+                    <label for="class" class="LClass">Class:</label>
+                    <input type="text" class="InClass" id="class" name="class"><br><br>
+        
+                    <label for="sex" class="LSex">Sex:</label>
+                    <input type="text" class="InSex" id="sex" name="sex"><br><br>
+        
+                    <label for="count" class="LCount">Count:</label>
+                    <input type="text" class="InCount" id="count" name="count"><br><br>
+        
+                    <label for="weight" class="LWeight">Weight:</label>
+                    <input type="text" class="InWeight" id="weight" name="weight"><br><br>
+        
+                    <label for="remarks" class="LRemarks">Remarks:</label>
+                    <input type="text" class="InRemarks" id="remarks" name="remarks"><br><br>
+                </div>
+        
+                <hr class="separator">
+        
+                <div class="flex4">
+                    <label for="verifBy" class="LVerifBy">Verified By:</label>
+                    <input type="text" class="InVerifBy" id="verifBy" name="verifBy"><br><br>
+                </div>
+        
+                <div class="response">
+                    <input type="submit" class="save" value="Save">
+                    <input type="button" class="cancel" value="Cancel" >
+                </div>
+            </form>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

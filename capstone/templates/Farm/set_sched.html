@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div>Manage Schedules</div>
+<div class="navbar mb-2">
+    <button id="openOverlayButton">Set Schedule</button>
+    <div class="search-container">
+        <input type="text" placeholder="Search...">
+        <button type="submit">Search</button>
+    </div>
+</div>
+<div id="overlay">
+    <div id="formContainer">
+        <h2>Set Schedules</h2>
+        <div class="scheduling-container">
+            <form method="post" action="{% url 'set_sched' user_type=user_type %}">
+                {% csrf_token %}
+                <label class="taskname" for="taskname">Task Name:</label>
+                <input class="taskname" type="text" id="taskname" name="taskname"><br><br>
+
+                <label class="duedate" for="duedate">Due Date:</label>
+                <input class="duedate" type="text" id="duedate" name="duedate"><br><br>
+
+                <label class="duetime" for="duetime">Due Time:</label>
+                <input class="duetime" type="text" id="duetime" name="duetime"><br><br>
+
+                <label class="desc" for="desc">Description:</label>
+                <input type="text" class="desc" id="desc" name="desc"><br><br>
+                
+                <input type="submit" value="Save Task">
+                <input type="button" id="closeOverlayButton" value="Cancel">
+            </form>
+            <div class="error-message" id="error-message">
+                {{ message }}
+            </div>
+        </div>
+    </div>
+</div>
+<div id="calendar"></div>
+<div class="card px-2 custom_sched_box" id="scheduleToday">
+    <div class="mt-2 schedule_header">SCHEDULE TODAY:</div>
+    {% if today_tasks %}
+        {% for task in today_tasks %}
+            <div class="mt-2 p-2 custom_sched_tab">
+                {{ task.task_name }}
+                <label class="checkbox-container">
+                    <input
+                        type="checkbox"
+                        data-task-id="{{ task.id }}"
+                        {% if task.is_done %}checked{% endif %}
+                        onchange="updateTaskStatus(this)"
+                    >
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+        {% endfor %}
+    {% else %}
+        <img src="{% static 'img/No_Task.png' %}" alt="No Tasks Today Image" class="no-task-img">
+        <p class="no-tasks-text">No Tasks Today.</p>
+    {% endif %}
+</div>
+
+
+
+<div class="container">
+    <div class="row">
+        <div class=" col-md-6 custom_todo_box"  id="sample">
+            <h4>To Do</h4>
+            {% for task in todo_tasks %}
+            <div class="card mb-2 custom_todo">
+                <div class="card-body" >
+                    {{ task.task_name }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-6 custom_todo_box" id="doneTasks">
+            <h4>Done</h4>
+            {% for task in done_tasks %}
+            <div class="card mb-3 custom_done">
+                <div class="card-body">
+                    {{ task.task_name }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

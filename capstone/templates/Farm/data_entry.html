@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% block content %}
+<div> DATA ENTRY</div>
+<div class="row px-3 py-3 gap-3 ps-5">
+    <div class="col-5">
+        <button class="ctm-btn-2 dEntry_button" id="openOverlayButton1">
+            <img src="../pig3.png" style="width: 35%;">
+            <span class="pb-3 text-white fs-5 fw-bold">
+                PIG SALES
+            </span>
+        </button>
+    </div>
+    <div class="col-5">
+        <button class="ctm-btn-2 dEntry_button" id="openOverlayButton2">
+            <img src="../pig3.png" style="width: 35%;">
+            <span class="pb-3 text-white fs-5 fw-bold">
+                Sow Performance
+            </span>
+        </button>
+    </div>
+</div>
+
+<div class="row px-3 py-3 gap-3 ps-5">
+    <div class="col-5">
+        <button class="ctm-btn-2 dEntry_button" id="openOverlayButton3">
+            <img src="../pig3.png" style="width: 35%;">
+            <span class="pb-3 text-white fs-5 fw-bold">
+                Weanlings
+            </span>
+        </button>
+    </div>
+    <div class="col-5">
+        <button class="ctm-btn-2 dEntry_button" id="openOverlayButton4">
+            <img src="../pig3.png" style="width: 35%;">
+            <span class="pb-3 text-white fs-5 fw-bold">
+                Vaccine
+            </span>
+        </button>
+    </div>
+</div>
+
+<div class="row px-3 py-3 gap-3 ps-5">
+    <div class="col-5">
+        <button class="ctm-btn-2 dEntry_button" id="openOverlayButton5">
+            <img src="../pig3.png" style="width: 35%;">
+            <span class="pb-3 text-white fs-5 fw-bold">
+                Feeds Inventory
+            </span>
+        </button>
+    </div>
+    <div class="col-5">
+        <button class="ctm-btn-2 dEntry_button" id="openOverlayButton6">
+            <img src="../pig3.png" style="width: 35%;">
+            <span class="pb-3 text-white fs-5 fw-bold">
+                Mortality Form
+            </span>
+        </button>
+    </div>
+</div>
+
+<div id="overlay1">
+    <div id="formContainer">
+        <h2>Pig Sales</h2>
+        <div class="scheduling-container">
+            <form>
+                <label for="PigID" class = "LpigID">Pig ID:</label>
+                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
+    
+                <label for="weight" class= "Lweight">Weight:</label>
+                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
+    
+                <label for="price" class= "Lprice">Price:</label>
+                <input type="text" class= "Inprice" id="price" name="price"><br><br>
+    
+                
+                <hr class="separator">
+    
+                <div class = "Verification">
+                    <label for="Verified" class= "LVerifBy">Verified By:</label>
+                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
+                    <label for="date" class= "Ldate">Date:</label>
+                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                </div>
+    
+                <input type="submit" value="Save Task">
+                <input type="button" id="closeOverlayButton1" value="Cancel">
+    
+            </form>
+            <div class="error-message" id="error-message">
+                {{ message }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="overlay2">
+    <div id="formContainer">
+        <h2>Sow Performance</h2>
+        <div class="scheduling-container">
+            <form>
+                <label for="PigID" class = "LpigID">Pig ID:</label>
+                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
+    
+                <label for="weight" class= "Lweight">Weight:</label>
+                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
+    
+                <label for="price" class= "Lprice">Price:</label>
+                <input type="text" class= "Inprice" id="price" name="price"><br><br>
+    
+                
+                <hr class="separator">
+    
+                <div class = "Verification">
+                    <label for="Verified" class= "LVerifBy">Verified By:</label>
+                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
+                    <label for="date" class= "Ldate">Date:</label>
+                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                </div>
+    
+                <input type="submit" value="Save Task">
+                <input type="button" id="closeOverlayButton2" value="Cancel">
+    
+            </form>
+            <div class="error-message" id="error-message">
+                {{ message }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="overlay3">
+    <div id="formContainer">
+        <h2>Weanlings</h2>
+        <div class="scheduling-container">
+            <form>
+                <label for="PigID" class = "LpigID">Pig ID:</label>
+                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
+    
+                <label for="weight" class= "Lweight">Weight:</label>
+                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
+    
+                <label for="price" class= "Lprice">Price:</label>
+                <input type="text" class= "Inprice" id="price" name="price"><br><br>
+    
+                
+                <hr class="separator">
+    
+                <div class = "Verification">
+                    <label for="Verified" class= "LVerifBy">Verified By:</label>
+                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
+                    <label for="date" class= "Ldate">Date:</label>
+                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                </div>
+    
+                <input type="submit" value="Save Task">
+                <input type="button" id="closeOverlayButton3" value="Cancel">
+    
+            </form>
+            <div class="error-message" id="error-message">
+                {{ message }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="overlay4">
+    <div id="formContainer">
+        <h2>Vaccine</h2>
+        <div class="scheduling-container">
+            <form>
+                <label for="PigID" class = "LpigID">Pig ID:</label>
+                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
+    
+                <label for="weight" class= "Lweight">Weight:</label>
+                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
+    
+                <label for="price" class= "Lprice">Price:</label>
+                <input type="text" class= "Inprice" id="price" name="price"><br><br>
+    
+                
+                <hr class="separator">
+    
+                <div class = "Verification">
+                    <label for="Verified" class= "LVerifBy">Verified By:</label>
+                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
+                    <label for="date" class= "Ldate">Date:</label>
+                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                </div>
+    
+                <input type="submit" value="Save Task">
+                <input type="button" id="closeOverlayButton4" value="Cancel">
+    
+            </form>
+            <div class="error-message" id="error-message">
+                {{ message }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="overlay5">
+    <div id="formContainer">
+        <h2>Feeds Inventory</h2>
+        <div class="scheduling-container">
+            <form>
+                <label for="PigID" class = "LpigID">Pig ID:</label>
+                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
+    
+                <label for="weight" class= "Lweight">Weight:</label>
+                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
+    
+                <label for="price" class= "Lprice">Price:</label>
+                <input type="text" class= "Inprice" id="price" name="price"><br><br>
+    
+                
+                <hr class="separator">
+    
+                <div class = "Verification">
+                    <label for="Verified" class= "LVerifBy">Verified By:</label>
+                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
+                    <label for="date" class= "Ldate">Date:</label>
+                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                </div>
+    
+                <input type="submit" value="Save Task">
+                <input type="button" id="closeOverlayButton5" value="Cancel">
+    
+            </form>
+            <div class="error-message" id="error-message">
+                {{ message }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="overlay6">
+    <div id="formContainer">
+        <h2>Mortality Form</h2>
+        <div class="scheduling-container">
+            <form>
+                <label for="PigID" class = "LpigID">Pig ID:</label>
+                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
+    
+                <label for="weight" class= "Lweight">Weight:</label>
+                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
+    
+                <label for="price" class= "Lprice">Price:</label>
+                <input type="text" class= "Inprice" id="price" name="price"><br><br>
+    
+                
+                <hr class="separator">
+    
+                <div class = "Verification">
+                    <label for="Verified" class= "LVerifBy">Verified By:</label>
+                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
+                    <label for="date" class= "Ldate">Date:</label>
+                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                </div>
+    
+                <input type="submit" value="Save Task">
+                <input type="button" id="closeOverlayButton6" value="Cancel">
+    
+            </form>
+            <div class="error-message" id="error-message">
+                {{ message }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
