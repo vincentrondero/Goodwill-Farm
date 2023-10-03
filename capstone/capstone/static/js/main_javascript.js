@@ -170,11 +170,168 @@ $(document).ready(function() {
     if (closeOverlayButton6) {
         closeOverlayButton6.addEventListener("click", closeOverlay6);
     }
+    $(".delete_button").click(function () {
+        var userId = $(this).data("user-id");
+        var user_type = $(this).data("user-type"); // Get user_type from data attribute
+        var deleteButton = $(this); // Store a reference to the button clicked
+        var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+    
+        // Confirm the user wants to delete before proceeding
+        var confirmDelete = confirm("Are you sure you want to delete this user?");
+        if (confirmDelete) {
+            // Construct the correct URL for the AJAX request
+            var deleteUrl = '/delete_user/' + user_type + '/';  // Update with the correct URL pattern
+    
+            // Send an AJAX request to delete the user
+            $.ajax({
+                url: deleteUrl,
+                method: "POST",
+                data: { action: 'delete_user', id: userId, csrfmiddlewaretoken: csrfToken },
+                success: function (response) {
+                    // Handle success, maybe remove the row from the table
+                    if (response.success) {
+                        // Remove the table row
+                        deleteButton.closest("tr").remove(); // Use the reference to the button
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    // Handle errors
+                    console.log(err);
+                },
+            });
+        }
+    });
+    
 
+    // Add click event handler for the edit button
+    $(".edit_button").click(function () {
+        // Show the edit overlay
+        $("#edit_overlay").show();
+    
+        // Get the user data from the clicked row
+        var row = $(this).closest("tr");
+        var firstname = row.find("td:nth-child(1)").text();
+        var lastname = row.find("td:nth-child(2)").text();
+        var username = row.find("td:nth-child(3)").text();
+        var role = row.find("td:nth-child(4)").text();
+        var date = row.find("td:nth-child(5)").text();
+    
+        // Populate the overlay fields with the user data
+        $("#edit_firstname").val(firstname);
+        $("#edit_lastname").val(lastname);
+        $("#edit_username").val(username);
+        $("#edit_role").val(role);
+        $("#edit_date").val(date);
+    
+        // Store the user ID in a data attribute
+        var userId = $(this).data("user-id");
+        $(".save-button").data("user-id", userId);
+    });
+    
+    // Add click event handler for the save button
+    $(".save-button").click(function (e) {
+        e.preventDefault(); // Prevent the default form submission
+    
+        // Store a reference to the button element that was clicked
+        var clickedButton = $(this);
+    
+        // Get user ID and user type from data attributes
+        var userId = clickedButton.data("user-id");
+        console.log("UserID (Primary Key): " + userId);
+        var user_type = clickedButton.data("user-type");
+    
+        // Get the CSRF token from the form
+        var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+    
+        // Confirm the user wants to update before proceeding
+        var confirmUpdate = confirm("Are you sure you want to update this user?");
+    
+        if (confirmUpdate) {
+            // Debugging: Log the value of #edit_date to check if it's retrieved correctly
+            var dateString = $("#edit_date").val();
+            console.log("Date String: " + dateString);
+    
+            // Construct the correct URL for the AJAX request
+            var updateUrl = '/update_user/' + user_type + '/';
+    
+            // Retrieve the updated user data from your form fields
+            var updatedData = {
+                id: userId,  // Include user ID
+                username: $("#edit_username").val(),
+                firstname: $("#edit_firstname").val(),
+                lastname: $("#edit_lastname").val(),
+                role: $("#edit_role").val(),
+                date: formatDate(dateString), // Convert the date
+                csrfmiddlewaretoken: csrfToken,
+            };
+    
+            // Send an AJAX request to update the user using POST
+            $.ajax({
+                url: updateUrl,
+                method: "POST",
+                data: updatedData,
+                success: function (response) {
+                    console.log("Update Response:", response); // Log the response for debugging
+    
+                    if (response.success) {
+                        var updatedUser = response.updated_user;
+    
+                        // Find the closest table row to the clicked button and update its contents
+                        var tableRow = clickedButton.closest("tr");
+    
+                        // Update the table cells with the new data
+                        tableRow.find("td:nth-child(1)").text(updatedUser.firstname);
+                        tableRow.find("td:nth-child(2)").text(updatedUser.lastname);
+                        tableRow.find("td:nth-child(3)").text(updatedUser.username);
+                        tableRow.find("td:nth-child(4)").text(updatedUser.role);
+                        tableRow.find("td:nth-child(5)").text(updatedUser.date);
+    
+                        // Hide the edit overlay after successful update
+                        $("#edit_overlay").hide();
 
+                        location.reload();
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    // Handle errors
+                    console.log("Update Error:", err);
+                },
+            });
+        }
+    });
+    
+    
+    
+    
 });
 
+function formatDate(dateString) {
+    // Split the input date string into parts
+    var dateParts = dateString.split(' ');
 
+    // Ensure we have at least 3 parts (Month, day, year)
+    if (dateParts.length >= 3) {
+        var month = dateParts[0]; // Month
+        var day = dateParts[1].slice(0, -1); // Day (remove the comma)
+        var year = dateParts[2]; // Year
+
+        // Map month names to their numerical representation
+        var monthMap = {
+            'Jan.': '01', 'Feb.': '02', 'Mar.': '03', 'Apr.': '04', 'May.': '05', 'Jun.': '06',
+            'Jul.': '07', 'Aug.': '08', 'Sep.': '09', 'Oct.': '10', 'Nov.': '11', 'Dec.': '12'
+        };
+
+        // Construct the formatted date
+        var formattedDate = year + '-' + monthMap[month] + '-' + day;
+
+        return formattedDate;
+    }
+
+    // Return an empty string if the date string format is not as expected
+    return '';
+}
+
+    
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {

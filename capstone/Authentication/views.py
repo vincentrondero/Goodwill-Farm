@@ -5,6 +5,7 @@ from .models import Task
 from datetime import date
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
+from django.db import transaction
 
 def add_pigs(request, user_type):
     return render(request, 'Farm/add_pigs.html',{"user_type": user_type})
@@ -18,9 +19,36 @@ def index(request, user_type):
     checked_tasks = Task.objects.filter(is_done=True)  
     return render(request, 'Farm/index.html', {"today_tasks": today_tasks, "checked_tasks": checked_tasks, "user_type": user_type})
 
-
 def manage_user(request, user_type):
-    return render(request, 'Farm/manage_user.html',{"user_type": user_type})
+    if request.method == 'POST':
+        # Handle user creation
+        firstname = request.POST.get("firstname")
+        lastname = request.POST.get("lastname")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        role = request.POST.get("role")
+        date = request.POST.get("date")
+
+        # If all required fields are provided, create a new User object and save it to the database
+        if firstname and lastname and username and password and role and date:
+            user = User(
+                firstname=firstname,
+                lastname=lastname,
+                username=username,
+                password=password,
+                role=role,
+                date=date
+            )
+            user.save()
+            
+            # Redirect to the same page to prevent form resubmission
+            return redirect('manage_user', user_type=user_type)
+     # Retrieve a queryset of User objects from your database
+    users = User.objects.all()
+    users_count = User.objects.filter(role='user').count()
+
+    # Render the manage_user page
+    return render(request, 'Farm/manage_user.html', {"users": users,"user_type": user_type, "users_count" :users_count })
 
 def reports(request, user_type):
     return render(request, 'Farm/reports.html',{"user_type": user_type})
@@ -163,3 +191,53 @@ def tasks_for_date(request, selected_date):
 
     # Return the tasks data as JSON response
     return JsonResponse(tasks_data, safe=False)
+
+def delete_user(request, user_type):
+    if request.method == 'POST':
+        user_id = request.POST.get('id')
+        try:
+            user = User.objects.get(pk=user_id)
+            user.delete()
+            return JsonResponse({'success': True})
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'})
+    return render(request, 'Farm/manage_user.html', { "user_type": user_type, })
+
+
+def update_user(request, user_type):
+    if request.method == 'POST':
+        data = request.POST  # Access POST data directly
+        user_id = data.get('id')  # Get the user ID from POST data
+
+        try:
+            with transaction.atomic():
+                user = User.objects.get(pk=user_id)
+                user.username = data.get('username')
+                user.firstname = data.get('firstname')
+                user.lastname = data.get('lastname')
+                user.role = data.get('role')
+                user.date = data.get('date')
+                user.save()
+
+            # Debug: Add print statements or use Django's logging
+            print("User updated successfully.")
+            
+            return JsonResponse({'success': True, 'updated_user': {
+                'firstname': user.firstname,
+                'lastname': user.lastname,
+                'username': user.username,
+                'role': user.role,
+                'date': user.date,
+            }})
+        except User.DoesNotExist:
+            # Debug: Print error message
+            print("User not found.")
+            
+            return JsonResponse({'success': False, 'error': 'User not found'})
+        except Exception as e:
+            # Debug: Print error message
+            print(f"Error: {str(e)}")
+            
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return render(request, 'Farm/manage_user.html', {"user_type": user_type})

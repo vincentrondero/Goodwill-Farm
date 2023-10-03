@@ -14,4 +14,6 @@ urlpatterns = [
     path('get_checkbox_states/', views.get_checkbox_states, name='get_checkbox_states'),
     path('update_task_status/', views.update_task_status, name='update_task_status'),
     path('api/tasks-for-date/<str:selected_date>/', views.tasks_for_date, name='tasks-for-date'),
+    path('delete_user/<str:user_type>/', views.delete_user, name='delete_user'),
+    path('update_user/<str:user_type>/', views.update_user, name='update_user'),  
 ]
