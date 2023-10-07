@@ -329,6 +329,7 @@ function formatDate(dateString) {
 
     // Return an empty string if the date string format is not as expected
     return '';
+
 }
 
     
@@ -456,37 +457,33 @@ document.addEventListener('DOMContentLoaded', function() {
             updateTaskStatus(event.target);
         }
     });
+    
+});
+document.addEventListener('DOMContentLoaded', function() {
+    var buttons = document.querySelectorAll('.dropdown_dots');
+    console.log("Dropdown Buttons:", buttons);
+
+    buttons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent the click event from propagating to the document
+            var dropdown = this.nextElementSibling;
+            console.log("Dropdown Clicked. Dropdown:", dropdown);
+            
+            // Toggle the dropdown's display
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                dropdown.style.display = 'block';
+            }
+        });
+    });
+
+    // Add a click event listener to the document to close the dropdown when clicking outside of it
+    document.addEventListener('click', function(event) {
+        var dropdowns = document.querySelectorAll('.dropdown');
+        dropdowns.forEach(function(dropdown) {
+            dropdown.style.display = 'none';
+        });
+    });
 });
 
-
-
-document.getElementById('scheduleToday').addEventListener('mousedown', function (e) {
-    if (e.button === 1) { // Check if the middle mouse button (button 1) is clicked
-        // Prevent the default behavior (e.g., text selection)
-        e.preventDefault();
-
-        // Store the initial mouse position and scroll position
-        const initialMouseY = e.clientY;
-        const initialScrollTop = this.scrollTop;
-
-        // Handle mousemove events to scroll the container
-        const handleMouseMove = (e) => {
-            // Calculate the amount to scroll based on the mouse movement
-            const deltaY = e.clientY - initialMouseY;
-
-            // Update the scroll position
-            this.scrollTop = initialScrollTop - deltaY;
-        };
-
-        // Handle mouseup event to stop scrolling
-        const handleMouseUp = () => {
-            // Remove the event listeners to stop scrolling
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-
-        // Add event listeners for mousemove and mouseup to enable scrolling
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-    }
-});

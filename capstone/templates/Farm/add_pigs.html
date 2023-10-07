@@ -2,109 +2,75 @@
 {% load static %}
 {% block content %}
 <div>Manage Pigs</div>
-<div class="navbar mb-2">
-    <button id="openOverlayButton" >Add Pigs</button>
+<div class="navbar mb-1">
+    <div class="d-flex" >
+    <button class="custom_button mx-2" id="openOverlayButton" style="border-radius: 20px; width: 100px; height: 30px; background-color: #FFFFFF; color: #ff7b7b;">ADD PIGS</button>
+    <button class="custom_button mx-2" id="openOverlayButton1" style="border-radius: 20px; width: 100px; height: 30px; background-color: #FFFFFF; color: #ff7b7b;">ADD SOW</button>
+    </div>
     <div class="search-container">
         <input type="text" placeholder="Search...">
         <button type="submit">Search</button>
     </div>
 </div>
+
 <div class="row px-3 py-1 gap-auto">
     <div class="col-4 py-1">
-        <div class="bg-warning card d-flex">
+        <div class="bg-warning card d-flex"  style="max-height: 315px;">
             <div class="d-flex justify-content-between">
                 <div class="mx-2 mt-1">
-                    <span class="text-white p-0 fw-bold"> <img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="..."> Patener </span>
+                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="...">Patener</span>
                 </div>
                 <div class="m-3">
-                    <span class="text-white p-0 fw-bold"> number here </span>
+                    <!-- Display the count from pig_list_28_days -->
+                    <span class="text-white p-0 fw-bold">{{ pig_list_28_days.count }}</span>
                 </div>
             </div>
-            <hr class="hr-shadow">
-            <ul class="d-flex flex-column">
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
+            <div class="d-flex flex-column m-1" style="overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none;">
+                {% for pig in pig_list %}
+                    <div class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between">
+                        <div>
+                            <span>{{ pig.pig_id }}</span>
+                            <p class="m-0 p-0">Status: {{ pig.pig_class }}</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <button class="ctm-btn">
+                                <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
-                    </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
-                    </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-            </ul>
-        </div>
+                {% endfor %}
+                <!-- Add more list items as needed for other pig data -->
+            </div>
+        </div>            
     </div>
     <div class="col-4 py-1">
-        <div class="bg-warning card d-flex">
+        <div class="bg-danger card d-flex"  style="max-height: 315px;">
             <div class="d-flex justify-content-between">
                 <div class="mx-2 mt-1">
-                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="..."> Grower </span>
+                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="...">Grower</span>
                 </div>
                 <div class="m-3">
-                    <span class="text-white p-0 fw-bold"> number here </span>
+                    <!-- Display the count from pig_list_28_days -->
+                    <span class="text-white p-0 fw-bold">{{ pig_list_28_days.count }}</span>
                 </div>
             </div>
-            <hr class="hr-shadow">
-            <ul class="d-flex flex-column">
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
+            <div class="d-flex flex-column m-1" style="overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none;">
+                {% for pig in pig_list %}
+                    <div class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between">
+                        <div>
+                            <span>{{ pig.pig_id }}</span>
+                            <p class="m-0 p-0">Status: {{ pig.pig_class }}</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <button class="ctm-btn">
+                                <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
-                    </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
-                    </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-            </ul>
-        </div>
+                {% endfor %}
+                <!-- Add more list items as needed for other pig data -->
+            </div>
+        </div>            
     </div>
     <div class="col-4 py-1">
         <div class="bg-success card d-flex ctm-grid" style="height: 300px;">
@@ -157,157 +123,244 @@
 </div>            
 <div class="row px-3 gap-auto">
     <div class="col-4 py-1">
-        <div class="bg-primary card d-flex">
+        <div class="bg-primary card d-flex"  style="max-height: 315px;">
             <div class="d-flex justify-content-between">
                 <div class="mx-2 mt-1">
-                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="..."> Nursery </span>
+                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="...">Nursery</span>
                 </div>
                 <div class="m-3">
-                    <span class="text-white p-0 fw-bold"> number here </span>
+                    <!-- Display the count from pig_list_28_days -->
+                    <span class="text-white p-0 fw-bold">{{ pig_list_28_days.count }}</span>
                 </div>
             </div>
-            <hr class="hr-shadow">
-            <ul class="d-flex flex-column">
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
+            <div class="d-flex flex-column m-1" style="overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none;">
+                {% for pig in pig_list %}
+                    <div class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between">
+                        <div>
+                            <span>{{ pig.pig_id }}</span>
+                            <p class="m-0 p-0">Status: {{ pig.pig_class }}</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <button class="ctm-btn">
+                                <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
-                    </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
-                    </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-            </ul>
-        </div>
+                {% endfor %}
+                <!-- Add more list items as needed for other pig data -->
+            </div>
+        </div>            
     </div>
     <div class="col-4 py-1">
-        <div class="bg-primary card d-flex">
+        <div class="bg-primary card d-flex"  style="max-height: 315px;">
             <div class="d-flex justify-content-between">
                 <div class="mx-2 mt-1">
-                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="..."> Suckling </span>
+                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="...">Suckling</span>
                 </div>
                 <div class="m-3">
-                    <span class="text-white p-0 fw-bold"> number here </span>
+                    <!-- Display the count from pig_list_28_days -->
+                    <span class="text-white p-0 fw-bold">{{ pig_list_28_days.count }}</span>
                 </div>
             </div>
-            <hr class="hr-shadow">
-            <ul class="d-flex flex-column">
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
+            <div class="d-flex flex-column m-1" style="overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none;">
+                {% for pig in pig_list %}
+                    <div class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between">
+                        <div>
+                            <span>{{ pig.pig_id }}</span>
+                            <p class="m-0 p-0">Status: {{ pig.pig_class }}</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <button class="dropdown_dots" data-user-type="{{ user.user_type }}">
+                                <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
+                            </button>          
+                        <div id="dropdown" class="dropdown" style="display: none;">
+                            <a href="#" class="edit-option">Edit</a>
+                            <a href="#" class="delete-option">Delete</a>
+                        </div>
+                        </div>
+
                     </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
-                    </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
-                    </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-            </ul>
-        </div>
+                {% endfor %}
+                <!-- Add more list items as needed for other pig data -->
+            </div>
+        </div>            
     </div>
-</div>            
 </div>
 </div>
-</div>
+
+
 <div id="overlay">
-    <div id="formContainer">
-        <h2>Pig Registration</h2>
-        <div class="registration-container">
-            <form>
-                <div class="flex1">
-                    <label for="pigID" class="LPigID">Pig ID:</label>
-                    <input type="text" class="InPigID" id="pigID" name="pigID"><br><br>
-        
-                    <label for="dam" class="LDam">DAM:</label>
-                    <input type="text" class="InDam" id="dam" name="dam"><br><br>
+    <div id="formContainer" class="card rounded">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                ADD PIGS
+            </span>
+        </div>
+        <div class="scheduling-container">
+            <form method="post" action="{% url 'Add_Pigs' user_type=user_type %}">
+                {% csrf_token %}
+                <div class="row mb-3 align-items-center">
+                    <label for="pigID" class="col-md-2 col-form-label">Pig ID:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="pigID" name="pigID">
+                    </div>
+                    <label for="dam" class="col-md-2 col-form-label">DAM:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="dam" name="dam">
+                    </div>
                 </div>
-        
-                <div class="flex2">
-                    <label for="dob" class="LDOB">DOB:</label>
-                    <input type="text" class="InDOB" id="dob" name="dob"><br><br>
-        
-                    <label for="sire" class="LSire">SIRE:</label>
-                    <input type="text" class="InSire" id="sire" name="sire"><br><br>
+                
+                <div class="row mb-3 align-items-center">
+                    <label for="dob" class="col-md-2 col-form-label">DOB:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="dob" name="dob">
+                    </div>
+                    <label for="sire" class="col-md-2 col-form-label">SIRE:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="sire" name="sire">
+                    </div>
                 </div>
-        
-                <div class="flex3">
-                    <label for="class" class="LClass">Class:</label>
-                    <input type="text" class="InClass" id="class" name="class"><br><br>
-        
-                    <label for="sex" class="LSex">Sex:</label>
-                    <input type="text" class="InSex" id="sex" name="sex"><br><br>
-        
-                    <label for="count" class="LCount">Count:</label>
-                    <input type="text" class="InCount" id="count" name="count"><br><br>
-        
-                    <label for="weight" class="LWeight">Weight:</label>
-                    <input type="text" class="InWeight" id="weight" name="weight"><br><br>
-        
-                    <label for="remarks" class="LRemarks">Remarks:</label>
-                    <input type="text" class="InRemarks" id="remarks" name="remarks"><br><br>
+                
+                <div class="row mb-3 align-items-center">
+                    <label for="class" class="col-md-2 col-form-label">Class:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="class" name="class" value="Weanlings">
+                    </div>
+                    <label for="sex" class="col-md-2 col-form-label">Sex:</label>
+                    <div class="col-md-4">
+                        <select class="form-control mb-2" id="sex" name="sex">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
                 </div>
-        
+                
+                <div class="row mb-3 align-items-center">
+                    <label for="count" class="col-md-2 col-form-label">Count:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="count" name="count">
+                    </div>
+                    <label for="weight" class="col-md-2 col-form-label">Weight:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="weight" name="weight">
+                    </div>
+                </div>
+                
+                <div class="row mb-3 align-items-center">
+                    <label for="remarks" class="col-md-2 col-form-label">Remarks:</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" id="remarks" name="remarks"></textarea>
+                    </div>
+                </div>
+                
                 <hr class="separator">
-        
-                <div class="flex4">
-                    <label for="verifBy" class="LVerifBy">Verified By:</label>
-                    <input type="text" class="InVerifBy" id="verifBy" name="verifBy"><br><br>
+                
+                <div class="row mb-3 align-items-center">
+                    <label for="verifBy" class="col-md-2 col-form-label">Verified By:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="verifBy" name="verifBy">
+                    </div>
+                    <label for="date" class="col-md-2 col-form-label">Date:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="date" name="date">
+                    </div>
                 </div>
-        
-                <div class="response">
-                    <input type="submit" class="save" value="Save">
-                    <input type="button" class="cancel" value="Cancel" >
+    
+                <div class="d-flex justify-content-end">
+                    <input class="shadow custom_button" type="submit" value="Save Pig" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="button" id="closeOverlayButton" value="Cancel" style="border-radius: 20px; width: 120px;">
                 </div>
             </form>
         </div>
-        
     </div>
 </div>
+
+<div id="overlay1">
+    <div id="formContainer" class="card rounded">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                ADD SOW
+            </span>
+        </div>
+        <div class="scheduling-container">
+            <form method="post" action="{% url 'Add_Pigs' user_type=user_type %}">
+                {% csrf_token %}
+                <div class="row mb-3 align-items-center">
+                    <label for="pigID" class="col-md-2 col-form-label">Pig ID:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="pigID" name="pigID">
+                    </div>
+                    <label for="dam" class="col-md-2 col-form-label">DAM:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="dam" name="dam">
+                    </div>
+                </div>
+                
+                <div class="row mb-3 align-items-center">
+                    <label for="dob" class="col-md-2 col-form-label">DOB:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="dob" name="dob">
+                    </div>
+                    <label for="sire" class="col-md-2 col-form-label">SIRE:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="sire" name="sire">
+                    </div>
+                </div>
+                
+                <div class="row mb-3 align-items-center">
+                    <label for="class" class="col-md-2 col-form-label">Class:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="class" name="class" value="Weanlings">
+                    </div>
+                    <label for="sex" class="col-md-2 col-form-label">Sex:</label>
+                    <div class="col-md-4">
+                        <select class="form-control mb-2" id="sex" name="sex">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-3 align-items-center">
+                    <label for="count" class="col-md-2 col-form-label">Count:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="count" name="count">
+                    </div>
+                    <label for="weight" class="col-md-2 col-form-label">Weight:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="weight" name="weight">
+                    </div>
+                </div>
+                
+                <div class="row mb-3 align-items-center">
+                    <label for="remarks" class="col-md-2 col-form-label">Remarks:</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" id="remarks" name="remarks"></textarea>
+                    </div>
+                </div>
+                
+                <hr class="separator">
+                
+                <div class="row mb-3 align-items-center">
+                    <label for="verifBy" class="col-md-2 col-form-label">Verified By:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="verifBy" name="verifBy">
+                    </div>
+                    <label for="date" class="col-md-2 col-form-label">Date:</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control mb-2" id="date" name="date">
+                    </div>
+                </div>
+    
+                <div class="d-flex justify-content-end">
+                    <input class="shadow custom_button" type="submit" value="Save Pig" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="button" id="closeOverlayButton1" value="Cancel" style="border-radius: 20px; width: 120px;">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

@@ -104,8 +104,13 @@
     </table>
 </div>
 <div id="edit_overlay" style="display: none;">
-    <div id="editFormContainer">
-        <h2>Edit User</h2>
+        <div id="editFormContainer" class="card rounded">
+            <div class="rounded-top" style="background-color: #ff7b7b;">
+                <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+                <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                    EDIT USER
+                </span>
+            </div>
         <div class="scheduling-container">
             <form id="editUserForm"> 
                 {% csrf_token %}

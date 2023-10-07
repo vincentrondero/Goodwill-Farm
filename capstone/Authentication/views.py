@@ -2,13 +2,62 @@ from django.shortcuts import render, redirect
 from django.views import View
 from .models import User
 from .models import Task
-from datetime import date
+from .models import Pig
+from datetime import date, timedelta
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from django.db import transaction
 
+from datetime import date as today_date, timedelta
+
 def add_pigs(request, user_type):
-    return render(request, 'Farm/add_pigs.html',{"user_type": user_type})
+    if request.method == 'POST':
+        # Handle form submission
+        pig_id = request.POST.get("pigID")
+        dam = request.POST.get("dam")
+        dob = request.POST.get("dob")
+        sire = request.POST.get("sire")
+        pig_class = request.POST.get("class")
+        sex = request.POST.get("sex")
+        count = request.POST.get("count")
+        weight = request.POST.get("weight")
+        remarks = request.POST.get("remarks")
+        verif_by = request.POST.get("verifBy")
+        birthdate = request.POST.get("date")  # Renamed to 'birthdate'
+
+        # Convert data types if needed (e.g., count and weight)
+        try:
+            count = int(count)
+            weight = float(weight)
+        except (ValueError, TypeError):
+            # Handle conversion errors here
+            pass
+
+        except ValueError:
+            # Handle invalid date format here
+            pass
+
+        # Create a Pig object and save it to the database
+        pig = Pig(
+            pig_id=pig_id,
+            dam=dam,
+            dob=dob,
+            sire=sire,
+            pig_class=pig_class,
+            sex=sex,
+            count=count,
+            weight=weight,
+            remarks=remarks,
+            verif_by=verif_by,
+            date=birthdate  # Use 'birthdate' for the date field
+        )
+        pig.save()
+
+    pig_list = Pig.objects.all()
+    twenty_eight_days_ago = date.today() - timedelta(days=28)
+    pig_list_28_days = pig_list.filter(date__gte=twenty_eight_days_ago)
+
+    return render(request, 'Farm/add_pigs.html', {"pig_list": pig_list, "user_type": user_type, "pig_list_28_days": pig_list_28_days})
 
 def Login(request):
     return render(request, 'Authentication/Login.html')

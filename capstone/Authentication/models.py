@@ -2,7 +2,7 @@ from django.db import models
 from datetime import date 
 
 class User(models.Model):
-    firstname = models.CharField(max_length=100, default="Juan")  # Set a default value, e.g., "John"
+    firstname = models.CharField(max_length=100, default="Juan") 
     lastname = models.CharField(max_length=100, default="De la Cruz")
     username = models.CharField(max_length=255)
     password = models.CharField(max_length=255)  
@@ -22,3 +22,23 @@ class Task(models.Model):
     due_time = models.TimeField()
     description = models.TextField()
     is_done = models.BooleanField(default=False)
+
+class Pig(models.Model):
+    pig_id = models.CharField(max_length=255)
+    dam = models.CharField(max_length=255)
+    dob = models.DateField()
+    sire = models.CharField(max_length=255)
+    pig_class = models.CharField(max_length=255)
+    
+    SEX_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+    ]
+    sex = models.CharField(max_length=10, choices=SEX_CHOICES)
+    
+    count = models.PositiveIntegerField()
+    weight = models.DecimalField(max_digits=5, decimal_places=2)
+    remarks = models.TextField()
+    
+    verif_by = models.CharField(max_length=255)
+    date = models.DateField(default=date.today) 

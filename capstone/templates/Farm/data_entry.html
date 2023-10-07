@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 <div> DATA ENTRY</div>
 <div class="row px-3 py-3 gap-3 ps-5">
@@ -59,32 +60,44 @@
 </div>
 
 <div id="overlay1">
-    <div id="formContainer">
-        <h2>Pig Sales</h2>
+    <div id="formContainer" class="card rounded">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                PIG SALES
+            </span>
+        </div>
         <div class="scheduling-container">
             <form>
-                <label for="PigID" class = "LpigID">Pig ID:</label>
-                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
-    
-                <label for="weight" class= "Lweight">Weight:</label>
-                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
-    
-                <label for="price" class= "Lprice">Price:</label>
-                <input type="text" class= "Inprice" id="price" name="price"><br><br>
-    
-                
-                <hr class="separator">
-    
-                <div class = "Verification">
-                    <label for="Verified" class= "LVerifBy">Verified By:</label>
-                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
-                    <label for="date" class= "Ldate">Date:</label>
-                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                <div class="col g-3">
+                    <div class="col-md-6">
+                        <label for="PigID" class="form-label">Pig ID:</label>
+                        <input type="text" class="form-control" id="pigID" name="PigID">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="weight" class="form-label">Weight:</label>
+                        <input type="text" class="form-control" id="weight" name="weight">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="price" class="form-label">Price:</label>
+                        <input type="text" class="form-control" id="price" name="price">
+                    </div>
                 </div>
-    
-                <input type="submit" value="Save Task">
-                <input type="button" id="closeOverlayButton1" value="Cancel">
-    
+                <hr class="separator">
+                    <div class="col-md-6">
+                        <div class="Verification">
+                            <label for="Verified" class="form-label">Verified By:</label>
+                            <input type="text" class="form-control" id="Verified" name="Verified">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="date" class="form-label">Date:</label>
+                        <input type="text" class="form-control" id="date" name="date">
+                    </div>
+                <div class="d-flex justify-content-end">
+                    <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="button" id="closeOverlayButton1" value="Cancel" style="border-radius: 20px; width: 120px;">
+                </div>
             </form>
             <div class="error-message" id="error-message">
                 {{ message }}
@@ -93,68 +106,200 @@
     </div>
 </div>
 
+
 <div id="overlay2">
-    <div id="formContainer">
-        <h2>Sow Performance</h2>
+    <div id="formContainer2" class="card rounded">
+        <div class="card rounded">
+            <div class="rounded-top" style="background-color: #ff7b7b;">
+                <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+                <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                    Sow Performance
+                </span>
+            </div>
         <div class="scheduling-container">
             <form>
-                <label for="PigID" class = "LpigID">Pig ID:</label>
-                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
-    
-                <label for="weight" class= "Lweight">Weight:</label>
-                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
-    
-                <label for="price" class= "Lprice">Price:</label>
-                <input type="text" class= "Inprice" id="price" name="price"><br><br>
-    
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="SowNo">Sow no.:</label>
+                            <input type="text" class="form-control" id="SowNo" name="SowNo">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="dam">Dam:</label>
+                            <input type="text" class="form-control" id="dam" name="dam">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="DOB">DOB:</label>
+                            <input type="text" class="form-control" id="DOB" name="DOB">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="sire">Sire:</label>
+                            <input type="text" class="form-control" id="sire" name="sire">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="class">Class:</label>
+                            <input type="text" class="form-control" id="class" name="class">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="parity">Parity:</label>
+                            <input type="text" class="form-control" id="parity" name="parity">
+                        </div>
+                    </div>
+                </div>
+                <hr class="separator">
+                <p class="BoarU">Boar Used</p>
+                <div class="row">
+                    <div class="col">
+                        <div class="col-md-4 form-group">
+                            <label for="first" class="d-inline">1st:</label>
+                            <input type="text" class="form-control d-inline" id="first" name="first">
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="second" class="d-inline">2nd:</label>
+                            <input type="text" class="form-control d-inline" id="second" name="second">
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="third" class="d-inline">3rd:</label>
+                            <input type="text" class="form-control d-inline" id="third" name="third">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="col-md-4">
+                            <label for="bred">Date Bred:</label>
+                            <input type="text" class="form-control" id="bred" name="bred">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="due">Date Due:</label>
+                            <input type="text" class="form-control" id="due" name="due">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="farr">Date Farr:</label>
+                            <input type="text" class="form-control" id="farr" name="farr">
+                        </div>
+                    </div>
+                </div>
                 
                 <hr class="separator">
-    
-                <div class = "Verification">
-                    <label for="Verified" class= "LVerifBy">Verified By:</label>
-                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
-                    <label for="date" class= "Ldate">Date:</label>
-                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                <p class="LitterS">Litter Size</p>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="alive">Alive:</label>
+                        <input type="text" class="form-control" id="alive" name="alive">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="mk">MK:</label>
+                        <input type="text" class="form-control" id="mk" name="mk">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="SB">SB:</label>
+                        <input type="text" class="form-control" id="SB" name="SB">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="mffd">MFFD:</label>
+                        <input type="text" class="form-control" id="mffd" name="mffd">
+                    </div>
                 </div>
-    
-                <input type="submit" value="Save Task">
-                <input type="button" id="closeOverlayButton2" value="Cancel">
-    
-            </form>
-            <div class="error-message" id="error-message">
-                {{ message }}
+                <div class="row">
+                <div class="col">
+                    <label for="totalLS">Total Litter Size:</label>
+                    <input type="text" class="form-control" id="totalLS" name="totalLS">
+                </div>
+                <div class="col">
+                    <label for="aveLS">Ave Litter Size:</label>
+                    <input type="text" class="form-control" id="aveLS" name="aveLS">
+                </div>
+                </div>
+                <hr class="separator">
+        <div class="row">
+            <div class="col">
+                <div class="col g-2">
+                    <label for="dateW">Date Weaned:</label>
+                    <input type="text" class="form-control" id="dateW" name="dateW">
+                </div>
+                <div class="col g-2">
+                    <label for="noW">No. Weaned:</label>
+                    <input type="text" class="form-control" id="noW" name="noW">
+                </div>
+                <div class="col g-2">
+                    <label for="totalW">Total Weaned:</label>
+                    <input type="text" class="form-control" id="totalW" name="totalW">
+                </div>
+                <div class="col g-2">
+                    <label for="aveW">Ave Weaned:</label>
+                    <input type="text" class="form-control" id="aveW" name="aveW">
+                </div>
             </div>
+            <div class="col">
+                <div class="col g-3">
+                    <label for="totalKW">Total Kilo Weaned:</label>
+                    <input type="text" class="form-control" id="totalKW" name="totalKW">
+                </div>
         </div>
-    </div>
+        </div>
+            <div class="d-flex justify-content-end">
+                <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                <input class="shadow custom_button" type="button" id="closeOverlayButton2" value="Cancel" style="border-radius: 20px; width: 120px;">
+            </div>
+        
+            </form>
+        </div>
+        </div>   
+    </div>    
 </div>
 
 <div id="overlay3">
-    <div id="formContainer">
-        <h2>Weanlings</h2>
+    <div id="formContainer" class="card rounded">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                WEANLINGS
+            </span>
+        </div>
         <div class="scheduling-container">
             <form>
-                <label for="PigID" class = "LpigID">Pig ID:</label>
-                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
+                <div class = "flex1">
+
+                    <label for="pigID" class= "LPigID">Pig ID:</label>
+                    <input type="text" class= "InPigID" id="pigID" name="pigID"><br><br>
     
-                <label for="weight" class= "Lweight">Weight:</label>
-                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
-    
-                <label for="price" class= "Lprice">Price:</label>
-                <input type="text" class= "Inprice" id="price" name="price"><br><br>
-    
-                
+                    <label for="date" class= "LDate">Date:</label>
+                    <input type="text" class= "InDate" id="date" name="date"><br><br>
+                </div>
+
                 <hr class="separator">
+
+                <div class = "flex2">
+                    <label for="sowID" class= "LSowID">Sow ID:</label>
+                    <input type="text" class= "InSowID" id="sowID" name="sowID"><br><br>
     
-                <div class = "Verification">
-                    <label for="Verified" class= "LVerifBy">Verified By:</label>
-                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
-                    <label for="date" class= "Ldate">Date:</label>
-                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                    <label for="weight" class= "LWeight">Weight:</label>
+                    <input type="text" class= "InWeight" id="weight" name="weight"><br><br>
+    
+                    <label for="sex" class= "LSex">Sex:</label>
+                    <input type="text" class= "InSex" id="sex" name="sex"><br><br>
+                    
+                    <label for="remarks" class= "LRemarks">Remarks:</label>
+                    <input type="text" class= "InRemarks" id="remarks" name="remarks"><br><br>
                 </div>
     
-                <input type="submit" value="Save Task">
-                <input type="button" id="closeOverlayButton3" value="Cancel">
-    
+                <div class="d-flex justify-content-end">
+                    <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="button" id="closeOverlayButton3" value="Cancel" style="border-radius: 20px; width: 120px;">
+                </div>
             </form>
             <div class="error-message" id="error-message">
                 {{ message }}
@@ -164,31 +309,42 @@
 </div>
 
 <div id="overlay4">
-    <div id="formContainer">
-        <h2>Vaccine</h2>
+    <div id="formContainer" class="card rounded">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                VACCINE
+            </span>
+        </div>
         <div class="scheduling-container">
             <form>
-                <label for="PigID" class = "LpigID">Pig ID:</label>
-                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
+                <div class = "flex1">
+
+                    <label for="pigID" class= "LPigID">Pig ID:</label>
+                    <input type="text" class= "InPigID" id="pigID" name="pigID"><br><br>
     
-                <label for="weight" class= "Lweight">Weight:</label>
-                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
-    
-                <label for="price" class= "Lprice">Price:</label>
-                <input type="text" class= "Inprice" id="price" name="price"><br><br>
-    
+                    <label for="date" class= "LDate">Date:</label>
+                    <input type="text" class= "InDate" id="date" name="date"><br><br>
+                </div>
                 
+
                 <hr class="separator">
     
-                <div class = "Verification">
-                    <label for="Verified" class= "LVerifBy">Verified By:</label>
-                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
-                    <label for="date" class= "Ldate">Date:</label>
-                    <input type="text" class= "Indate" id="date" name="date"><br><br>
-                </div>
+                <div class = "flex2">
+                    <label for="vaccine" class= "LVaccine">Vaccine:</label>
+                    <input type="text" class= "InVaccine" id="vaccine" name="vaccine"><br><br>
     
-                <input type="submit" value="Save Task">
-                <input type="button" id="closeOverlayButton4" value="Cancel">
+                    <label for="purpose" class= "LPurpose">Purpose:</label>
+                    <input type="text" class= "InPurpose" id="purpose" name="purpose"><br><br>
+    
+                    <label for="dosage" class= "LDosage">Dosage:</label>
+                    <input type="text" class= "InDosage" id="dosage" name="dosage"><br><br>
+                    
+                </div>
+                <div class="d-flex justify-content-end">
+                    <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="button" id="closeOverlayButton4" value="Cancel" style="border-radius: 20px; width: 120px;">
+                </div>
     
             </form>
             <div class="error-message" id="error-message">
@@ -199,32 +355,44 @@
 </div>
 
 <div id="overlay5">
-    <div id="formContainer">
-        <h2>Feeds Inventory</h2>
+    <div id="formContainer" class="card rounded">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                FEEDS INVENTORY
+            </span>
+        </div>
         <div class="scheduling-container">
             <form>
-                <label for="PigID" class = "LpigID">Pig ID:</label>
-                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
+                <div class = "flex1">
+                    <label for="feedsB" class= "LFeedsB">Feeds Brand:</label>
+                    <input type="text" class= "InFeedsB" id="feedsB" name="feedsB"><br><br>
     
-                <label for="weight" class= "Lweight">Weight:</label>
-                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
+                    <label for="feedsR" class= "LFeedsR">Feeds Ration:</label>
+                    <input type="text" class= "InFeedsR" id="feedsR" name="feedsR"><br><br>
     
-                <label for="price" class= "Lprice">Price:</label>
-                <input type="text" class= "Inprice" id="price" name="price"><br><br>
-    
+                    <label for="cost" class= "LCost">Cost:</label>
+                    <input type="text" class= "InCost" id="cost" name="cost"><br><br>
+                    
+                    <label for="quantity" class= "LQuantity">Quantity:</label>
+                    <input type="text" class= "InQuantity" id="quantity" name="quantity"><br><br>
+                </div>
                 
                 <hr class="separator">
     
-                <div class = "Verification">
-                    <label for="Verified" class= "LVerifBy">Verified By:</label>
-                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
-                    <label for="date" class= "Ldate">Date:</label>
-                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                <div class = "flex2">
+    
+                    <label for="verifBy" class= "LVerifBy">Verified By:</label>
+                    <input type="text" class= "InVerifBy" id="verifBy" name="verifBy"><br><br>
+    
+                    <label for="date" class= "LDate">Date:</label>
+                    <input type="text" class= "InDate" id="date" name="date"><br><br>
                 </div>
     
-                <input type="submit" value="Save Task">
-                <input type="button" id="closeOverlayButton5" value="Cancel">
-    
+                <div class="d-flex justify-content-end">
+                    <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="button" id="closeOverlayButton5" value="Cancel" style="border-radius: 20px; width: 120px;">
+                </div>
             </form>
             <div class="error-message" id="error-message">
                 {{ message }}
@@ -234,32 +402,69 @@
 </div>
 
 <div id="overlay6">
-    <div id="formContainer">
-        <h2>Mortality Form</h2>
+    <div id="formContainer" class="card rounded">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                MORTALITY FORM
+            </span>
+        </div>
         <div class="scheduling-container">
             <form>
-                <label for="PigID" class = "LpigID">Pig ID:</label>
-                <input type="text" class = "InpigID" id="pigID" name="PigID"><br><br>
+                <div class = "flex1">
+
+                    <label for="pigID" class= "LPigID">Pig ID:</label>
+                    <input type="text" class= "InPigID" id="pigID" name="pigID"><br><br>
     
-                <label for="weight" class= "Lweight">Weight:</label>
-                <input type="text" class= "Inweight" id="weight" name="weight"><br><br>
-    
-                <label for="price" class= "Lprice">Price:</label>
-                <input type="text" class= "Inprice" id="price" name="price"><br><br>
-    
-                
-                <hr class="separator">
-    
-                <div class = "Verification">
-                    <label for="Verified" class= "LVerifBy">Verified By:</label>
-                    <input type="text" class= "InVerifBy" id="Verified" name="Verified"><br><br>
-                    <label for="date" class= "Ldate">Date:</label>
-                    <input type="text" class= "Indate" id="date" name="date"><br><br>
+                    <label for="date" class= "LDate">Date:</label>
+                    <input type="text" class= "InDate" id="date" name="date"><br><br>
                 </div>
     
-                <input type="submit" value="Save Task">
-                <input type="button" id="closeOverlayButton6" value="Cancel">
+                <div class = "flex2">
     
+                    <label for="class" class= "LClass">Class:</label>
+                    <input type="text" class= "InClass" id="class" name="class"><br><br>
+    
+                    <label for="dob" class= "LDOB">DOB:</label>
+                    <input type="text" class= "InDOB" id="dob" name="dob"><br><br>
+                </div>
+    
+                <div class = "flex3">
+    
+                    <label for="dam" class= "LDam">DAM:</label>
+                    <input type="text" class= "InDam" id="dam" name="dam"><br><br>
+    
+                    <label for="cause" class= "LCause">Cause:</label>
+                    <input type="text" class= "InCause" id="cause" name="cause"><br><br>
+                </div>
+    
+                <div class = "flex4">
+    
+                    <label for="sire" class= "LSire">SIRE:</label>
+                    <input type="text" class= "InSire" id="sire" name="sire"><br><br>
+    
+                    <label for="location" class= "LLocation">Location:</label>
+                    <input type="text" class= "InLocation" id="location" name="location"><br><br>
+    
+                    <label for="remarks" class= "LRemarks">Remarks:</label>
+                    <input type="text" class= "InRemarks" id="remarks" name="remarks"><br><br>
+                </div>
+    
+                <hr class="separator">
+    
+                <div class = "flex5">
+                    <label for="repBY" class= "LRepBy">Reported By:</label>
+                    <input type="text" class= "InRepBy" id="repBy" name="repBy"><br><br>
+    
+                    <label for="verifBy" class= "LVerifBy">Verified By:</label>
+                    <input type="text" class= "InVerifBy" id="verifBy" name="verifBy"><br><br>
+    
+                </div>
+    
+                <div class="d-flex justify-content-end">
+                    <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="button" id="closeOverlayButton6" value="Cancel" style="border-radius: 20px; width: 120px;">
+                </div>
             </form>
             <div class="error-message" id="error-message">
                 {{ message }}
@@ -267,4 +472,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

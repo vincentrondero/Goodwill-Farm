@@ -3,15 +3,20 @@
 {% block content %}
 <div>Manage Schedules</div>
 <div class="navbar mb-2">
-    <button id="openOverlayButton">Set Schedule</button>
+    <button class="custom_button" id="openOverlayButton" style="border-radius: 20px; width: 120px; height: 30px; background-color: #FFFFFF; color: #ff7b7b;" >Set Schedule</button>
     <div class="search-container">
         <input type="text" placeholder="Search...">
         <button type="submit">Search</button>
     </div>
 </div>
 <div id="overlay">
-    <div id="formContainer">
-        <h2>Set Schedules</h2>
+    <div id="formContainer" class="card rounded">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                SET SCHEDULE
+            </span>
+        </div>
         <div class="scheduling-container">
             <form method="post" action="{% url 'set_sched' user_type=user_type %}">
                 {% csrf_token %}
@@ -27,8 +32,10 @@
                 <label class="desc" for="desc">Description:</label>
                 <input type="text" class="desc" id="desc" name="desc"><br><br>
                 
-                <input type="submit" value="Save Task">
-                <input type="button" id="closeOverlayButton" value="Cancel">
+                <div class="d-flex justify-content-end">
+                    <input class="shadow  custom_button" type="submit" value="Save Task" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="button" id="closeOverlayButton" value="Cancel" style="border-radius: 20px; width: 120px;">
+                </div>
             </form>
             <div class="error-message" id="error-message">
                 {{ message }}
