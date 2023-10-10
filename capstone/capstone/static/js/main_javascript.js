@@ -461,6 +461,68 @@ $(document).ready(function() {
     });
     
 
+   // Parse the months and counts data
+const monthsData = JSON.parse(document.getElementById("months").textContent);
+const countsData = JSON.parse(document.getElementById("counts").textContent);
+
+// Create an array of all months of the year
+const allMonths = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+
+// Initialize an array to store the counts for each month
+const counts = Array(12).fill(0); // Initialize with zeros for all months
+
+// Fill in the counts based on the data you have
+monthsData.forEach((monthYear, index) => {
+  const [year, month] = monthYear.split('-'); // Split the "YYYY-MM" format
+  const monthIndex = parseInt(month, 10) - 1; // Adjust for 0-based indexing
+  if (!isNaN(monthIndex)) {
+    counts[monthIndex] = countsData[index];
+  }
+});
+
+console.log("Counts:", counts);
+
+// Create a bar chart using the data
+const ctx = document.getElementById("pigBarChart").getContext("2d");
+new Chart(ctx, {
+  type: "bar",
+  data: {
+    labels: allMonths,
+    datasets: [
+      {
+        label: "Pig Registration Count",
+        data: counts,
+        backgroundColor: "#FF7373",
+        borderColor: "#FF7373   ",
+        borderWidth: 1,
+      },
+    ],
+  },
+  options: {
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Month",
+        },
+      },
+      y: {
+        beginAtZero: true,
+        title: {
+          display: false,
+          text: "Count",
+        },
+      },
+    },
+  },
+});
+
+
+  
+
 });
     
 
@@ -645,3 +707,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+

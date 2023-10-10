@@ -8,6 +8,7 @@ from datetime import date, timedelta
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from django.db import transaction
+import json
 
 from datetime import date as today_date, timedelta
 
@@ -123,8 +124,40 @@ def manage_user(request, user_type):
     # Render the manage_user page
     return render(request, 'Farm/manage_user.html', {"users": users,"user_type": user_type, "users_count" :users_count })
 
+from collections import defaultdict
+from datetime import datetime
+
 def reports(request, user_type):
-    return render(request, 'Farm/reports.html',{"user_type": user_type})
+    # Fetch Pig data and calculate monthly counts
+    pig_data = Pig.objects.all()
+
+    monthly_counts = defaultdict(int)
+
+    for pig in pig_data:
+        # Assuming you have a 'registration_date' field in your Pig model
+        registration_date = pig.date # Replace with your actual field name
+
+        # Calculate the year and month as a string (e.g., "2023-10")
+        year_month = registration_date.strftime("%Y-%m")
+
+        # Increment the count for the corresponding month
+        monthly_counts[year_month] += 1
+
+    # Separate the dictionary into lists for months and counts
+    months, counts = zip(*monthly_counts.items())
+
+    print("Number of pigs:", len(pig_data))
+
+    # Pass the data to the template context
+    context = {
+        "user_type": user_type,
+        "pig_data":pig_data,
+        "months": json.dumps(list(months)),  # Serialize months as JSON
+        "counts": json.dumps(list(counts)),
+    }
+
+    return render(request, 'Farm/reports.html', context)
+
 
 def data_entry(request, user_type):
     return render(request, 'Farm/data_entry.html',{"user_type": user_type})

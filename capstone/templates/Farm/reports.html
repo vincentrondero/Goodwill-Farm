@@ -1,13 +1,20 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<div>Manage Pigs</div>
-<div class="navbar mb-2">
-    <button>Add Pigs</button>
-    <div class="search-container">
-        <input type="text" placeholder="Search...">
-        <button type="submit">Search</button>
+<div>Reports</div>
+
+<div id="months" style="display: none;">{{ months|safe }}</div>
+<div id="counts" style="display: none;">{{ counts|safe|default:"[]" }}</div>
+
+
+<div class="graph-container" style="height: 33%; width: 50%; margin-top: 38%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
+    <div class="rounded-top" style="background-color: #ff7b7b;">
+        <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 5%;">
+        <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+            Monthly Registration Count
+        </span>
     </div>
+    <canvas id="pigBarChart" width="300%" height="100%"></canvas>
 </div>
 
-<di>bar graph</div>
 {% endblock %}
