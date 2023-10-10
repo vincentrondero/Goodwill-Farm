@@ -3,6 +3,7 @@ from django.views import View
 from .models import User
 from .models import Task
 from .models import Pig
+from .models import Sow  
 from datetime import date, timedelta
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
@@ -11,6 +12,10 @@ from django.db import transaction
 from datetime import date as today_date, timedelta
 
 def add_pigs(request, user_type):
+    context = {
+        'user_type': user_type,
+    }
+
     if request.method == 'POST':
         # Handle form submission
         pig_id = request.POST.get("pigID")
@@ -23,18 +28,15 @@ def add_pigs(request, user_type):
         weight = request.POST.get("weight")
         remarks = request.POST.get("remarks")
         verif_by = request.POST.get("verifBy")
-        birthdate = request.POST.get("date")  # Renamed to 'birthdate'
+        birthdate = request.POST.get("date")
 
-        # Convert data types if needed (e.g., count and weight)
         try:
             count = int(count)
             weight = float(weight)
         except (ValueError, TypeError):
-            # Handle conversion errors here
             pass
 
         except ValueError:
-            # Handle invalid date format here
             pass
 
         # Create a Pig object and save it to the database
@@ -49,15 +51,37 @@ def add_pigs(request, user_type):
             weight=weight,
             remarks=remarks,
             verif_by=verif_by,
-            date=birthdate  # Use 'birthdate' for the date field
+            date=birthdate
         )
         pig.save()
 
-    pig_list = Pig.objects.all()
-    twenty_eight_days_ago = date.today() - timedelta(days=28)
-    pig_list_28_days = pig_list.filter(date__gte=twenty_eight_days_ago)
+        # Redirect to prevent form resubmission
+        return redirect('Add_Pigs', user_type=user_type)
 
-    return render(request, 'Farm/add_pigs.html', {"pig_list": pig_list, "user_type": user_type, "pig_list_28_days": pig_list_28_days})
+    twenty_eight_days_ago = date.today() - timedelta(days=28)
+    eighty_eight_days_ago = date.today() - timedelta(days=88)
+    one_fortyeight_days_ago = date.today() - timedelta(days=148)
+    pig_list_28_days = Pig.objects.filter(dob__gte=twenty_eight_days_ago)
+    pig_list_28_to_88_days = Pig.objects.filter(dob__gte=eighty_eight_days_ago, dob__lt=twenty_eight_days_ago)
+    pig_list_88_to_148_days = Pig.objects.filter(dob__gte=one_fortyeight_days_ago, dob__lt=eighty_eight_days_ago)
+    pig_list_greater_than_148_days = Pig.objects.filter(dob__lt=one_fortyeight_days_ago)
+
+    pig_list = Pig.objects.all()
+    sow_list = Sow.objects.all()
+    pig_list_grower = Pig.objects.filter(pig_class='Grower')
+
+    context.update({
+        'pig_list_28_days': pig_list_28_days,
+        'pig_list_28_to_88_days': pig_list_28_to_88_days,
+        'pig_list_88_to_148_days': pig_list_88_to_148_days,
+        'pig_list_greater_than_148_days': pig_list_greater_than_148_days,
+        'pig_list': pig_list,
+        'sow_list': sow_list,
+        'pig_list_grower': pig_list_grower,
+    })
+
+    return render(request, 'Farm/add_pigs.html', context)
+
 
 def Login(request):
     return render(request, 'Authentication/Login.html')
@@ -290,3 +314,150 @@ def update_user(request, user_type):
             return JsonResponse({'success': False, 'error': str(e)})
 
     return render(request, 'Farm/manage_user.html', {"user_type": user_type})
+
+
+def delete_pig(request, user_type, pig_id):
+    if request.method == 'POST':
+        try:
+            pig = Pig.objects.get(id=pig_id)
+            pig.delete()
+            return JsonResponse({'success': True})
+        except Pig.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Pig not found'})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def get_pig_data(request, pig_id):
+    try:
+        # Retrieve the pig data based on pig_id
+        pig = Pig.objects.get(pk=pig_id)
+        
+        # Serialize the pig data into a dictionary
+        pig_data = {
+            'pig_id': pig.pig_id,
+            'dam': pig.dam,
+            'dob': pig.dob.strftime('%Y-%m-%d'),  # Format date as string
+            'sire': pig.sire,
+            'pig_class': pig.pig_class,
+            'sex': pig.sex,
+            'count': pig.count,
+            'weight': str(pig.weight),  # Convert DecimalField to string
+            'remarks': pig.remarks,
+            # Add more fields as needed
+        }
+        
+        return JsonResponse({'success': True, 'pig_data': pig_data})
+    except Pig.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Pig not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+    
+def update_pig(request, pig_id, user_type):
+    if request.method == 'POST':
+        data = request.POST  # Access POST data directly
+
+        try:
+            with transaction.atomic():
+                # Get the pig using the provided pig_id
+                pig = Pig.objects.get(pk=pig_id)
+                # Update pig data fields based on your form field names
+                pig.dam = data.get('dam')
+                pig.dob = data.get('dob')
+                pig.sire = data.get('sire')
+                pig.pig_class = data.get('pig_class')
+                pig.sex = data.get('sex')
+                pig.count = data.get('count')
+                pig.weight = data.get('weight')
+                pig.remarks = data.get('remarks')
+                # Add more fields as needed
+                pig.save()
+
+            # Debug: Add print statements or use Django's logging
+            print("Pig updated successfully.")
+
+            # Prepare the updated pig data as a dictionary
+            updated_pig_data = {
+                'pig_id': pig.pig_id,
+                'dam': pig.dam,
+                'dob': pig.dob,  # No need for strftime if dob is already in the desired format
+                'sire': pig.sire,
+                'pig_class': pig.pig_class,
+                'sex': pig.sex,
+                'count': pig.count,
+                'weight': str(pig.weight),  # Convert DecimalField to string
+                'remarks': pig.remarks,
+                # Add more fields as needed
+            }
+
+            return JsonResponse({'success': True, 'updated_pig_data': updated_pig_data})
+        except Pig.DoesNotExist:
+            # Debug: Print error message
+            print("Pig not found.")
+
+            return JsonResponse({'success': False, 'error': 'Pig not found'})
+        except Exception as e:
+            # Debug: Print error message
+            print(f"Error: {str(e)}")
+
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return render(request, 'Farm/add_pigs.html', {"user_type": user_type})
+
+
+def add_sow(request, user_type):
+    context = {
+        'user_type': user_type,
+    }
+
+    if request.method == 'POST':
+        # Handle form submission
+        pig_id = request.POST.get("pig_id")
+        dam = request.POST.get("dam")
+        dob = request.POST.get("dob")
+        sire = request.POST.get("sire")
+        pig_class = request.POST.get("pig_class")
+        sex = request.POST.get("sex")
+        count = request.POST.get("count")
+        weight = request.POST.get("weight")
+        remarks = request.POST.get("remarks")
+        verif_by = request.POST.get("verif_by")
+        birthdate = request.POST.get("date")
+
+        try:
+            count = int(count)
+            weight = float(weight)
+        except (ValueError, TypeError):
+            pass
+
+        sow = Sow(
+            pig_id=pig_id,
+            dam=dam,
+            dob=dob,
+            sire=sire,
+            pig_class=pig_class,
+            sex=sex,
+            count=count,
+            weight=weight,
+            remarks=remarks,
+            verif_by=verif_by,
+            date=birthdate
+        )
+        sow.save()
+
+        sow_list = Sow.objects.all()
+
+        context['sow_list'] = sow_list
+        return redirect('Add_Pigs', user_type=user_type)
+
+    return render(request, 'Farm/add_pigs.html', context)
+
+def delete_sow(request, user_type, sow_id):
+    if request.method == 'POST':
+        try:
+            sow = Sow.objects.get(id=sow_id)  # Get the sow object by ID
+            sow.delete()
+            return JsonResponse({'success': True})
+        except Sow.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Sow not found'})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})

@@ -15,27 +15,36 @@
 
 <div class="row px-3 py-1 gap-auto">
     <div class="col-4 py-1">
-        <div class="bg-warning card d-flex"  style="max-height: 315px;">
+        <div class="bg-warning card d-flex"  style="max-height: 315px; min-height: 315px;">
             <div class="d-flex justify-content-between">
                 <div class="mx-2 mt-1">
                     <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="...">Patener</span>
                 </div>
                 <div class="m-3">
                     <!-- Display the count from pig_list_28_days -->
-                    <span class="text-white p-0 fw-bold">{{ pig_list_28_days.count }}</span>
+                    <span class="text-white p-0 fw-bold">{{ pig_list_greater_than_148_days.count }}</span>
                 </div>
             </div>
             <div class="d-flex flex-column m-1" style="overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none;">
-                {% for pig in pig_list %}
+                {% for pig in pig_list_greater_than_148_days %}
                     <div class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between">
                         <div>
                             <span>{{ pig.pig_id }}</span>
-                            <p class="m-0 p-0">Status: {{ pig.pig_class }}</p>
+                            <p class="m-0 p-0">Status: {{ pig.remarks }}</p>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <button class="ctm-btn">
-                                <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
+                         <div class="d-flex align-items-center">
+                            <button class="dropdown_dots" data-user-type="{{ user.user_type }}" style="border: none; background: none;">
+                                <img src="{% static 'img/three_dots.png' %}" style="height: 24px;" alt="...">
                             </button>
+                            <div id="dropdown" class="dropdown" style="display: none;">
+                                {% csrf_token %}   
+                                <button class="icon-button edit_pigs_button" data-pig-id="{{ pig.id }}" data-user-type="{{ user_type }}">
+                                    <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="Edit Pig">
+                                </button>                            
+                                <button class="icon-button-add-pigs delete_pigs_button" data-pig-id="{{ pig.id }}" data-user-type="{{ user_type }}">
+                                    <img src="{% static 'img/trash_can.png' %}" style="height: 24px;" alt="...">
+                                </button>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
@@ -44,27 +53,36 @@
         </div>            
     </div>
     <div class="col-4 py-1">
-        <div class="bg-danger card d-flex"  style="max-height: 315px;">
+        <div class="bg-danger card d-flex"  style="max-height: 315px; min-height: 315px;">
             <div class="d-flex justify-content-between">
                 <div class="mx-2 mt-1">
                     <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="...">Grower</span>
                 </div>
                 <div class="m-3">
                     <!-- Display the count from pig_list_28_days -->
-                    <span class="text-white p-0 fw-bold">{{ pig_list_28_days.count }}</span>
+                    <span class="text-white p-0 fw-bold">{{ pig_list_88_to_148_days.count }}</span>
                 </div>
             </div>
             <div class="d-flex flex-column m-1" style="overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none;">
-                {% for pig in pig_list %}
+                {% for pig in pig_list_88_to_148_days %}
                     <div class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between">
                         <div>
                             <span>{{ pig.pig_id }}</span>
-                            <p class="m-0 p-0">Status: {{ pig.pig_class }}</p>
+                            <p class="m-0 p-0">Status: {{ pig.remarks }}</p>
                         </div>
                         <div class="d-flex align-items-center">
-                            <button class="ctm-btn">
-                                <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
+                            <button class="dropdown_dots" data-user-type="{{ user.user_type }}" style="border: none; background: none;">
+                                <img src="{% static 'img/three_dots.png' %}" style="height: 24px;" alt="...">
                             </button>
+                            <div id="dropdown" class="dropdown" style="display: none;">
+                                {% csrf_token %}   
+                                <button class="icon-button edit_pigs_button" data-pig-id="{{ pig.id }}" data-user-type="{{ user_type }}">
+                                    <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="Edit Pig">
+                                </button>                            
+                                <button class="icon-button-add-pigs delete_pigs_button" data-pig-id="{{ pig.id }}" data-user-type="{{ user_type }}">
+                                    <img src="{% static 'img/trash_can.png' %}" style="height: 24px;" alt="...">
+                                </button>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
@@ -73,77 +91,76 @@
         </div>            
     </div>
     <div class="col-4 py-1">
-        <div class="bg-success card d-flex ctm-grid" style="height: 300px;">
+        <div class="bg-primary card d-flex" style="max-height: 315px; min-height: 315px;">
             <div class="d-flex justify-content-between">
                 <div class="mx-2 mt-1">
-                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="..."> Sow </span>
+                    <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="...">Sow</span>
                 </div>
                 <div class="m-3">
-                    <span class="text-white p-0 fw-bold"> number here </span>
+                    <!-- Display the count from pig_list_28_days -->
+                    <span class="text-white p-0 fw-bold">{{ sow_list.count }}</span>
                 </div>
             </div>
-            <hr class="hr-shadow">
-            <ul class="d-flex flex-column">
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
+            <div class="d-flex flex-column m-1" style="overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none;">
+                {% for sow in sow_list %}
+                <div class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between">
                     <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
+                        <span>{{ sow.pig_id }}</span>
+                        <p class="m-0 p-0">Status: {{ sow.remarks }}</p>
                     </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
+                    <div class="d-flex align-items-center">
+                        <button class="dropdown_dots" data-user-type="{{ user.user_type }}" style="border: none; background: none;">
+                            <img src="{% static 'img/three_dots.png' %}" style="height: 24px;" alt="...">
                         </button>
+                        <div id="dropdown" class="dropdown" style="display: none;">
+                            {% csrf_token %}   
+                            <button class="icon-button edit_pigs_button" data-sow-id="{{ sow.id }}" data-user-type="{{ user_type }}">
+                                <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="Edit Pig">
+                            </button>                            
+                            <button class="icon-button-add-pigs delete_sow_button" data-sow-id="{{ sow.id }}" data-user-type="{{ user_type }}">
+                                <img src="{% static 'img/trash_can.png' %}" style="height: 24px;" alt="...">
+                            </button>                            
+                        </div>
                     </div>
-                </li>
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
-                    </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-                <li class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between" style="list-style-type: none; width: 90%;">
-                    <div>
-                        <span> Pig Name </span> 
-                        <p class="m-0 p-0"> Status: Taena </p>
-                    </div>
-                    <div>
-                        <button class="ctm-btn">
-                            <i class="fa-solid fa-ellipsis-vertical mx-1 mt-3"></i>
-                        </button>
-                    </div>
-                </li>
-            </ul>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
+    
 </div>            
 <div class="row px-3 gap-auto">
     <div class="col-4 py-1">
-        <div class="bg-primary card d-flex"  style="max-height: 315px;">
+        <div class="bg-primary card d-flex"  style="max-height: 315px; min-height: 315px;">
             <div class="d-flex justify-content-between">
                 <div class="mx-2 mt-1">
                     <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="...">Nursery</span>
                 </div>
                 <div class="m-3">
                     <!-- Display the count from pig_list_28_days -->
-                    <span class="text-white p-0 fw-bold">{{ pig_list_28_days.count }}</span>
+                    <span class="text-white p-0 fw-bold">{{ pig_list_28_to_88_days.count }}</span>
                 </div>
             </div>
             <div class="d-flex flex-column m-1" style="overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none;">
-                {% for pig in pig_list %}
+                {% for pig in pig_list_28_to_88_days %}
                     <div class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between">
                         <div>
                             <span>{{ pig.pig_id }}</span>
-                            <p class="m-0 p-0">Status: {{ pig.pig_class }}</p>
+                            <p class="m-0 p-0">Status: {{ pig.remarks }}</p>
                         </div>
                         <div class="d-flex align-items-center">
-                            <button class="ctm-btn">
-                                <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
+                            <button class="dropdown_dots" data-user-type="{{ user.user_type }}" style="border: none; background: none;">
+                                <img src="{% static 'img/three_dots.png' %}" style="height: 24px;" alt="...">
                             </button>
+                            <div id="dropdown" class="dropdown" style="display: none;">
+                                {% csrf_token %}   
+                                <button class="icon-button edit_pigs_button" data-pig-id="{{ pig.id }}" data-user-type="{{ user_type }}">
+                                    <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="Edit Pig">
+                                </button>                            
+                                <button class="icon-button-add-pigs delete_pigs_button" data-pig-id="{{ pig.id }}" data-user-type="{{ user_type }}">
+                                    <img src="{% static 'img/trash_can.png' %}" style="height: 24px;" alt="...">
+                                </button>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
@@ -152,7 +169,7 @@
         </div>            
     </div>
     <div class="col-4 py-1">
-        <div class="bg-primary card d-flex"  style="max-height: 315px;">
+        <div class="bg-primary card d-flex" style="max-height: 315px; min-height: 315px;">
             <div class="d-flex justify-content-between">
                 <div class="mx-2 mt-1">
                     <span class="text-white p-0 fw-bold"><img src="{% static 'img/pig.png' %}" style="height: 50px;" alt="...">Suckling</span>
@@ -163,30 +180,90 @@
                 </div>
             </div>
             <div class="d-flex flex-column m-1" style="overflow-y: scroll; -ms-overflow-style: none; scrollbar-width: none;">
-                {% for pig in pig_list %}
-                    <div class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between">
-                        <div>
-                            <span>{{ pig.pig_id }}</span>
-                            <p class="m-0 p-0">Status: {{ pig.pig_class }}</p>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <button class="dropdown_dots" data-user-type="{{ user.user_type }}">
-                                <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
-                            </button>          
-                        <div id="dropdown" class="dropdown" style="display: none;">
-                            <a href="#" class="edit-option">Edit</a>
-                            <a href="#" class="delete-option">Delete</a>
-                        </div>
-                        </div>
-
+                {% for pig in pig_list_28_days %}
+                <div class="bg-light border border-dark py-2 px-1 mt-1 text-decoration-none d-flex justify-content-between">
+                    <div>
+                        <span>{{ pig.pig_id }}</span>
+                        <p class="m-0 p-0">Status: {{ pig.remarks }}</p>
                     </div>
+                    <div class="d-flex align-items-center">
+                        <button class="dropdown_dots" data-user-type="{{ user.user_type }}" style="border: none; background: none;">
+                            <img src="{% static 'img/three_dots.png' %}" style="height: 24px;" alt="...">
+                        </button>
+                        <div id="dropdown" class="dropdown" style="display: none;">
+                            {% csrf_token %}   
+                            <button class="icon-button edit_sow_button" data-pig-id="{{ pig.id }}" data-user-type="{{ user_type }}">
+                                <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="Edit Pig">
+                            </button>                            
+                            <button class="icon-button-add-pigs delete_sow_button" data-pig-id="{{ pig.id }}" data-user-type="{{ user_type }}">
+                                <img src="{% static 'img/trash_can.png' %}" style="height: 24px;" alt="...">
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
-                <!-- Add more list items as needed for other pig data -->
             </div>
-        </div>            
+        </div>
+    </div>
+    
+</div>
+
+<!-- Updated HTML for the pig edit overlay -->
+<div id="edit_pig_overlay">
+    <div class="edit-pig-container">
+        <h2>Edit Pig</h2>
+        <form id="edit_pig_form">
+            <!-- Editable fields for pig data -->
+            <div class="form-group">
+                <label for="edit_pig_id">Pig ID:</label>
+                <input type="text" id="edit_pig_id" name="edit_pig_id" required>
+            </div>
+            <div class="form-group">
+                <label for="edit_dam">Dam:</label>
+                <input type="text" id="edit_dam" name="edit_dam">
+            </div>
+            <div class="form-group">
+                <label for="edit_dob">Date of Birth:</label>
+                <input type="date" id="edit_dob" name="edit_dob">
+            </div>
+            <div class="form-group">
+                <label for="edit_sire">Sire:</label>
+                <input type="text" id="edit_sire" name="edit_sire">
+            </div>
+            <div class="form-group">
+                <label for="edit_pig_class">Pig Class:</label>
+                <input type="text" id="edit_pig_class" name="edit_pig_class">
+            </div>
+            <div class="form-group">
+                <label for="edit_sex">Sex:</label>
+                <select id="edit_sex" name="edit_sex">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit_count">Count:</label>
+                <input type="number" id="edit_count" name="edit_count">
+            </div>
+            <div class="form-group">
+                <label for="edit_weight">Weight:</label>
+                <input type="number" id="edit_weight" name="edit_weight" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="edit_remarks">Remarks:</label>
+                <textarea id="edit_remarks" name="edit_remarks"></textarea>
+            </div>
+            <!-- Add more editable fields as needed -->
+            <div class="form-group">
+                <button type="submit" class="save-pig-button" data-user-type="{{ user_type }}">Save</button>
+                <button class="cancel-button">Cancel</button>
+            </div>
+        </form>
     </div>
 </div>
-</div>
+
+
+
 
 
 <div id="overlay">
@@ -214,7 +291,7 @@
                 <div class="row mb-3 align-items-center">
                     <label for="dob" class="col-md-2 col-form-label">DOB:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="dob" name="dob">
+                        <input type="date" class="form-control mb-2" id="dob" name="dob">
                     </div>
                     <label for="sire" class="col-md-2 col-form-label">SIRE:</label>
                     <div class="col-md-4">
@@ -225,7 +302,12 @@
                 <div class="row mb-3 align-items-center">
                     <label for="class" class="col-md-2 col-form-label">Class:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="class" name="class" value="Weanlings">
+                        <select class="form-control mb-2" id="class" name="class">
+                            <option value="Suckling">Suckling</option>
+                            <option value="Weanlings">Weanlings</option>
+                            <option value="Grower">Grower</option>
+                            <option value="Pattener">Pattener</option>
+                        </select>
                     </div>
                     <label for="sex" class="col-md-2 col-form-label">Sex:</label>
                     <div class="col-md-4">
@@ -263,7 +345,7 @@
                     </div>
                     <label for="date" class="col-md-2 col-form-label">Date:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="date" name="date">
+                        <input type="date" class="form-control mb-2" id="date" name="date">
                     </div>
                 </div>
     
@@ -277,7 +359,7 @@
 </div>
 
 <div id="overlay1">
-    <div id="formContainer" class="card rounded">
+    <div id="SowformContainer" class="card rounded">
         <div class="rounded-top" style="background-color: #ff7b7b;">
             <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
             <span class="mx-3 pt-2 fs-5 text-white fw-bold">
@@ -285,39 +367,38 @@
             </span>
         </div>
         <div class="scheduling-container">
-            <form method="post" action="{% url 'Add_Pigs' user_type=user_type %}">
+            <form method="post" action="{% url 'add_sow'  user_type=user_type  %}">
                 {% csrf_token %}
                 <div class="row mb-3 align-items-center">
                     <label for="pigID" class="col-md-2 col-form-label">Pig ID:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="pigID" name="pigID">
+                        <input type="text" class="form-control mb-2" id="Sow_pigID" name="pig_id">
                     </div>
                     <label for="dam" class="col-md-2 col-form-label">DAM:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="dam" name="dam">
+                        <input type="text" class="form-control mb-2" id="Sow_dam" name="dam">
                     </div>
                 </div>
                 
                 <div class="row mb-3 align-items-center">
                     <label for="dob" class="col-md-2 col-form-label">DOB:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="dob" name="dob">
+                        <input type="date" class="form-control mb-2" id="Sow_dob" name="dob">
                     </div>
                     <label for="sire" class="col-md-2 col-form-label">SIRE:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="sire" name="sire">
+                        <input type="text" class="form-control mb-2" id="Sow_sire" name="sire">
                     </div>
                 </div>
                 
                 <div class="row mb-3 align-items-center">
                     <label for="class" class="col-md-2 col-form-label">Class:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="class" name="class" value="Weanlings">
+                        <input type="text" class="form-control mb-2" id="Sow_class" name="pig_class" value="Sow">
                     </div>
                     <label for="sex" class="col-md-2 col-form-label">Sex:</label>
                     <div class="col-md-4">
                         <select class="form-control mb-2" id="sex" name="sex">
-                            <option value="male">Male</option>
                             <option value="female">Female</option>
                         </select>
                     </div>
@@ -326,18 +407,18 @@
                 <div class="row mb-3 align-items-center">
                     <label for="count" class="col-md-2 col-form-label">Count:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="count" name="count">
+                        <input type="number" class="form-control mb-2" id="Sow_count" name="count">
                     </div>
                     <label for="weight" class="col-md-2 col-form-label">Weight:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="weight" name="weight">
+                        <input type="number" class="form-control mb-2" id="Sow_weight" name="weight">
                     </div>
                 </div>
                 
                 <div class="row mb-3 align-items-center">
                     <label for="remarks" class="col-md-2 col-form-label">Remarks:</label>
                     <div class="col-md-10">
-                        <textarea class="form-control" id="remarks" name="remarks"></textarea>
+                        <textarea class="form-control" id="Sow_remarks" name="remarks"></textarea>
                     </div>
                 </div>
                 
@@ -346,21 +427,23 @@
                 <div class="row mb-3 align-items-center">
                     <label for="verifBy" class="col-md-2 col-form-label">Verified By:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="verifBy" name="verifBy">
+                        <input type="text" class="form-control mb-2" id="Sow_verifBy" name="verif_by">
                     </div>
                     <label for="date" class="col-md-2 col-form-label">Date:</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control mb-2" id="date" name="date">
+                        <input type="date" class="form-control mb-2" id="Sow_date" name="date">
                     </div>
                 </div>
     
                 <div class="d-flex justify-content-end">
-                    <input class="shadow custom_button" type="submit" value="Save Pig" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="submit" value="Save Sow" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
                     <input class="shadow custom_button" type="button" id="closeOverlayButton1" value="Cancel" style="border-radius: 20px; width: 120px;">
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+
 
 {% endblock %}

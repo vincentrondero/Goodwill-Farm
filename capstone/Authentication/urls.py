@@ -15,5 +15,10 @@ urlpatterns = [
     path('update_task_status/', views.update_task_status, name='update_task_status'),
     path('api/tasks-for-date/<str:selected_date>/', views.tasks_for_date, name='tasks-for-date'),
     path('delete_user/<str:user_type>/', views.delete_user, name='delete_user'),
-    path('update_user/<str:user_type>/', views.update_user, name='update_user'),  
+    path('update_user/<str:user_type>/', views.update_user, name='update_user'), 
+    path('delete_pig/<str:user_type>/<int:pig_id>/', views.delete_pig, name='delete_pig'),
+    path('update_pig/<int:pig_id>/<str:user_type>/', views.update_pig, name='update_pig'),
+    path('get_pig_data/<int:pig_id>/', views.get_pig_data, name='get_pig_data'),
+    path('add_sow/<str:user_type>/', views.add_sow, name="add_sow"),
+    path('delete_sow/<str:user_type>/<int:sow_id>/', views.delete_sow, name='delete_sow'),
 ]

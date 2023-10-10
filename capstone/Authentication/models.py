@@ -42,3 +42,16 @@ class Pig(models.Model):
     
     verif_by = models.CharField(max_length=255)
     date = models.DateField(default=date.today) 
+
+class Sow(models.Model):
+    pig_id = models.CharField(max_length=255, null=True)
+    dam = models.CharField(max_length=20)
+    dob = models.DateField()
+    sire = models.CharField(max_length=20)
+    pig_class = models.CharField(max_length=20)
+    sex = models.CharField(max_length=10)
+    count = models.IntegerField()
+    weight = models.FloatField()
+    remarks = models.TextField()
+    verif_by = models.CharField(max_length=50)
+    date = models.DateField()

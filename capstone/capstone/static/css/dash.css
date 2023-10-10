@@ -434,6 +434,52 @@ body, html {
 }
 #dropdown{
     z-index: 1001; 
-    background-color: #659D60;
+    background-color: transparent;
     display: none;
+}
+
+.icon-button-add-pigs {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    transition: transform 0.2s; 
+}
+
+.icon-button-add-pigs:hover {
+    transform: scale(1.2);
+}
+
+
+#edit_pig_overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000; 
+    box-shadow: 2px #659D60;
+}
+
+.edit-pig-container{
+    background-color: #FFFF;
+    width: 60%;
+    position: absolute;
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1001; 
+}
+
+#SowformContainer{
+    background-color: #FFFF;
+    width: 60%;
+    position: absolute;
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1001; 
 }

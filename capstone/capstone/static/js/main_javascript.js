@@ -299,11 +299,171 @@ $(document).ready(function() {
             });
         }
     });
+
+    $(".delete_pigs_button").click(function () {
+        var pigId = $(this).data("pig-id");
+        var user_type = $(this).data("user-type"); 
+        var deleteButton = $(this); 
+        var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
     
+        var confirmDelete = confirm("Are you sure you want to delete this pig?");
+        if (confirmDelete) {
+            var deleteUrl = '/delete_pig/' + user_type + '/' + pigId + '/';
     
+            $.ajax({
+                url: deleteUrl,
+                method: "POST",
+                data: { csrfmiddlewaretoken: csrfToken, id: pigId }, // Include pigId here
+                success: function (response) {
+                    if (response.success) {
+                        // Remove the pig element from the UI
+                        deleteButton.closest(".bg-light").remove();
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(err);
+                },
+            });
+        }
+    });
+
+    $(".edit_pigs_button").click(function () {
+        // Show the edit overlay for pigs
+        $("#edit_pig_overlay").show();
     
+        // Get the pig ID from the clicked element
+        var pigId = $(this).data("pig-id");
+        var userType = $(this).data("user-type");
+        console.log("User Type:", userType);
+
     
+        // Make an AJAX request to fetch the pig data based on the pig ID and user type
+        var updatePigUrl = '/get_pig_data/' + pigId + '/';
+    
+        $.ajax({
+            url: updatePigUrl,
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if (data.success) {
+                    // Populate the overlay fields with the pig data
+                    $("#edit_pig_id").val(data.pig_data.pig_id);
+                    $("#edit_dam").val(data.pig_data.dam);
+                    $("#edit_dob").val(data.pig_data.dob);
+                    $("#edit_sire").val(data.pig_data.sire);
+                    $("#edit_pig_class").val(data.pig_data.pig_class);
+                    $("#edit_sex").val(data.pig_data.sex);
+                    $("#edit_count").val(data.pig_data.count);
+                    $("#edit_weight").val(data.pig_data.weight);
+                    $("#edit_remarks").val(data.pig_data.remarks);
+    
+                    // Store the pig ID in a data attribute for the Save Pig button
+                    $(".save-pig-button").data("pig-id", pigId);
+                } else {
+                    // Handle the case where the server couldn't fetch pig data
+                    alert("Failed to fetch pig data. Please try again.");
+                }
+            },
+            error: function () {
+                // Handle AJAX error
+                alert("An error occurred while fetching pig data.");
+            }
+        });
+    });
+    
+    // Click event handler for the save button
+    $(".save-pig-button").click(function (e) {
+        e.preventDefault(); // Prevent the default form submission
+    
+        // Store a reference to the button element that was clicked
+        var clickedButton = $(this);
+    
+        // Get pig ID from data attribute
+        var pigId = clickedButton.data("pig-id");
+    
+        // Get the CSRF token from the form
+        var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+    
+        // Construct the correct URL for the AJAX request
+        var userType = $(this).data("user-type");
+        var updatePigUrl = '/update_pig/' + pigId + '/' + userType + '/';
+    
+        // Retrieve the updated pig data from your form fields
+        var updatedPigData = {
+            pig_id: pigId,
+            dam: $("#edit_dam").val(),
+            dob: $("#edit_dob").val(), // Add date of birth field
+            sire: $("#edit_sire").val(), // Add sire field
+            pig_class: $("#edit_pig_class").val(), // Add pig class field
+            sex: $("#edit_sex").val(), // Add sex field
+            count: $("#edit_count").val(), // Add count field
+            weight: $("#edit_weight").val(), // Add weight field
+            remarks: $("#edit_remarks").val(), // Add remarks field
+            csrfmiddlewaretoken: csrfToken,
+        };
+    
+        // Send an AJAX request to update the pig using POST
+        $.ajax({
+            url: updatePigUrl,
+            method: "POST",
+            data: updatedPigData,
+            success: function (response) {
+                console.log("Update Pig Response:", response); // Log the response for debugging
+    
+                if (response.success) {
+                    // Update the pig data in the UI (you can add your logic here)
+                    // For example, update the status of the pig
+    
+                    // Hide the edit pig overlay after successful update
+                    $("#edit_pig_overlay").hide();
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                // Handle errors
+                console.log("Update Pig Error:", err);
+            },
+        });
+    });
+    
+    // Click event handler for the cancel button
+    $(".cancel-button").click(function (e) {
+        e.preventDefault(); // Prevent the default form submission
+    
+        // Hide the edit pig overlay
+        $("#edit_pig_overlay").hide();
+    });
+    
+    $(".delete_sow_button").click(function () {
+        var sowId = $(this).data("sow-id");  // Change "pig-id" to "sow-id"
+        var user_type = $(this).data("user-type"); 
+        var deleteButton = $(this); 
+        var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+    
+        var confirmDelete = confirm("Are you sure you want to delete this sow?");
+        if (confirmDelete) {
+            var deleteSowUrl = '/delete_sow/' + user_type + '/' + sowId + '/';  // Update URL for deleting sows
+    
+            $.ajax({
+                url: deleteSowUrl,
+                method: "POST",
+                data: { csrfmiddlewaretoken: csrfToken, id: sowId },  // Include sowId here
+                success: function (response) {
+                    if (response.success) {
+                        // Remove the sow element from the UI
+                        deleteButton.closest(".bg-light").remove();
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(err);
+                },
+            });
+        }
+    });
+    
+
 });
+    
+
 
 function formatDate(dateString) {
     // Split the input date string into parts
@@ -461,7 +621,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 document.addEventListener('DOMContentLoaded', function() {
     var buttons = document.querySelectorAll('.dropdown_dots');
-    console.log("Dropdown Buttons:", buttons);
 
     buttons.forEach(function(button) {
         button.addEventListener('click', function(event) {
@@ -486,4 +645,3 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
