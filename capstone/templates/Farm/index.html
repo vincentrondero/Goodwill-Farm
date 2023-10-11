@@ -3,23 +3,38 @@
 {% block content %}
 <div class="col py-3 custom-padX gap-5" style="height: 15rem;">
   <div class="row py-3 gap-4">
-      <div class="bg-primary card px-2" style="width: 22rem;">
-          <div class="card-body card-font">
-            <img src="{% static 'img/pig_logo.png' %}" style="height: 120px;" alt="...">
-              <p class="px-3"> Pigs </p>
-          </div>
+      <div class="bg-primary card px-2" style="width: 23rem;">
+        <div class="col col-auto card-body card-font d-flex justify-content-between">
+            <div>
+                <img src="{% static 'img/pig_logo.png' %}" style="height: 120px;" alt="...">
+                <p class="px-1 fs-3 text-white"> Pigs </p>
+            </div>
+            <div class="py-3 my-3">
+                <span class="text-white p-0 fw-bold" style="font-size:500%">{{ pig_list_more_88_days.count }}</span>
+            </div>
+        </div>
       </div>
-      <div class="bg-warning card px-2" style="width: 22rem;">
-          <div class="card-body">
-            <img src="{% static 'img/piglets.png' %}" style="height: 120px;" alt="...">
-              <p class="px-3"> Piglets </p>
-          </div>
+      <div class="bg-warning card px-2" style="width: 23rem;">
+        <div class="col col-auto card-body card-font d-flex justify-content-between">
+            <div>
+                <img src="{% static 'img/piglets.png' %}" style="height: 120px;" alt="...">
+                <p class="px-1 fs-3 text-white"> Piglets </p>
+            </div>  
+            <div class="py-3 my-3">
+                <span class="text-white p-0 fw-bold" style="font-size:500%">{{ pig_list_88_days.count }}</span>
+            </div>
+        </div>
       </div>
-      <div class="bg-danger card px-2" style="width: 22rem;">
-          <div class="card-body">
-            <img src="{% static 'img/feeds_logo.png' %}" style="height: 120px;" alt="...">
-              <p class="px-3"> Feed Stock </p>
-          </div>
+      <div class="bg-danger card px-2" style="width: 23rem;">
+        <div class="col col-auto card-body card-font d-flex justify-content-between">
+            <div>
+                <img src="{% static 'img/feeds_logo.png' %}" style="height: 120px;" alt="...">
+                <p class="px-1 fs-3 text-white"> Feed Stock </p>
+            </div>  
+            <div class="py-3 my-3">
+                <span class="text-white p-0 fw-bold" style="font-size:500%">{{ feed_stock.count }}</span>
+            </div>
+        </div>
       </div>
       <div class="card px-2 custom_sched_box" id="scheduleToday">
         <div class="mt-2 schedule_header">SCHEDULE TODAY:</div>

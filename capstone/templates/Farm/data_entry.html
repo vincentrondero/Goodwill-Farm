@@ -5,7 +5,7 @@
 <div class="row px-3 py-3 gap-3 ps-5">
     <div class="col-5">
         <button class="ctm-btn-2 dEntry_button" id="openOverlayButton1">
-            <img src="../pig3.png" style="width: 35%;">
+            <img src="{% static 'img/pig_logo.png' %}" style="height: 120px;" alt="...">
             <span class="pb-3 text-white fs-5 fw-bold">
                 PIG SALES
             </span>
@@ -13,7 +13,7 @@
     </div>
     <div class="col-5">
         <button class="ctm-btn-2 dEntry_button" id="openOverlayButton2">
-            <img src="../pig3.png" style="width: 35%;">
+            <img src="{% static 'img/pig_logo.png' %}" style="height: 120px;" alt="...">
             <span class="pb-3 text-white fs-5 fw-bold">
                 Sow Performance
             </span>
@@ -24,7 +24,7 @@
 <div class="row px-3 py-3 gap-3 ps-5">
     <div class="col-5">
         <button class="ctm-btn-2 dEntry_button" id="openOverlayButton3">
-            <img src="../pig3.png" style="width: 35%;">
+            <img src="{% static 'img/piglets.png' %}" style="height: 120px;" alt="...">
             <span class="pb-3 text-white fs-5 fw-bold">
                 Weanlings
             </span>
@@ -32,7 +32,7 @@
     </div>
     <div class="col-5">
         <button class="ctm-btn-2 dEntry_button" id="openOverlayButton4">
-            <img src="../pig3.png" style="width: 35%;">
+            <img src="{% static 'img/vaccine_icon.png' %}" style="height: 120px;" alt="...">
             <span class="pb-3 text-white fs-5 fw-bold">
                 Vaccine
             </span>
@@ -43,7 +43,7 @@
 <div class="row px-3 py-3 gap-3 ps-5">
     <div class="col-5">
         <button class="ctm-btn-2 dEntry_button" id="openOverlayButton5">
-            <img src="../pig3.png" style="width: 35%;">
+            <img src="{% static 'img/feeds_logo.png' %}" style="height: 120px;" alt="...">
             <span class="pb-3 text-white fs-5 fw-bold">
                 Feeds Inventory
             </span>
@@ -51,7 +51,7 @@
     </div>
     <div class="col-5">
         <button class="ctm-btn-2 dEntry_button" id="openOverlayButton6">
-            <img src="../pig3.png" style="width: 35%;">
+            <img src="{% static 'img/mortality_icon.png' %}" style="height: 120px;" alt="...">
             <span class="pb-3 text-white fs-5 fw-bold">
                 Mortality Form
             </span>
@@ -68,11 +68,19 @@
             </span>
         </div>
         <div class="scheduling-container">
-            <form>
+            <form method="POST" action="{% url 'save_pig_sale' user_type=user_type %}">
+                {% csrf_token %}   
                 <div class="col g-3">
                     <div class="col-md-6">
                         <label for="PigID" class="form-label">Pig ID:</label>
-                        <input type="text" class="form-control" id="pigID" name="PigID">
+                        <select class="form-select" id="pigID" name="PigID">
+                            <option value="" selected>Select a Pig</option>
+                            {% for pig in pigs %}
+                                {% if pig.id not in pig_sales_ids %}
+                                    <option value="{{ pig.id }}">{{ pig.pig_id }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>                                                                                       
                     </div>
                     <div class="col-md-6">
                         <label for="weight" class="form-label">Weight:</label>
@@ -92,7 +100,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="date" class="form-label">Date:</label>
-                        <input type="text" class="form-control" id="date" name="date">
+                        <input type="date" class="form-control" id="date" name="date">
                     </div>
                 <div class="d-flex justify-content-end">
                     <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
@@ -270,27 +278,44 @@
             </span>
         </div>
         <div class="scheduling-container">
-            <form>
+            <form method="POST" action="{% url 'save_weanling' user_type=user_type %}">
+                {% csrf_token %}
                 <div class = "flex1">
-
                     <label for="pigID" class= "LPigID">Pig ID:</label>
-                    <input type="text" class= "InPigID" id="pigID" name="pigID"><br><br>
+                    <select class="form-select" id="pigID" name="pig_id">
+                        <option value="" selected>Select a Pig</option>
+                        {% for pig in pigs %}
+                            {% if pig.id not in pig_sales_ids %}
+                                <option value="{{ pig.id }}">{{ pig.pig_id }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select><br><br>
     
                     <label for="date" class= "LDate">Date:</label>
-                    <input type="text" class= "InDate" id="date" name="date"><br><br>
+                    <input type="date" class= "InDate" id="date" name="date"><br><br>
                 </div>
 
                 <hr class="separator">
 
                 <div class = "flex2">
-                    <label for="sowID" class= "LSowID">Sow ID:</label>
-                    <input type="text" class= "InSowID" id="sowID" name="sowID"><br><br>
+                    <label for="sowID" class="LSowID">Sow ID:</label>
+                    <select class="form-select" id="sowID" name="sow_id">
+                        <option value="" selected>Select a Sow</option>
+                        {% for sow in sows %}
+                            <option value="{{ sow.id }}">{{ sow.pig_id }}</option>
+                        {% endfor %}
+                    </select><br><br>
+
+                    
     
                     <label for="weight" class= "LWeight">Weight:</label>
                     <input type="text" class= "InWeight" id="weight" name="weight"><br><br>
     
                     <label for="sex" class= "LSex">Sex:</label>
-                    <input type="text" class= "InSex" id="sex" name="sex"><br><br>
+                    <select class="form-select" id="sex" name="sex">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select><br><br>
                     
                     <label for="remarks" class= "LRemarks">Remarks:</label>
                     <input type="text" class= "InRemarks" id="remarks" name="remarks"><br><br>
@@ -311,20 +336,27 @@
 <div id="overlay4">
     <div id="formContainer" class="card rounded">
         <div class="rounded-top" style="background-color: #ff7b7b;">
-            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <img src="{% static 'img/vaccine_icon.png' %}" class="ms-2" style="width: 3%;">
             <span class="mx-3 pt-2 fs-5 text-white fw-bold">
-                VACCINE
+                VACCINE 
             </span>
         </div>
         <div class="scheduling-container">
-            <form>
+            <form method="POST" action="{% url 'save_vaccine' user_type=user_type %}">
+                {% csrf_token %}
                 <div class = "flex1">
-
                     <label for="pigID" class= "LPigID">Pig ID:</label>
-                    <input type="text" class= "InPigID" id="pigID" name="pigID"><br><br>
+                    <select class="form-select" id="mortalitypigID" name="pig_id">
+                        <option value="" selected>Select a Pig</option>
+                        {% for pig in pigs %}
+                            {% if pig.id not in pig_sales_ids %}
+                                <option value="{{ pig.id }}">{{ pig.pig_id }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
     
                     <label for="date" class= "LDate">Date:</label>
-                    <input type="text" class= "InDate" id="date" name="date"><br><br>
+                    <input type="date" class= "InDate" id="date" name="date"><br><br>
                 </div>
                 
 
@@ -357,13 +389,14 @@
 <div id="overlay5">
     <div id="formContainer" class="card rounded">
         <div class="rounded-top" style="background-color: #ff7b7b;">
-            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <img src="{% static 'img/feeds_logo.png' %}" style="height: 30px;" alt="...">
             <span class="mx-3 pt-2 fs-5 text-white fw-bold">
                 FEEDS INVENTORY
             </span>
         </div>
         <div class="scheduling-container">
-            <form>
+            <form method="POST" action="{% url 'save_feeds_inventory' user_type=user_type %}">
+                {% csrf_token %}   
                 <div class = "flex1">
                     <label for="feedsB" class= "LFeedsB">Feeds Brand:</label>
                     <input type="text" class= "InFeedsB" id="feedsB" name="feedsB"><br><br>
@@ -386,7 +419,7 @@
                     <input type="text" class= "InVerifBy" id="verifBy" name="verifBy"><br><br>
     
                     <label for="date" class= "LDate">Date:</label>
-                    <input type="text" class= "InDate" id="date" name="date"><br><br>
+                    <input type="date" class= "InDate" id="date" name="date"><br><br>
                 </div>
     
                 <div class="d-flex justify-content-end">
@@ -410,59 +443,45 @@
             </span>
         </div>
         <div class="scheduling-container">
-            <form>
-                <div class = "flex1">
-
-                    <label for="pigID" class= "LPigID">Pig ID:</label>
-                    <input type="text" class= "InPigID" id="pigID" name="pigID"><br><br>
-    
-                    <label for="date" class= "LDate">Date:</label>
-                    <input type="text" class= "InDate" id="date" name="date"><br><br>
+            <form method="POST" action="{% url 'mortality_form' user_type=user_type %}">
+                {% csrf_token %}
+                <div class="flex1">
+                    <label for="mortalitypigID" class="LPigID">Pig ID:</label>
+                    <select class="form-select" id="mortalitypigID" name="pig_id">
+                        <option value="" selected>Select a Pig</option>
+                        {% for pig in pigs %}
+                            {% if pig.id not in pig_sales_ids %}
+                                <option value="{{ pig.id }}">{{ pig.pig_id }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    
+                    <label for="date" class="LDate">Date:</label>
+                    <input type="date" class="InDate" id="date" name="date"><br><br>
                 </div>
-    
-                <div class = "flex2">
-    
-                    <label for="class" class= "LClass">Class:</label>
-                    <input type="text" class= "InClass" id="class" name="class"><br><br>
-    
-                    <label for="dob" class= "LDOB">DOB:</label>
-                    <input type="text" class= "InDOB" id="dob" name="dob"><br><br>
+                <div class="flex2">
+                    <label for="class" class="LClass">Class:</label>
+                    <input type="text" class="InClass" id="class" name="class"><br><br>
                 </div>
-    
-                <div class = "flex3">
-    
-                    <label for="dam" class= "LDam">DAM:</label>
-                    <input type="text" class= "InDam" id="dam" name="dam"><br><br>
-    
-                    <label for="cause" class= "LCause">Cause:</label>
-                    <input type="text" class= "InCause" id="cause" name="cause"><br><br>
+                <div class="flex3">
+                    <label for="cause" class="LCause">Cause:</label>
+                    <input type="text" class="InCause" id="cause" name="cause"><br><br>
                 </div>
-    
-                <div class = "flex4">
-    
-                    <label for="sire" class= "LSire">SIRE:</label>
-                    <input type="text" class= "InSire" id="sire" name="sire"><br><br>
-    
-                    <label for="location" class= "LLocation">Location:</label>
-                    <input type="text" class= "InLocation" id="location" name="location"><br><br>
-    
-                    <label for="remarks" class= "LRemarks">Remarks:</label>
-                    <input type="text" class= "InRemarks" id="remarks" name="remarks"><br><br>
+                <div class="flex4">
+                    <label for="location" class="LLocation">Location:</label>
+                    <input type="text" class="InLocation" id="location" name="location"><br><br>
+                    <label for="remarks" class="LRemarks">Remarks:</label>
+                    <input type="text" class="InRemarks" id="remarks" name="remarks"><br><br>
                 </div>
-    
                 <hr class="separator">
-    
-                <div class = "flex5">
-                    <label for="repBY" class= "LRepBy">Reported By:</label>
-                    <input type="text" class= "InRepBy" id="repBy" name="repBy"><br><br>
-    
-                    <label for="verifBy" class= "LVerifBy">Verified By:</label>
-                    <input type="text" class= "InVerifBy" id="verifBy" name="verifBy"><br><br>
-    
+                <div class="flex5">
+                    <label for="repBY" class="LRepBy">Reported By:</label>
+                    <input type="text" class="InRepBy" id="repBy" name="repBy"><br><br>
+                    <label for="verifBy" class="LVerifBy">Verified By:</label>
+                    <input type="text" class="InVerifBy" id="verifBy" name="verifBy"><br><br>
                 </div>
-    
                 <div class="d-flex justify-content-end">
-                    <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
                     <input class="shadow custom_button" type="button" id="closeOverlayButton6" value="Cancel" style="border-radius: 20px; width: 120px;">
                 </div>
             </form>

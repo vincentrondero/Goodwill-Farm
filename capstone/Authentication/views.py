@@ -3,13 +3,17 @@ from django.views import View
 from .models import User
 from .models import Task
 from .models import Pig
-from .models import Sow  
+from .models import Sow
+from .models import PigSale
+from .models import Vaccine 
+from .models import FeedsInventory  
+from .models import MortalityForm
 from datetime import date, timedelta
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from django.db import transaction
 import json
-
+from django.db.models import Q
 from datetime import date as today_date, timedelta
 
 def add_pigs(request, user_type):
@@ -37,9 +41,6 @@ def add_pigs(request, user_type):
         except (ValueError, TypeError):
             pass
 
-        except ValueError:
-            pass
-
         # Create a Pig object and save it to the database
         pig = Pig(
             pig_id=pig_id,
@@ -59,17 +60,23 @@ def add_pigs(request, user_type):
         # Redirect to prevent form resubmission
         return redirect('Add_Pigs', user_type=user_type)
 
+    # Filter pigs by age groups
     twenty_eight_days_ago = date.today() - timedelta(days=28)
     eighty_eight_days_ago = date.today() - timedelta(days=88)
     one_fortyeight_days_ago = date.today() - timedelta(days=148)
-    pig_list_28_days = Pig.objects.filter(dob__gte=twenty_eight_days_ago)
-    pig_list_28_to_88_days = Pig.objects.filter(dob__gte=eighty_eight_days_ago, dob__lt=twenty_eight_days_ago)
-    pig_list_88_to_148_days = Pig.objects.filter(dob__gte=one_fortyeight_days_ago, dob__lt=eighty_eight_days_ago)
-    pig_list_greater_than_148_days = Pig.objects.filter(dob__lt=one_fortyeight_days_ago)
 
-    pig_list = Pig.objects.all()
+    # Define the Q objects to filter pigs with PigSale or MortalityForm
+    exclude_q = Q(pigsale__isnull=False) | Q(mortality_forms__isnull=False)
+
+    # Filter pigs based on age groups while excluding those with PigSale or MortalityForm
+    pig_list_28_days = Pig.objects.filter(dob__gte=twenty_eight_days_ago).exclude(exclude_q)
+    pig_list_28_to_88_days = Pig.objects.filter(dob__gte=eighty_eight_days_ago, dob__lt=twenty_eight_days_ago).exclude(exclude_q)
+    pig_list_88_to_148_days = Pig.objects.filter(dob__gte=one_fortyeight_days_ago, dob__lt=eighty_eight_days_ago).exclude(exclude_q)
+    pig_list_greater_than_148_days = Pig.objects.filter(dob__lt=one_fortyeight_days_ago).exclude(exclude_q)
+
+    # Filter the full pig list to exclude those with PigSale or MortalityForm
+    pig_list = Pig.objects.all().exclude(exclude_q)
     sow_list = Sow.objects.all()
-    pig_list_grower = Pig.objects.filter(pig_class='Grower')
 
     context.update({
         'pig_list_28_days': pig_list_28_days,
@@ -78,20 +85,27 @@ def add_pigs(request, user_type):
         'pig_list_greater_than_148_days': pig_list_greater_than_148_days,
         'pig_list': pig_list,
         'sow_list': sow_list,
-        'pig_list_grower': pig_list_grower,
     })
 
     return render(request, 'Farm/add_pigs.html', context)
+
 
 
 def Login(request):
     return render(request, 'Authentication/Login.html')
 
 def index(request, user_type):
+
+    feed_stock =  FeedsInventory.objects.all()
+
+    eighty_eight_days_ago = date.today() - timedelta(days=88)
+    pig_list_88_days = Pig.objects.filter(dob__gte=eighty_eight_days_ago)
+    pig_list_more_88_days = Pig.objects.filter(dob__lt=eighty_eight_days_ago)
+
     today = date.today()
     today_tasks = Task.objects.filter(due_date=today)
     checked_tasks = Task.objects.filter(is_done=True)  
-    return render(request, 'Farm/index.html', {"today_tasks": today_tasks, "checked_tasks": checked_tasks, "user_type": user_type})
+    return render(request, 'Farm/index.html', {"today_tasks": today_tasks, "checked_tasks": checked_tasks, "user_type": user_type, "pig_list_88_days":  pig_list_88_days, "pig_list_more_88_days":pig_list_more_88_days, "feed_stock":feed_stock })
 
 def manage_user(request, user_type):
     if request.method == 'POST':
@@ -126,41 +140,82 @@ def manage_user(request, user_type):
 
 from collections import defaultdict
 from datetime import datetime
+from django.db.models import Count
 
 def reports(request, user_type):
-    # Fetch Pig data and calculate monthly counts
+    # Fetch Pig data and calculate monthly counts for pig registration
     pig_data = Pig.objects.all()
 
     monthly_counts = defaultdict(int)
 
     for pig in pig_data:
-        # Assuming you have a 'registration_date' field in your Pig model
-        registration_date = pig.date # Replace with your actual field name
-
-        # Calculate the year and month as a string (e.g., "2023-10")
+        registration_date = pig.date
         year_month = registration_date.strftime("%Y-%m")
-
-        # Increment the count for the corresponding month
         monthly_counts[year_month] += 1
 
-    # Separate the dictionary into lists for months and counts
+    # Fetch PigSale data and calculate monthly sales counts
+    sale_data = PigSale.objects.all()
+
+    monthly_sale_counts = defaultdict(int)
+
+    for sale in sale_data:
+        sale_date = sale.date
+        year_month = sale_date.strftime("%Y-%m")
+        monthly_sale_counts[year_month] += 1
+
+    # Fetch Mortality data and calculate monthly mortality counts
+    mortality_data = MortalityForm.objects.all()
+
+    monthly_mortality_counts = defaultdict(int)
+
+    for mortality in mortality_data:
+        mortality_date = mortality.date  # Adjust this to your actual field name
+        year_month_day = mortality_date.strftime("%Y-%m")
+        monthly_mortality_counts[year_month] += 1
+
+    # Count the number of vaccinated pigs
+    vaccinated_pigs = Pig.objects.annotate(vaccine_count=Count('vaccines')).filter(vaccine_count__gt=0).count()
+
+    # Calculate the percentage of vaccinated pigs
+    total_pigs = len(pig_data)
+    percentage_vaccinated = (vaccinated_pigs / total_pigs) * 100
+
+    # Separate the dictionaries into lists for months and counts
     months, counts = zip(*monthly_counts.items())
+    sale_months, sale_counts = zip(*monthly_sale_counts.items())
+    mortality_dates, mortality_counts = zip(*monthly_mortality_counts.items())
 
-    print("Number of pigs:", len(pig_data))
-
-    # Pass the data to the template context
     context = {
         "user_type": user_type,
-        "pig_data":pig_data,
-        "months": json.dumps(list(months)),  # Serialize months as JSON
+        "months": json.dumps(list(months)),
         "counts": json.dumps(list(counts)),
+        "sale_months": json.dumps(list(sale_months)),
+        "sale_counts": json.dumps(list(sale_counts)),
+        "mortality_dates": json.dumps(list(mortality_dates)),
+        "mortality_counts": json.dumps(list(mortality_counts)),
+        "percentage_vaccinated": percentage_vaccinated,
+        "total_pigs": total_pigs,
+        "vaccinated_pigs": vaccinated_pigs,
     }
 
     return render(request, 'Farm/reports.html', context)
 
 
+
 def data_entry(request, user_type):
-    return render(request, 'Farm/data_entry.html',{"user_type": user_type})
+    # Get a list of pig IDs that have a PigSale entry
+    pig_sales_ids = PigSale.objects.values_list('pig_id', flat=True)
+
+    # Use Q objects to filter out pigs that have either PigSale or MortalityForm
+    excluded_pigs = Pig.objects.filter(Q(id__in=pig_sales_ids) | Q(mortality_forms__isnull=False))
+
+    # Exclude the excluded pigs from the list of all pigs
+    sows = Sow.objects.all()
+    pigs = Pig.objects.exclude(id__in=excluded_pigs)
+
+    return render(request, 'Farm/data_entry.html', {"user_type": user_type, 'pigs': pigs, 'pig_sales_ids': pig_sales_ids, 'sows':sows})
+
+
 
 class LoginView(View):
     template_name = 'Authentication/Login.html'
@@ -494,3 +549,151 @@ def delete_sow(request, user_type, sow_id):
             return JsonResponse({'success': False, 'error': 'Sow not found'})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+def save_feeds_inventory(request, user_type):
+    if request.method == 'POST':
+        feeds_brand = request.POST.get('feedsB')
+        feeds_ration = request.POST.get('feedsR')
+        cost = request.POST.get('cost')
+        quantity = request.POST.get('quantity')
+        verified_by = request.POST.get('verifBy')
+        date = request.POST.get('date')
+
+        feeds_inventory = FeedsInventory(
+            feeds_brand=feeds_brand,
+            feeds_ration=feeds_ration,
+            cost=cost,
+            quantity=quantity,
+            verified_by=verified_by,
+            date=date
+        )
+        feeds_inventory.save()
+
+        return redirect('data_entry', user_type=user_type) 
+
+    return render(request, 'Farm/data_entry.html', {"user_type": user_type})
+
+def save_pig_sale(request, user_type):
+    if request.method == 'POST':
+        pig_id = request.POST.get('PigID')
+        weight = request.POST.get('weight')
+        price = request.POST.get('price')
+        verif_by = request.POST.get('Verified')
+        date = request.POST.get('date')
+
+        # Get the selected pig object
+        pig = Pig.objects.get(id=pig_id)
+
+        # Create a PigSale object
+        pig_sale = PigSale(
+            pig=pig,
+            weight=weight,
+            price=price,
+            verif_by=verif_by,
+            date=date
+        )
+        pig_sale.save()
+
+        return redirect('data_entry', user_type=user_type)
+
+    # Pig sales IDs can be accessed from the context
+    pig_sales_ids = PigSale.objects.values_list('pig_id', flat=True)
+    pigs = Pig.objects.exclude(id__in=pig_sales_ids)
+
+    return render(request, 'Farm/data_entry.html', {'pigs': pigs, 'pig_sales_ids': pig_sales_ids})
+
+def mortality_form(request, user_type):
+    if request.method == 'POST':
+        pig_id = request.POST.get('pig_id')
+        date = request.POST.get('date')
+        pig_class = request.POST.get('class')
+        cause = request.POST.get('cause')
+        location = request.POST.get('location')
+        remarks = request.POST.get('remarks')
+        reported_by = request.POST.get('repBy')
+        verified_by = request.POST.get('verifBy')
+
+        # Check if the selected pig is not sold
+        if not PigSale.objects.filter(pig_id=pig_id).exists():
+            mortality_form = MortalityForm(
+                pig_id=pig_id,
+                date=date,
+                pig_class=pig_class,
+                cause=cause,
+                location=location,
+                remarks=remarks,
+                reported_by=reported_by,
+                verified_by=verified_by
+            )
+            mortality_form.save()
+
+            return redirect('data_entry', user_type=user_type)
+        else:
+ 
+            error_message = "Selected pig has been sold."
+
+    context = {
+        'user_type': user_type,
+    }
+
+    if 'error_message' in locals():
+        context['error_message'] = error_message
+
+    return render(request, 'Farm/data_entry.html', context)
+
+from django.shortcuts import render, redirect
+from .models import Pig, Vaccine
+
+def save_vaccine(request, user_type):
+    if request.method == 'POST':
+        pig_id = request.POST.get('pig_id')
+        date = request.POST.get('date')
+        vaccine = request.POST.get('vaccine')
+        purpose = request.POST.get('purpose')
+        dosage = request.POST.get('dosage')
+
+        # Find the pig based on the pig ID
+        try:
+            pig = Pig.objects.get(id=pig_id)
+            vaccine_record = Vaccine(pig=pig, date=date, vaccine=vaccine, purpose=purpose, dosage=dosage)
+            vaccine_record.save()
+            # Redirect to a success page or do something else
+            return redirect('data_entry', user_type=user_type)
+        except Pig.DoesNotExist:
+            error_message = "Pig with the provided ID does not exist."
+
+    context = {
+        'user_type': user_type,
+    }
+
+    if 'error_message' in locals():
+        context['error_message'] = error_message
+
+    return render(request, 'Farm/data_entry.html', context)
+
+from .models import Weanling
+
+def save_weanling(request, user_type):
+    if request.method == 'POST':
+        pig_id = request.POST.get('pig_id')
+        date = request.POST.get('date')
+        sow_id = request.POST.get('sow_id')
+        weight = request.POST.get('weight')
+        sex = request.POST.get('sex')
+        remarks = request.POST.get('remarks')
+
+        weanling = Weanling(
+            pig_id=pig_id,
+            date=date,
+            sow_id=sow_id,
+            weight=weight,
+            sex=sex,
+            remarks=remarks,
+        )
+        weanling.save()
+
+        return redirect('data_entry', user_type=user_type) 
+    
+    return render(request, 'Farm/data_entry.html')
+

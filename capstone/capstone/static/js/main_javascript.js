@@ -521,8 +521,6 @@ new Chart(ctx, {
 });
 
 
-  
-
 });
     
 
@@ -708,3 +706,355 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+    
+
+
+function formatDate(dateString) {
+    // Split the input date string into parts
+    var dateParts = dateString.split(' ');
+
+    // Ensure we have at least 3 parts (Month, day, year)
+    if (dateParts.length >= 3) {
+        var month = dateParts[0]; // Month
+        var day = dateParts[1].slice(0, -1); // Day (remove the comma)
+        var year = dateParts[2]; // Year
+
+        // Map month names to their numerical representation
+        var monthMap = {
+            'Jan.': '01', 'Feb.': '02', 'Mar.': '03', 'Apr.': '04', 'May.': '05', 'Jun.': '06',
+            'Jul.': '07', 'Aug.': '08', 'Sep.': '09', 'Oct.': '10', 'Nov.': '11', 'Dec.': '12'
+        };
+
+        // Construct the formatted date
+        var formattedDate = year + '-' + monthMap[month] + '-' + day;
+
+        return formattedDate;
+    }
+
+    // Return an empty string if the date string format is not as expected
+    return '';
+
+}
+
+    
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function updateTaskStatus(checkbox) {
+    console.log("Checkbox changed");
+    const taskId = $(checkbox).data('task-id');
+    const isChecked = checkbox.checked;
+
+    $.ajax({
+        url: "/update_task_status/",
+        method: "POST",
+        data: {
+            task_id: taskId,
+            is_done: isChecked,
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+        },
+        success: function(response) {
+            console.log("Task status updated successfully.");
+            console.log("Updated Task Data:", response.task);
+            const updatedTask = response.task;
+
+            if (updatedTask.is_done) {
+                const taskElement = $(checkbox).closest(".sample");
+                console.log("Task Element:", taskElement);
+
+                taskElement.appendTo("#doneTasks");
+                console.log("Task moved to 'Done'");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error updating task status:", error);
+        }
+    });
+}
+
+// Call updateTaskStatus for any checkboxes with the 'update-checkbox' class
+$(".update-checkbox").change(function() {
+    updateTaskStatus(this);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var noTaskImageUrl = "/static/img/No_Task.png"
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        // Configuration options
+        initialView: 'dayGridMonth',
+    
+        dayMaxEventRows: 4,
+        dateClick: function(info) {
+            // Get the clicked date
+            var selectedDate = info.dateStr;
+            
+            // Send an AJAX request to fetch tasks for the selected date
+            fetch('/api/tasks-for-date/' + selectedDate) // Replace with your API endpoint
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Selected Date:', selectedDate);
+                    // Clear the "selectedDateTasksContainer"
+                    var selectedDateTasksContainer = document.getElementById('scheduleToday');
+                    selectedDateTasksContainer.innerHTML = '<div class="mt-2 schedule_header">SCHEDULE TODAY:</div>'; // Reset the header
+
+                    if (data.length === 0) {
+                        // If there are no tasks for the selected date, display the image and text
+                         // This line causes the issue
+                         selectedDateTasksContainer.innerHTML += '<img src="' + noTaskImageUrl + '" alt="No Tasks Today Image" class="no-task-img">';
+                         selectedDateTasksContainer.innerHTML += '<p class="no-tasks-text">No Tasks Today.</p>';
+                    } else {
+                        // Loop through the fetched tasks and create a separate tab for each task
+                        data.forEach(task => {
+                            var taskTab = document.createElement('div');
+                            taskTab.className = 'mt-2 p-2 custom_sched_tab'; // Apply your CSS classes
+        
+                            // Add a checkbox
+                            var checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.dataset.taskId = task.id;
+        
+                            // Set the checkbox state based on is_done
+                            if (task.is_done) {
+                                checkbox.setAttribute('checked', 'checked');
+                            }
+        
+                            var label = document.createElement('label');
+                            label.className = 'checkbox-container';
+                            label.appendChild(checkbox);
+                            label.innerHTML += '<span class="checkmark"></span>';
+        
+                            // Display the task name
+                            taskTab.textContent = task.task_name;
+        
+                            taskTab.appendChild(label);
+        
+                            // Append the task tab to the container
+                            selectedDateTasksContainer.appendChild(taskTab);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching tasks for the selected date:', error);
+                });
+        }
+    });
+
+    calendar.render();
+
+    // Event delegation for dynamically created checkboxes
+    document.getElementById('scheduleToday').addEventListener('change', function(event) {
+        if (event.target.type === 'checkbox') {
+            updateTaskStatus(event.target);
+        }
+    });
+    
+});
+document.addEventListener('DOMContentLoaded', function() {
+    var buttons = document.querySelectorAll('.dropdown_dots');
+
+    buttons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent the click event from propagating to the document
+            var dropdown = this.nextElementSibling;
+            console.log("Dropdown Clicked. Dropdown:", dropdown);
+            
+            // Toggle the dropdown's display
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                dropdown.style.display = 'block';
+            }
+        });
+    });
+
+    // Add a click event listener to the document to close the dropdown when clicking outside of it
+    document.addEventListener('click', function(event) {
+        var dropdowns = document.querySelectorAll('.dropdown');
+        dropdowns.forEach(function(dropdown) {
+            dropdown.style.display = 'none';
+        });
+    });
+});
+document.addEventListener("DOMContentLoaded", function () {
+    var totalPigs = parseInt(document.getElementById("totalPigs").textContent);
+    var vaccinatedPigs = parseInt(document.getElementById("vaccinatedPigs").textContent);
+  
+    var percentageVaccinated = (vaccinatedPigs / totalPigs) * 100;
+  
+    var ctx = document.getElementById('vaccinationProgress').getContext('2d');
+  
+    var data = {
+      datasets: [{
+        data: [percentageVaccinated, 100 - percentageVaccinated],
+        backgroundColor: ['#FF7373', '#FBCACA'],
+      }],
+      labels: ['Vaccinated', 'Remaining'],
+    };
+  
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: data,
+      options: {
+        responsive: false,
+        cutout: '65%',
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: function (context) {
+                var label = context.label || '';
+                var value = context.parsed || 0;
+                return label + ': ' + value + '%';
+              },
+            },
+          },
+        },
+      },
+    });
+    
+  });
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var saleMonthsData = JSON.parse(document.getElementById("saleMonths").textContent);
+    var saleCountsData = JSON.parse(document.getElementById("salesData").textContent);
+  
+    // Create an array of all months of the year
+    const allMonths = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+  
+    // Initialize an array to store the counts for each month
+    const counts = Array(12).fill(0);
+  
+    // Map sale months to the correct index in the counts array
+    saleMonthsData.forEach((monthYear, index) => {
+      const [year, month] = monthYear.split('-');
+      const monthIndex = parseInt(month, 10) - 1;
+      if (!isNaN(monthIndex)) {
+        counts[monthIndex] = saleCountsData[index];
+      }
+    });
+  
+    // Create an array to store the labels for the line chart
+    const labels = allMonths;
+  
+    // Create the line chart
+    var ctx = document.getElementById('salesLineChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Monthly Sales',
+            data: counts,
+            fill: false,
+            borderColor: 'rgba(255, 99, 132, 1)',
+          },
+        ],
+      },
+      options: {
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Month',
+            },
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Count',
+            },
+          },
+        },
+      },
+    });
+  });
+  
+  document.addEventListener("DOMContentLoaded", function () {
+    var mortalityDatesData = JSON.parse(document.getElementById("mortalityDates").textContent);
+    var mortalityCountsData = JSON.parse(document.getElementById("mortalityData").textContent);
+
+    // Create an array of all months of the year
+    const allMonths = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    // Initialize an array to store the counts for each month
+    const counts = Array(12).fill(0);
+
+    // Map mortality data to the correct index in the counts array
+    mortalityDatesData.forEach((monthYear, index) => {
+        const [year, month] = monthYear.split('-');
+        const monthIndex = parseInt(month, 10) - 1;
+        if (!isNaN(monthIndex)) {
+            counts[monthIndex] = mortalityCountsData[index];
+        }
+    });
+
+    // Create an array to store the labels for the line chart
+    const labels = allMonths;
+
+    // Create the line chart for mortality data
+    var ctx = document.getElementById('mortalityAreaChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Mortality Count',
+                    data: counts,
+                    fill: true,
+                    borderColor: '#F7D355',
+                    backgroundColor: '#F7D355',
+                },
+            ],
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Month',
+                    },
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: false,
+                        text: 'Count',
+                    },
+                },
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+            },
+        },
+    });
+});

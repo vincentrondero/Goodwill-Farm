@@ -55,3 +55,57 @@ class Sow(models.Model):
     remarks = models.TextField()
     verif_by = models.CharField(max_length=50)
     date = models.DateField()
+
+
+class FeedsInventory(models.Model):
+    feeds_brand = models.CharField(max_length=255)
+    feeds_ration = models.CharField(max_length=255)
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.PositiveIntegerField()
+    verified_by = models.CharField(max_length=255)
+    date = models.DateField()
+
+class PigSale(models.Model):
+    pig = models.ForeignKey('Pig', on_delete=models.CASCADE)
+    weight = models.DecimalField(max_digits=5, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    verif_by = models.CharField(max_length=255)
+    date = models.DateField()
+
+class MortalityForm(models.Model):
+    pig = models.ForeignKey(Pig, on_delete=models.CASCADE, related_name='mortality_forms')
+    date = models.DateField()
+    pig_class = models.CharField(max_length=255)
+    cause = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    remarks = models.CharField(max_length=255)
+    reported_by = models.CharField(max_length=255)
+    verified_by = models.CharField(max_length=255)
+
+    def is_pig_sold(self):
+        return PigSale.objects.filter(pig=self.pig).exists()
+    
+class Vaccine(models.Model):
+    pig = models.ForeignKey(Pig, on_delete=models.CASCADE, related_name='vaccines')
+    date = models.DateField()
+    vaccine = models.CharField(max_length=255)
+    purpose = models.CharField(max_length=255)
+    dosage = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"Vaccine for Pig {self.pig.pig_id} - {self.vaccine}"
+
+class Weanling(models.Model):
+    pig = models.ForeignKey('Pig', on_delete=models.CASCADE, related_name='weanlings_pig')
+    sow = models.ForeignKey('Sow', on_delete=models.CASCADE, related_name='weanlings_sow')
+    date = models.DateField()
+    weight = models.DecimalField(max_digits=5, decimal_places=2)
+    SEX_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+    ]
+    sex = models.CharField(max_length=10, choices=SEX_CHOICES)
+    remarks = models.TextField()
+
+    def __str__(self):
+        return f"Weanling {self.id}"

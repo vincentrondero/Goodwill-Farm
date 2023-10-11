@@ -5,9 +5,35 @@
 
 <div id="months" style="display: none;">{{ months|safe }}</div>
 <div id="counts" style="display: none;">{{ counts|safe|default:"[]" }}</div>
+<div id="totalPigs" style="display: none;">{{ total_pigs }}</div>
+<div id="vaccinatedPigs" style="display: none;">{{ vaccinated_pigs }}</div>
+<div id="salesData" style="display: none;">{{ sale_counts|safe }}</div>
+<div id="saleMonths" style="display: none;">{{ sale_months|safe }}</div>
+<div id="mortalityData" style="display: none;">{{ mortality_counts|safe }}</div>
+<div id="mortalityDates" style="display: none;">{{ mortality_dates|safe }}</div>
 
 
-<div class="graph-container" style="height: 33%; width: 50%; margin-top: 38%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
+<div class="graph-container" style="height: 33%; width: 50%; margin-top: 2%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
+    <div class="rounded-top" style="background-color: #ff7b7b;">
+        <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 5%;">
+        <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+            Vaccination Rate
+        </span>
+    </div>
+    <canvas id="vaccinationProgress" width="200%" height="100%"  style="margin:2%;"></canvas>
+</div>
+
+<div class="graph-container" style="height: 33%; width: 50%; margin-top: 2%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
+    <div class="rounded-top" style="background-color: #ff7b7b;">
+        <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 5%;">
+        <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+            Monthly Sales
+        </span>
+    </div>
+    <canvas id="salesLineChart" width="300" height="100"></canvas>
+</div>
+
+<div class="graph-container" style="height: 33%; width: 50%; margin-top:10%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
     <div class="rounded-top" style="background-color: #ff7b7b;">
         <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 5%;">
         <span class="mx-3 pt-2 fs-5 text-white fw-bold">
@@ -16,5 +42,17 @@
     </div>
     <canvas id="pigBarChart" width="300%" height="100%"></canvas>
 </div>
+
+<div class="graph-container" style="height: 33%; width: 50%; margin-top:10%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
+    <div class="rounded-top" style="background-color: #ff7b7b;">
+        <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 5%;">
+        <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+            Monthly Registration Count
+        </span>
+    </div>
+    <canvas id="mortalityAreaChart" width="300" height="100"></canvas>
+</div>
+
+
 
 {% endblock %}
