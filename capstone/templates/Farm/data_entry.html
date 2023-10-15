@@ -125,12 +125,18 @@
                 </span>
             </div>
         <div class="scheduling-container">
-            <form>
+            <form method="POST" action="{% url 'add_sp' user_type=user_type %}">
+                {% csrf_token %}
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="SowNo">Sow no.:</label>
-                            <input type="text" class="form-control" id="SowNo" name="SowNo">
+                            <select class="form-select" id="SowNo" name="SowNo">
+                                <option value="" selected>Select a Sow</option>
+                                {% for sow in sows %}
+                                <option value="{{ sow.id }}">{{ sow.pig_id }}</option>
+                                {% endfor %}
+                                </select>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -144,7 +150,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="DOB">DOB:</label>
-                            <input type="text" class="form-control" id="DOB" name="DOB">
+                            <input type="text" class="form-control" id="dob" name="dob">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -158,7 +164,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="class">Class:</label>
-                            <input type="text" class="form-control" id="class" name="class">
+                            <input type="text" class="form-control" id="pig_class" name="pig_class">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -262,7 +268,7 @@
                 <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
                 <input class="shadow custom_button" type="button" id="closeOverlayButton2" value="Cancel" style="border-radius: 20px; width: 120px;">
             </div>
-        
+            
             </form>
         </div>
         </div>   
@@ -303,14 +309,14 @@
                         <option value="" selected>Select a Sow</option>
                         {% for sow in sows %}
                             <option value="{{ sow.id }}">{{ sow.pig_id }}</option>
-                        {% endfor %}
+                            {% endfor %}
                     </select><br><br>
 
                     
     
                     <label for="weight" class= "LWeight">Weight:</label>
                     <input type="text" class= "InWeight" id="weight" name="weight"><br><br>
-    
+                    
                     <label for="sex" class= "LSex">Sex:</label>
                     <select class="form-select" id="sex" name="sex">
                         <option value="male">Male</option>
@@ -491,5 +497,6 @@
         </div>
     </div>
 </div>
+
 
 {% endblock %}

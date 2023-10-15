@@ -109,3 +109,34 @@ class Weanling(models.Model):
 
     def __str__(self):
         return f"Weanling {self.id}"
+    
+class SowPerformance(models.Model):
+    sow_no = models.ForeignKey('Sow', on_delete=models.CASCADE, related_name='sow_perf')
+    dam = models.CharField(max_length=20)
+    dob = models.CharField(max_length=20)
+    sire = models.CharField(max_length=20)
+    pig_class = models.CharField(max_length=20)
+    pig_parity = models.CharField(max_length=20)
+
+    first_boar = models.CharField(max_length=20)
+    second_boar = models.CharField(max_length=20)
+    third_boar = models.CharField(max_length=20)
+    date_bred = models.DateField()
+    date_due = models.DateField()
+    date_farr = models.DateField()
+
+    alive = models.IntegerField()
+    mk = models.IntegerField()
+    sb = models.IntegerField()
+    mffd = models.IntegerField()
+    total_litter_size = models.IntegerField()
+    ave_litter_size = models.IntegerField()
+
+    date_weaned = models.DateField()
+    no_weaned = models.IntegerField()
+    total_weaned = models.IntegerField()
+    ave_weaned = models.FloatField()
+    total_kilo_weaned = models.FloatField()
+
+    def __str__(self):
+        return f"SowPerformance {self.id}"

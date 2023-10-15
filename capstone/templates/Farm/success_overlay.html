@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div id="success-overlay" class="success-overlay">
+    <div class="success-overlay-content">
+        <h2>Success!</h2>
+        <button id="okay-button" class="success-button">Okay</button>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // No need to change the JavaScript
+        var overlay = document.getElementById('success-overlay');
+        overlay.style.display = 'block';
+
+        document.getElementById('okay-button').addEventListener('click', function () {
+            window.location.href = '{% url "data_entry" user_type %}';
+        });
+    });
+</script>
+
+{% endblock %}

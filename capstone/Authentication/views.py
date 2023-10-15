@@ -8,6 +8,7 @@ from .models import PigSale
 from .models import Vaccine 
 from .models import FeedsInventory  
 from .models import MortalityForm
+from .models import SowPerformance
 from datetime import date, timedelta
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
@@ -628,7 +629,7 @@ def mortality_form(request, user_type):
             )
             mortality_form.save()
 
-            return redirect('data_entry', user_type=user_type)
+            return render(request, 'Farm/success_overlay.html', {'user_type': user_type})
         else:
  
             error_message = "Selected pig has been sold."
@@ -659,7 +660,7 @@ def save_vaccine(request, user_type):
             vaccine_record = Vaccine(pig=pig, date=date, vaccine=vaccine, purpose=purpose, dosage=dosage)
             vaccine_record.save()
             # Redirect to a success page or do something else
-            return redirect('data_entry', user_type=user_type)
+            return render(request, 'Farm/success_overlay.html', {'user_type': user_type})
         except Pig.DoesNotExist:
             error_message = "Pig with the provided ID does not exist."
 
@@ -673,6 +674,8 @@ def save_vaccine(request, user_type):
     return render(request, 'Farm/data_entry.html', context)
 
 from .models import Weanling
+
+from django.shortcuts import render  # Import the render function
 
 def save_weanling(request, user_type):
     if request.method == 'POST':
@@ -693,7 +696,77 @@ def save_weanling(request, user_type):
         )
         weanling.save()
 
-        return redirect('data_entry', user_type=user_type) 
-    
+        # Render the success_overlay.html template
+        return render(request, 'Farm/success_overlay.html', {'user_type': user_type})
+
     return render(request, 'Farm/data_entry.html')
 
+def add_sp(request, user_type):
+    if request.method == 'POST':
+        sow_no = request.POST.get('SowNo')
+        dam = request.POST.get('dam')
+        dob = request.POST.get('dob')
+        sire = request.POST.get('sire')
+        pig_class = request.POST.get('pig_class')
+        parity = request.POST.get('parity')
+        
+        first_boar = request.POST.get('first')
+        second_boar = request.POST.get('second')
+        third_boar = request.POST.get('third')
+        date_bred = request.POST.get('bred')
+        date_due = request.POST.get('due')
+        date_farr = request.POST.get('farr')
+
+        alive = request.POST.get('alive')
+        mk = request.POST.get('mk')
+        sb = request.POST.get('SB')
+        mffd = request.POST.get('mffd')
+        total_litter_size = request.POST.get('totalLS')
+        ave_litter_size = request.POST.get('aveLS')
+
+        date_weaned = request.POST.get('dateW')
+        no_weaned = request.POST.get('noW')
+        total_weaned = request.POST.get('totalW')
+        ave_weaned = request.POST.get('aveW')
+        total_kilo_weaned = request.POST.get('totalKW')
+
+        # Get the selected pig object
+        sow = Sow.objects.get(id=sow_no)
+
+        sp = SowPerformance(
+            sow_no = sow,
+            dam = dam,
+            dob = dob,
+            sire = sire,
+            pig_class = pig_class,
+            pig_parity = parity,
+
+            first_boar = first_boar,
+            second_boar = second_boar,
+            third_boar = third_boar,
+            date_bred = date_bred,
+            date_due = date_due,
+            date_farr = date_farr,
+
+            alive = alive,
+            mk = mk,
+            sb = sb,
+            mffd = mffd,
+            total_litter_size = total_litter_size,
+            ave_litter_size = ave_litter_size,
+
+            date_weaned = date_weaned,
+            no_weaned = no_weaned,
+            total_weaned = total_weaned,
+            ave_weaned = ave_weaned,
+            total_kilo_weaned = total_kilo_weaned
+        )
+        sp.save()
+
+        return render(request, 'Farm/success_overlay.html', {'user_type': user_type})
+    
+    # Sow Performance IDs can be accessed from the context
+    sow_perf_ids = SowPerformance.objects.values_list('pig_id', flat=True)
+    sows = Sow.objects.get.all(id__in=sow_perf_ids)
+
+    return render(request, 'Farm/data_entry.html', {'sows': sows, 'sow_perf_ids': sow_perf_ids})

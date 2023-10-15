@@ -26,4 +26,5 @@ urlpatterns = [
     path('mortality-form/<str:user_type>/', views.mortality_form, name='mortality_form'),
     path('save_vaccine/<str:user_type>/', views.save_vaccine, name='save_vaccine'),
     path('save_weanling/<str:user_type>/', views.save_weanling, name='save_weanling'),
+    path('add_sp/<str:user_type>/', views.add_sp, name='add_sp'),
 ]

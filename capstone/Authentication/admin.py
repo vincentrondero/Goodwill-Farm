@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Task, Pig, Sow,FeedsInventory, PigSale, MortalityForm, Vaccine,  Weanling
+from .models import User, Task, Pig, Sow,FeedsInventory, PigSale, MortalityForm, Vaccine,  Weanling, SowPerformance
 
 admin.site.register(Task)
 admin.site.register(User)
@@ -10,3 +10,4 @@ admin.site.register(PigSale)
 admin.site.register(MortalityForm)
 admin.site.register(Vaccine)
 admin.site.register( Weanling)
+admin.site.register(SowPerformance)
