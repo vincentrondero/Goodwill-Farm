@@ -11,39 +11,55 @@
 </div>
 
 <div id="overlay">
-    <div id="formContainer">
-        <h2>Add User</h2>
+    <div id="formContainer" class="rounded" style="width: 40%;">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/feeds_logo.png' %}" style="height: 30px;" alt="...">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                ADD USER
+            </span>
+        </div>
         <div class="scheduling-container">
             <form method="post" action="{% url 'manage_user'  user_type=user_type %}">
                 {% csrf_token %}
-                
-                <label for="firstname" class="LFirstName">Firstname:</label>
-                <input type="text" class="InFirstName" id="firstname" name="firstname" value="Juan"><br><br>
-                
-                <label for="lastname" class="LLastName">Lastname:</label>
-                <input type="text" class="InLastName" id="lastname" name="lastname" value="De la Cruz"><br><br>
-                
-                <label for="role" class="LRole">Role:</label>
-                <input type="text" class="InRole" id="role" name="role" value="user"><br><br>
-                
-                <label for="username" class="LUserName">Username:</label>
-                <input type="text" class="InUserName" id="username" name="username"><br><br>
-                
-                <label for="password" class="LPassword">Password:</label>
-                <input type="password" class="InPassword" id="password" name="password"><br><br>
-                
-                <label for="confpass" class="LConfPass">Confirm Password:</label>
-                <input type="password" class="InConfPass" id="confpass" name="confpass"><br><br>
-                
-                <hr class="separator">
-    
-                <div class="Submission">
-                    <label for="date" class="LDate">Date:</label>
-                    <input type="text" class="Indate" id="date" name="date" value="{{ date.today }}"><br><br>
+                <div class="d-flex flex-column align-items-end" style="width: 50%;">
+                    <div>
+                        <label for="firstname" class="LFirstName">Firstname:</label>
+                        <input type="text" class="InFirstName" id="firstname" name="firstname" value="Juan"><br><br>
+                    </div>
+                    <div>
+                        <label for="lastname" class="LLastName">Lastname:</label>
+                        <input type="text" class="InLastName" id="lastname" name="lastname" value="De la Cruz"><br><br>
+                    </div>                    
+                    <div>
+                        <label for="role" class="LRole">Role:</label>
+                        <input type="text" class="InRole" id="role" name="role" value="user"><br><br>
+                    </div>                    
+                    <div>
+                        <label for="username" class="LUserName">Username:</label>
+                        <input type="text" class="InUserName" id="username" name="username"><br><br>
+                    </div>                       
+                    <div>
+                        <label for="password" class="LPassword">Password:</label>
+                        <input type="password" class="InPassword" id="password" name="password"><br><br>
+                    </div>
+                    <div>
+                        <label for="confpass" class="LConfPass">Confirm Password:</label>
+                        <input type="password" class="InConfPass" id="confpass" name="confpass"><br><br>
+                    </div>                    
                 </div>
+                    
+                    <hr class="separator">
+                <div class="d-flex flex-column align-items-end" style="width: 40%;">
+                    <div class="Submission">
+                        <label for="date" class="LDate">Date:</label>
+                        <input type="date" class="Indate" id="date" name="date" value="{{ date.today }}"><br><br>
+                    </div>
+                </div>   
 
-                <input type="submit" value="Save Task">
-                <input type="button" id="closeOverlayButton" value="Cancel">
+                <div class="d-flex justify-content-end">
+                    <input class="shadow  custom_button" type="submit" value="Save Task" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                    <input class="shadow custom_button" type="button" id="closeOverlayButton" value="Cancel" style="border-radius: 20px; width: 120px;">
+                </div>
             </form>
             <div class="error-message" id="error-message">
                 {{ message }}
@@ -103,28 +119,55 @@
         {% endfor %}
     </table>
 </div>
+
 <div id="edit_overlay" style="display: none;">
-        <div id="editFormContainer" class="card rounded">
-            <div class="rounded-top" style="background-color: #ff7b7b;">
-                <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
-                <span class="mx-3 pt-2 fs-5 text-white fw-bold">
-                    EDIT USER
-                </span>
-            </div>
-        <div class="scheduling-container">
-            <form id="editUserForm"> 
-                {% csrf_token %}
-                <!-- Add input fields for editing user details -->
-                <input type="text" name="firstname" id="edit_firstname" value="">
-                <input type="text" name="lastname" id="edit_lastname" value="">
-                <input type="text" name="username" id="edit_username" value="">
-                <input type="text" name="role" id="edit_role" value="">
-                <input type="text" name="date" id="edit_date" value="">
-                <button  class="save-button" data-user-type="{{ user_type }}">Save</button>
-                <button id="cancel-button">Cancel</button>
-            </form>
+    <div id="editFormContainer" class="card rounded" style="width: 30%;">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                EDIT USER
+            </span>
         </div>
+    <div class="scheduling-container">
+        <form id="editUserForm"> 
+            {% csrf_token %}
+            <!-- Add input fields for editing user details -->
+            <div class="d-flex flex-column align-items-end" style="width: 50%;">
+                <div>
+                    <label for="firstname" class="LFirstName">Firstname:</label>
+                    <input type="text" name="firstname" id="edit_firstname" value="">
+                </div>
+                <br>
+                <div>
+                    <label for="lastname" class="LLastName">Lastname:</label>
+                    <input type="text" name="lastname" id="edit_lastname" value="">
+                </div>
+                <br>
+                <div>
+                    <label for="username" class="LUserName">Username:</label>
+                    <input type="text" name="username" id="edit_username" value="">
+                </div>
+                <br>
+                <div>
+                    <label for="role" class="LRole">Role:</label>
+                    <input type="text" name="role" id="edit_role" value="">
+                </div>
+                <br>
+                <div>
+                    <label for="date" class="LDate">Date:</label>
+                    <input type="text" name="date" id="edit_date" value="{{ date.today }}">
+                </div>
+                <br>
+            </div>
+            <!-- <button  class="save-button" data-user-type="{{ user_type }}">Save</button>
+            <button class="cancel-button" id=closeOverlayButton>Cancel</button> -->
+            <div class="d-flex justify-content-end">
+                <input class="shadow save-button custom_button" data-user-type="{{ user_type }}" type="submit" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
+                <input class="shadow custom_button cancel-button" type="button" id="cancel-button" value="Cancel" style="border-radius: 20px; width: 120px;">
+            </div>
+        </form>
     </div>
+</div>
 </div>
 
 

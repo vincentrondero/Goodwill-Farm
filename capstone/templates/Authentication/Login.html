@@ -13,7 +13,7 @@
                 <h2 class="header_title">Goodwill Farm</h2>
                 <form method="post" action="{% url 'Login' %}">
                     {% csrf_token %}
-                    <div class="error-message" id="error-message">
+                    <div class="error-message position-absolute" id="error-message" style="transform: translate(42%, -400%);">
                         {{ error_message }}
                     </div>
                     <div class="input-container">
