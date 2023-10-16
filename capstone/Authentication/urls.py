@@ -21,10 +21,13 @@ urlpatterns = [
     path('get_pig_data/<int:pig_id>/', views.get_pig_data, name='get_pig_data'),
     path('add_sow/<str:user_type>/', views.add_sow, name="add_sow"),
     path('delete_sow/<str:user_type>/<int:sow_id>/', views.delete_sow, name='delete_sow'),
+    path('update_sow_data/<int:sow_id>/<str:user_type>/', views.update_sow_data, name='update_sow_data'),
+    path('get_sow_data/<int:pig_id>/', views.get_sow_data, name='get_sow_data'),
     path('save_feeds_inventory/<str:user_type>/', views.save_feeds_inventory, name='save_feeds_inventory'),
     path('save_pig_sale/<str:user_type>/', views.save_pig_sale, name='save_pig_sale'),
     path('mortality-form/<str:user_type>/', views.mortality_form, name='mortality_form'),
     path('save_vaccine/<str:user_type>/', views.save_vaccine, name='save_vaccine'),
     path('save_weanling/<str:user_type>/', views.save_weanling, name='save_weanling'),
     path('add_sp/<str:user_type>/', views.add_sp, name='add_sp'),
+     path('search_suggestions/', views.search_suggestions, name='search_suggestions'),
 ]

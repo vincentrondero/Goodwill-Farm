@@ -226,6 +226,11 @@ $(document).ready(function() {
         // Store the user ID in a data attribute
         var userId = $(this).data("user-id");
         $(".save-button").data("user-id", userId);
+
+        $("#cancel-button").click(function () {
+            // Hide the edit overlay when the "Cancel" button is clicked
+            $("#edit_overlay").hide();
+        });
     });
     
     // Add click event handler for the save button
@@ -360,7 +365,6 @@ $(document).ready(function() {
                     // Store the pig ID in a data attribute for the Save Pig button
                     $(".save-pig-button").data("pig-id", pigId);
                 } else {
-                    // Handle the case where the server couldn't fetch pig data
                     alert("Failed to fetch pig data. Please try again.");
                 }
             },
@@ -425,7 +429,6 @@ $(document).ready(function() {
         });
     });
     
-    // Click event handler for the cancel button
     $(".cancel-button").click(function (e) {
         e.preventDefault(); // Prevent the default form submission
     
@@ -459,7 +462,136 @@ $(document).ready(function() {
             });
         }
     });
+    // Add an event listener for the sow data edit button
+$(".edit_sow_button").click(function () {
+    var sowId = $(this).data("sow-id");
+    var userType = $(this).data("user-type");
+    console.log("User Type:", userType);
+
+    // Make an AJAX request to fetch the sow data based on the sow ID and user type
+    var updateSowUrl = '/get_sow_data/' + sowId + '/'
+
+    $.ajax({
+        url: updateSowUrl,
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            console.log("Data received from the server:", data);
+            if (data.success) {
+                // Populate the overlay fields with the sow data
+                $("#edit_sow_id").val(data.sow_data.sow_id);
+                $("#edit_sow_dam").val(data.sow_data.dam);
+                $("#edit_sow_dob").val(data.sow_data.dob);
+                $("#edit_sow_sire").val(data.sow_data.sire);
+                $("#edit_sow_pig_class").val(data.sow_data.pig_class);
+                $("#edit_sow_sex").val(data.sow_data.sex);
+                $("#edit_sow_count").val(data.sow_data.count);
+                $("#edit_sow_weight").val(data.sow_data.weight);
+                $("#edit_sow_remarks").val(data.sow_data.remarks);
+
+                // Show the sow data edit overlay
+                $("#edit_sow_overlay").show();
+            } else {
+                alert("Failed to fetch sow data. Please try again.");
+            }
+        },
+        error: function () {
+            alert("An error occurred while fetching sow data.");
+        }
+    });
     
+    // Event handler to close the overlay when "Cancel" button is clicked
+    $("#cancel-sow-button").click(function () {
+        // Hide the sow data edit overlay when the "Cancel" button is clicked
+        $("#edit_sow_overlay").hide();
+    });
+});
+
+// Add an event listener for the sow data save button
+$(".save-sow-button").click(function () {
+    // Get the sow data from the overlay fields
+    var sowId = $("#edit_sow_id").val();
+    var updatedData = {
+        dam: $("#edit_sow_dam").val(),
+        dob: $("#edit_sow_dob").val(),
+        sire: $("#edit_sow_sire").val(),
+        pig_class: $("#edit_sow_pig_class").val(),
+        sex: $("#edit_sow_sex").val(),
+        count: $("#edit_sow_count").val(),
+        weight: $("#edit_sow_weight").val(),
+        remarks: $("#edit_sow_remarks").val(),
+        user_type: userType,
+        // Add more fields as needed
+    };
+
+    // Make an AJAX request to update the sow data
+    var updateSowUrl = '/update_sow_data/' + sowId + '/' + userType + '/';
+
+    $.ajax({
+        url: updateSowUrl,
+        method: 'POST',
+        data: updatedData,
+        dataType: 'json',
+        success: function (data) {
+            if (data.success) {
+                alert("Sow data updated successfully.");
+                // Optionally, hide the sow data edit overlay or perform other actions as needed
+                $("#edit_sow_overlay").hide();
+            } else {
+                alert("Failed to update sow data. Please try again.");
+            }
+        },
+        error: function () {
+            alert("An error occurred while updating sow data.");
+        }
+    });
+});
+
+$('#search-input').on('input', function () {
+    var searchQuery = $(this).val();
+    if (searchQuery) {
+        $.ajax({
+            url: '/search_suggestions/',
+            data: { 'search_query': searchQuery },
+            dataType: 'json',
+            success: function (data) {
+                if (data.suggestions.length > 0) {
+                    // Clear any previous results
+                    $('#search-results').empty();
+
+                    // Iterate over the suggestions
+                    data.suggestions.forEach(function (suggestion) {
+                        // Create a button for each suggestion
+                        var suggestionButton = $('<button class="result-button" style="display: block; width: 100%; border: none; height: 15%; color:#FF7373; padding:1%; background-color:#FFFFFF;"></button>');
+
+                        // Set button text (pig_id)
+                        suggestionButton.text(suggestion);
+
+                        // Add a click event handler to the button
+                        suggestionButton.click(function () {
+                            var pigId = suggestion;
+                            // Perform the desired action here
+                            
+                        });
+
+                        // Append the button to the search results div
+                        $('#search-results').append(suggestionButton);
+                    });
+
+                    // Show the search results
+                    $('#search-results').show();
+                } else {
+                    // No results, hide the search results
+                    $('#search-results').hide();
+                }
+            }
+        });
+    } else {
+        // Empty search query, hide the search results
+        $('#search-results').hide();
+    }
+});
+
 
    // Parse the months and counts data
 const monthsData = JSON.parse(document.getElementById("months").textContent);
@@ -707,189 +839,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-    
 
-
-function formatDate(dateString) {
-    // Split the input date string into parts
-    var dateParts = dateString.split(' ');
-
-    // Ensure we have at least 3 parts (Month, day, year)
-    if (dateParts.length >= 3) {
-        var month = dateParts[0]; // Month
-        var day = dateParts[1].slice(0, -1); // Day (remove the comma)
-        var year = dateParts[2]; // Year
-
-        // Map month names to their numerical representation
-        var monthMap = {
-            'Jan.': '01', 'Feb.': '02', 'Mar.': '03', 'Apr.': '04', 'May.': '05', 'Jun.': '06',
-            'Jul.': '07', 'Aug.': '08', 'Sep.': '09', 'Oct.': '10', 'Nov.': '11', 'Dec.': '12'
-        };
-
-        // Construct the formatted date
-        var formattedDate = year + '-' + monthMap[month] + '-' + day;
-
-        return formattedDate;
-    }
-
-    // Return an empty string if the date string format is not as expected
-    return '';
-
-}
-
-    
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-        const cookies = document.cookie.split(";");
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === name + "=") {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-function updateTaskStatus(checkbox) {
-    console.log("Checkbox changed");
-    const taskId = $(checkbox).data('task-id');
-    const isChecked = checkbox.checked;
-
-    $.ajax({
-        url: "/update_task_status/",
-        method: "POST",
-        data: {
-            task_id: taskId,
-            is_done: isChecked,
-            csrfmiddlewaretoken: getCookie("csrftoken"),
-        },
-        success: function(response) {
-            console.log("Task status updated successfully.");
-            console.log("Updated Task Data:", response.task);
-            const updatedTask = response.task;
-
-            if (updatedTask.is_done) {
-                const taskElement = $(checkbox).closest(".sample");
-                console.log("Task Element:", taskElement);
-
-                taskElement.appendTo("#doneTasks");
-                console.log("Task moved to 'Done'");
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("Error updating task status:", error);
-        }
-    });
-}
-
-// Call updateTaskStatus for any checkboxes with the 'update-checkbox' class
-$(".update-checkbox").change(function() {
-    updateTaskStatus(this);
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var noTaskImageUrl = "/static/img/No_Task.png"
-
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        // Configuration options
-        initialView: 'dayGridMonth',
-    
-        dayMaxEventRows: 4,
-        dateClick: function(info) {
-            // Get the clicked date
-            var selectedDate = info.dateStr;
-            
-            // Send an AJAX request to fetch tasks for the selected date
-            fetch('/api/tasks-for-date/' + selectedDate) // Replace with your API endpoint
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Selected Date:', selectedDate);
-                    // Clear the "selectedDateTasksContainer"
-                    var selectedDateTasksContainer = document.getElementById('scheduleToday');
-                    selectedDateTasksContainer.innerHTML = '<div class="mt-2 schedule_header">SCHEDULE TODAY:</div>'; // Reset the header
-
-                    if (data.length === 0) {
-                        // If there are no tasks for the selected date, display the image and text
-                         // This line causes the issue
-                         selectedDateTasksContainer.innerHTML += '<img src="' + noTaskImageUrl + '" alt="No Tasks Today Image" class="no-task-img">';
-                         selectedDateTasksContainer.innerHTML += '<p class="no-tasks-text">No Tasks Today.</p>';
-                    } else {
-                        // Loop through the fetched tasks and create a separate tab for each task
-                        data.forEach(task => {
-                            var taskTab = document.createElement('div');
-                            taskTab.className = 'mt-2 p-2 custom_sched_tab'; // Apply your CSS classes
-        
-                            // Add a checkbox
-                            var checkbox = document.createElement('input');
-                            checkbox.type = 'checkbox';
-                            checkbox.dataset.taskId = task.id;
-        
-                            // Set the checkbox state based on is_done
-                            if (task.is_done) {
-                                checkbox.setAttribute('checked', 'checked');
-                            }
-        
-                            var label = document.createElement('label');
-                            label.className = 'checkbox-container';
-                            label.appendChild(checkbox);
-                            label.innerHTML += '<span class="checkmark"></span>';
-        
-                            // Display the task name
-                            taskTab.textContent = task.task_name;
-        
-                            taskTab.appendChild(label);
-        
-                            // Append the task tab to the container
-                            selectedDateTasksContainer.appendChild(taskTab);
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching tasks for the selected date:', error);
-                });
-        }
-    });
-
-    calendar.render();
-
-    // Event delegation for dynamically created checkboxes
-    document.getElementById('scheduleToday').addEventListener('change', function(event) {
-        if (event.target.type === 'checkbox') {
-            updateTaskStatus(event.target);
-        }
-    });
-    
-});
-document.addEventListener('DOMContentLoaded', function() {
-    var buttons = document.querySelectorAll('.dropdown_dots');
-
-    buttons.forEach(function(button) {
-        button.addEventListener('click', function(event) {
-            event.stopPropagation(); // Prevent the click event from propagating to the document
-            var dropdown = this.nextElementSibling;
-            console.log("Dropdown Clicked. Dropdown:", dropdown);
-            
-            // Toggle the dropdown's display
-            if (dropdown.style.display === 'block') {
-                dropdown.style.display = 'none';
-            } else {
-                dropdown.style.display = 'block';
-            }
-        });
-    });
-
-    // Add a click event listener to the document to close the dropdown when clicking outside of it
-    document.addEventListener('click', function(event) {
-        var dropdowns = document.querySelectorAll('.dropdown');
-        dropdowns.forEach(function(dropdown) {
-            dropdown.style.display = 'none';
-        });
-    });
-});
 document.addEventListener("DOMContentLoaded", function () {
     var totalPigs = parseInt(document.getElementById("totalPigs").textContent);
     var vaccinatedPigs = parseInt(document.getElementById("vaccinatedPigs").textContent);
