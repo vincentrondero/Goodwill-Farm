@@ -140,3 +140,9 @@ class SowPerformance(models.Model):
 
     def __str__(self):
         return f"SowPerformance {self.id}"
+    
+class FeedStockUpdate(models.Model):
+    count_update = models.PositiveIntegerField()
+    date = models.DateField()
+    verify_by = models.CharField(max_length=255)
+    ration = models.CharField(max_length=255, default='Starter')

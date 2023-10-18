@@ -9,6 +9,7 @@ from .models import Vaccine
 from .models import FeedsInventory  
 from .models import MortalityForm
 from .models import SowPerformance
+from .models import FeedStockUpdate
 from datetime import date, timedelta
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
@@ -17,6 +18,10 @@ import json
 from django.db.models import Q
 from django.contrib import messages
 from datetime import date as today_date, timedelta
+from django.db.models.functions import ExtractDay
+from django.db.models import Sum, F
+from django.utils import timezone
+
 
 def add_pigs(request, user_type):
     context = {
@@ -100,7 +105,15 @@ def Login(request):
 
 def index(request, user_type):
     feed_stock = FeedsInventory.objects.all()
+    updated_to_stock=FeedStockUpdate.objects.all()
+    today = timezone.now().date()
     
+    total_used = FeedStockUpdate.objects.aggregate(total_used=Sum('count_update'))['total_used'] or 0
+
+    total_feed_quantity = feed_stock.aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
+
+    remaining_feed_quantity = total_feed_quantity - total_used
+
     # Define the Q object to filter pigs with PigSale or MortalityForm
     exclude_q = Q(pigsale__isnull=False) | Q(mortality_forms__isnull=False)
     
@@ -119,7 +132,8 @@ def index(request, user_type):
         "user_type": user_type,
         "pig_list_88_days": pig_list_88_days,
         "pig_list_more_88_days": pig_list_more_88_days,
-        "feed_stock": feed_stock
+        "feed_stock": feed_stock,
+        "remaining_feed_quantity": remaining_feed_quantity,
     })
 
 
@@ -157,15 +171,18 @@ def manage_user(request, user_type):
 from collections import defaultdict
 from datetime import datetime
 from django.db.models import Count
+from collections import Counter
+from django.db.models import Avg
 
 def reports(request, user_type):
     # Fetch Pig data and calculate monthly counts for pig registration
     pig_data = Pig.objects.all()
+    exclude_q = Q(pigsale__isnull=False) | Q(mortality_forms__isnull=False)
 
     monthly_counts = defaultdict(int)
 
     for pig in pig_data:
-        registration_date = pig.date
+        registration_date = pig.dob
         year_month = registration_date.strftime("%Y-%m")
         monthly_counts[year_month] += 1
 
@@ -179,16 +196,26 @@ def reports(request, user_type):
         year_month = sale_date.strftime("%Y-%m")
         monthly_sale_counts[year_month] += 1
 
-    # Fetch Mortality data and calculate monthly mortality counts
+    pig_sales_data = PigSale.objects.values('date__year', 'date__month').annotate(average_weight=Avg('weight'))
+    average_weights = {f"{data['date__year']}-{data['date__month']}": float(data['average_weight']) for data in pig_sales_data}
     mortality_data = MortalityForm.objects.all()
 
     monthly_mortality_counts = defaultdict(int)
+    top_mortality_causes = []
 
     for mortality in mortality_data:
         mortality_date = mortality.date  # Adjust this to your actual field name
         year_month_day = mortality_date.strftime("%Y-%m")
         monthly_mortality_counts[year_month] += 1
+        top_mortality_causes.append(mortality.cause)
 
+    total_mortality_count = sum(monthly_mortality_counts.values())
+    total_pig_count = sum(count for month, count in monthly_counts.items() if month not in monthly_sale_counts)
+    mortality_rate = (total_mortality_count / total_pig_count) * 100
+    current_year_month = date.today().strftime("%Y-%m")
+    current_month_mortality_count = monthly_mortality_counts[current_year_month]
+    current_month_pig_count = monthly_counts[current_year_month]
+    average_monthly_mortality_rate = (current_month_mortality_count /current_month_pig_count) * 100
     # Count the number of vaccinated pigs
     vaccinated_pigs = Pig.objects.annotate(vaccine_count=Count('vaccines')).filter(vaccine_count__gt=0).count()
 
@@ -201,6 +228,71 @@ def reports(request, user_type):
     sale_months, sale_counts = zip(*monthly_sale_counts.items())
     mortality_dates, mortality_counts = zip(*monthly_mortality_counts.items())
 
+    consumption_rate_per_pig = 1.2
+    total_pigs_for_feeds= Pig.objects.exclude(exclude_q).count() 
+    total_feed_needed = total_pigs_for_feeds * consumption_rate_per_pig
+
+    # You can round the result or format it as needed
+    total_feed_needed_formatted = "{:.2f}".format(total_feed_needed)
+
+
+    twenty_eight_days_ago = date.today() - timedelta(days=28)
+    weanlings_count = Pig.objects.filter(dob__gte=twenty_eight_days_ago).exclude(exclude_q).count()
+    unique_weanling_ids = Weanling.objects.values('pig_id').annotate(count=Count('pig_id')).count()
+
+    if weanlings_count < 500:
+        weanlings_prescription = "The weanlings count is low. Consider adjusting feeding or housing conditions."
+    else:
+        weanlings_prescription = "The weanlings count is within an acceptable range."
+
+    top_mortality_causes = [
+        {'cause': cause, 'count': count}
+        for cause, count in Counter(top_mortality_causes).most_common(5)
+    ]
+    current_year_month = date.today().strftime("%B %Y") 
+
+    if average_monthly_mortality_rate > 5.0:
+        prescription = "This month mortality rate is high. Consider improving health monitoring and biosecurity practices."
+    else:
+        prescription = "This month mortality rate is within an acceptable range."
+
+    quantity_by_ration = FeedsInventory.objects.values('feeds_ration').annotate(total_quantity=Sum('quantity'))
+
+    result = {}
+
+    for item in quantity_by_ration:
+        feeds_ration = item['feeds_ration']
+        total_quantity = item['total_quantity']
+
+        # Find the corresponding FeedStockUpdate records by feeds_ration
+        feed_stock_updates = FeedStockUpdate.objects.filter(ration=feeds_ration)
+
+        # Calculate the difference and store it in the result dictionary
+        difference = total_quantity - sum(feed_stock_update.count_update for feed_stock_update in feed_stock_updates)
+        result[feeds_ration] = difference
+
+    threshold = 20  # Define your threshold here
+    below_threshold_rations = {}
+
+    for ration, difference in result.items():
+        if difference < threshold:
+            below_threshold_rations[ration] = difference
+
+    # Now, create prescriptions for the rations that are below the threshold
+    stock_prescriptions = []
+
+    for ration, difference in below_threshold_rations.items():
+        if difference <= 0:
+            prescription = f"Warning! You have {difference} sacks of {ration} feeds.Order now!"
+        else:
+            prescription = f"Warning! You have {difference} remaining sacks of {ration} feeds, Consider ordering."
+
+        stock_prescriptions.append(prescription)
+    
+    feed_expenses = FeedsInventory.objects.values('date').annotate(total_cost=Sum('cost'))
+    dates = [item['date'].strftime('%Y-%m-%d') for item in feed_expenses]
+    total_costs = [float(item['total_cost']) for item in feed_expenses]
+
     context = {
         "user_type": user_type,
         "months": json.dumps(list(months)),
@@ -212,6 +304,23 @@ def reports(request, user_type):
         "percentage_vaccinated": percentage_vaccinated,
         "total_pigs": total_pigs,
         "vaccinated_pigs": vaccinated_pigs,
+        "total_pigs_for_feeds":total_pigs_for_feeds,
+        "total_feed_needed_formatted": total_feed_needed_formatted, 
+        "mortality_rate": mortality_rate,
+        "average_monthly_mortality_rate":average_monthly_mortality_rate,
+        "top_mortality_causes": top_mortality_causes,
+        "current_year_month": current_year_month,
+        "prescription":prescription,
+        "weanlings_count":weanlings_count,
+        "unique_weanling_ids":unique_weanling_ids,
+        "weanlings_prescription": weanlings_prescription,
+        "average_weights": json.dumps(average_weights),
+        'quantity_by_ration':quantity_by_ration,
+        "result": result,
+        "stock_prescriptions":stock_prescriptions, 
+        "feed_expenses_dates": json.dumps(dates),
+        "feed_expenses_costs": json.dumps(total_costs),
+
     }
 
     return render(request, 'Farm/reports.html', context)
@@ -574,6 +683,7 @@ def get_sow_data(request, pig_id):
         
         # Serialize the sow data into a dictionary
         sow_data = {
+            'pk': sow.pk,
             'sow_id': sow.pig_id,
             'dam': sow.dam,
             'dob': sow.dob.strftime('%Y-%m-%d'),  # Format date as string
@@ -592,30 +702,64 @@ def get_sow_data(request, pig_id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
     
-def update_sow_data(request, sow_id, user_type):
-    try:
-        # Retrieve the sow based on sow_id
-        sow = Sow.objects.get(pk=sow_id)
+from django.db import transaction
+from django.http import JsonResponse
+from django.shortcuts import render
+from .models import Sow
 
-        if request.method == 'POST':
-            # Update the sow data based on the POST data
-            sow.dam = request.POST.get('dam')
-            sow.dob = request.POST.get('dob')
-            sow.sire = request.POST.get('sire')
-            sow.pig_class = request.POST.get('pig_class')
-            sow.sex = request.POST.get('sex')
-            sow.count = request.POST.get('count')
-            sow.weight = request.POST.get('weight')
-            sow.remarks = request.POST.get('remarks')
-            # Update more fields as needed
-            sow.save()
-            return JsonResponse({'success': True})
-        else:
-            return JsonResponse({'success': False, 'error': 'Invalid request method'})
-    except Sow.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Sow not found'})
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
+def update_sow_data(request, pig_id,user_type):
+    if request.method == 'POST':
+        data = request.POST  
+        
+        try:
+            with transaction.atomic():
+                # Get the sow using the provided primary key (pk)
+                sow = Sow.objects.get(pk=pig_id)
+                
+                # Update sow data fields based on your form field names
+                sow.dam = data.get('edit_sow_dam')
+                sow.dob = data.get('edit_sow_dob')
+                sow.sire = data.get('edit_sow_sire')
+                sow.pig_class = data.get('edit_sow_pig_class')
+                sow.sex = data.get('edit_sow_sex')
+                sow.count = data.get('edit_sow_count')
+                sow.weight = data.get('edit_sow_weight')
+                sow.remarks = data.get('edit_sow_remarks')
+                # Add more fields as needed
+                sow.save()
+
+            # Debug: Add print statements or use Django's logging
+            print("Sow updated successfully.")
+            return render(request, 'Farm/success_overlay.html', {'user_type': user_type})
+
+            # Prepare the updated sow data as a dictionary
+            updated_sow_data = {
+                'pig_id': sow.pig_id,
+                'dam': sow.dam,
+                'dob': sow.dob,
+                'sire': sow.sire,
+                'pig_class': sow.pig_class,
+                'sex': sow.sex,
+                'count': sow.count,
+                'weight': str(sow.weight),
+                'remarks': sow.remarks,
+                # Add more fields as needed
+            }
+
+            return JsonResponse({'success': True, 'updated_sow_data': updated_sow_data})
+        except Sow.DoesNotExist:
+            # Debug: Print error message
+            print("Sow not found.")
+
+            return JsonResponse({'success': False, 'error': 'Sow not found'})
+        except Exception as e:
+            # Debug: Print error message
+            print(f"Error: {str(e)}")
+
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return render(request, 'Farm/add_pigs.html', {"user_type": user_type})
+
     
 def save_feeds_inventory(request, user_type):
     if request.method == 'POST':
@@ -635,8 +779,23 @@ def save_feeds_inventory(request, user_type):
             date=date
         )
         feeds_inventory.save()
-
+        messages.success(request, 'Feeds Stock Added to the database')
         return render(request, 'Farm/success_overlay.html', {'user_type': user_type})
+
+    return render(request, 'Farm/data_entry.html', {"user_type": user_type})
+
+def add_feed_stock_update(request, user_type):
+    if request.method == 'POST':
+        count_update = request.POST.get('count_update')
+        date = request.POST.get('date')
+        verify_by = request.POST.get('verify_by')
+
+        # Save the feed stock update to the database
+        feed_stock_update = FeedStockUpdate(count_update=count_update, date=date, verify_by=verify_by)
+        feed_stock_update.save()
+
+        messages.success(request, 'Feeds Stock Updated')
+        return render(request, 'Farm/success_overlay2.html', {'user_type': user_type})
 
     return render(request, 'Farm/data_entry.html', {"user_type": user_type})
 
@@ -740,7 +899,6 @@ def save_vaccine(request, user_type):
 
 from .models import Weanling
 
-from django.shortcuts import render  # Import the render function
 
 def save_weanling(request, user_type):
     if request.method == 'POST':
@@ -852,3 +1010,49 @@ def search_suggestions(request):
     suggestions = [result['pig_id'] for result in results]
 
     return JsonResponse({'suggestions': suggestions})
+
+def get_sow_performance_data(request, pig_id):
+    try:
+        sow = Sow.objects.get(pk=pig_id)
+        sow_performances = SowPerformance.objects.filter(sow_no=sow)
+        
+        if sow_performances:
+            # Create a list to store sow performance data for all records
+            sow_perf_data_list = []
+            
+            for sow_performance in sow_performances:
+                sow_perf_data = {
+                    'id': sow_performance.id,
+                    'dam': sow_performance.dam,
+                    'dob': sow_performance.dob,
+                    'sire': sow_performance.sire,
+                    'pig_class': sow_performance.pig_class,
+                    'pig_parity': sow_performance.pig_parity,
+                    'first_boar': sow_performance.first_boar,
+                    'second_boar': sow_performance.second_boar,
+                    'third_boar': sow_performance.third_boar,
+                    'date_bred': sow_performance.date_bred.strftime('%Y-%m-%d'),
+                    'date_due': sow_performance.date_due.strftime('%Y-%m-%d'),
+                    'date_farr': sow_performance.date_farr.strftime('%Y-%m-%d'),
+                    'alive': sow_performance.alive,
+                    'mk': sow_performance.mk,
+                    'sb': sow_performance.sb,
+                    'mffd': sow_performance.mffd,
+                    'total_litter_size': sow_performance.total_litter_size,
+                    'ave_litter_size': sow_performance.ave_litter_size,
+                    'date_weaned': sow_performance.date_weaned.strftime('%Y-%m-%d'),
+                    'no_weaned': sow_performance.no_weaned,
+                    'total_weaned': sow_performance.total_weaned,
+                    'ave_weaned': sow_performance.ave_weaned,
+                    'total_kilo_weaned': sow_performance.total_kilo_weaned,
+                    # Add more fields as needed
+                }
+                sow_perf_data_list.append(sow_perf_data)
+            
+            return JsonResponse({'success': True, 'sow_perf_data_list': sow_perf_data_list})
+        else:
+            return JsonResponse({'success': False, 'error': 'Sow Performance data not found'})
+    except Sow.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Sow not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

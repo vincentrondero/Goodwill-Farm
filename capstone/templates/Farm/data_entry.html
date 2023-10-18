@@ -379,22 +379,33 @@
 
                 <hr class="separator">
     
-                <div class = "d-flex flex-column align-items-end" style="width: 40%;">
-                    <div>
-                        <label for="vaccine" class= "LVaccine">Vaccine:</label>
-                        <input type="text" class= "InVaccine" id="vaccine" name="vaccine"><br><br>
-                    </div>
-                    <div>
-                        <label for="purpose" class= "LPurpose">Purpose:</label>
-                        <input type="text" class= "InPurpose" id="purpose" name="purpose"><br><br>
-                    </div>
-                    <div>
-                        <label for="dosage" class= "LDosage">Dosage:</label>
-                        <input type="text" class= "InDosage" id="dosage" name="dosage"><br><br>
+                    <div class="form-group">
+                        <label for="vaccine" class="LVaccine">Vaccine:</label>
+                        <select class="form-select" id="vaccine" name="vaccine">
+                            <option value="" selected>Select a Vaccine</option>
+                            <option value="MH">MH</option>
+                            <option value="HPS">HPS</option>
+                            <option value="PRRS">PRRS</option>
+                            <option value="PCV">PCV</option>
+                            <option value="HCV1">HCV1</option>
+                            <option value="SIV">SIV</option>
+                            <option value="APP">APP</option>
+                            <option value="HCV2">HCV2</option>
+                            <option value="PRV">PRV</option>
+                        </select>
                     </div>
                     
-                </div>
-                <div class="d-flex justify-content-end">
+                    <div class="form-group">
+                        <label for="purpose" class="LPurpose">Purpose:</label>
+                        <input type="text" class="form-control InPurpose" id="purpose" name="purpose">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dosage" class="LDosage">Dosage(mg):</label>
+                        <input type="text" class="form-control InDosage" id="dosage" name="dosage">
+                    </div>
+                    
+                <div class="d-flex justify-content-end mt-3">
                     <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
                     <input class="shadow custom_button" type="button" id="closeOverlayButton4" value="Cancel" style="border-radius: 20px; width: 120px;">
                 </div>
@@ -424,9 +435,14 @@
                         <input type="text" class= "InFeedsB" id="feedsB" name="feedsB"><br><br>
                     </div>
                     <div>
-                        <label for="feedsR" class= "LFeedsR">Feeds Ration:</label>
-                        <input type="text" class= "InFeedsR" id="feedsR" name="feedsR"><br><br>
-                    </div>
+                        <label for="feedsR" class="LFeedsR">Feeds Ration:</label>
+                        <select class="InFeedsR" id="feedsR" name="feedsR">
+                            <option value="Booster">Booster</option>
+                            <option value="Starter">Starter</option>
+                            <option value="Pre-Starter">Pre-Starter</option>
+                            <option value="Grower">Grower</option>
+                        </select>
+                    </div>                    
                     <div>
                         <label for="cost" class= "LCost">Cost:</label>
                         <input type="text" class= "InCost" id="cost" name="cost"><br><br>

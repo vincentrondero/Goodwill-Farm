@@ -207,7 +207,10 @@
                                 <img src="{% static 'img/three_dots.png' %}" style="height: 24px;" alt="...">
                             </button>
                             <div id="dropdown" class="dropdown" style="display: none;">
-                                {% csrf_token %}   
+                                {% csrf_token %}
+                                <button class="icon-button sow_perf_button" data-sow-id="{{ sow.id }}" data-user-type="{{ user_type }}">
+                                    <img src="{% static 'img/sow_chart.png' %}" style="height: 20px;" alt="Edit Pig">
+                                </button>        
                                 <button class="icon-button edit_sow_button" data-sow-id="{{ sow.id }}" data-user-type="{{ user_type }}">
                                     <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="Edit Pig">
                                 </button>                            
@@ -227,9 +230,14 @@
 
 <!-- Updated HTML for the pig edit overlay -->
 <div id="edit_pig_overlay">
-    <div class="edit-pig-container">
-        <h2>Edit Pig</h2>
-        <form id="edit_pig_form">
+    <div class="edit-pig-container rounded" style="width: 50%;">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                EDIT PIG DETAIL
+            </span>
+        </div>
+        <form class="mt-3" id="edit_pig_form">
             <!-- Editable fields for pig data -->
             <div class="form-group">
                 <label for="edit_pig_id">Pig ID:</label>
@@ -460,13 +468,19 @@
 </div>
 
 <div id="edit_sow_overlay" class="edit-sow-overlay">
-    <div class="edit-sow-container">
-        <h2>Edit Sow Data</h2>
-        <form id="edit_sow_form">
+        <div class="edit-pig-container rounded" style="width: 50%;">
+            <div class="rounded-top" style="background-color: #ff7b7b;">
+                <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+                <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                    EDIT SOW DATA
+                </span>
+            </div>
+        <form id="edit_sow_form" method="post">
+            {% csrf_token %}
             <!-- Editable fields for sow data -->
             <div class="form-group">
                 <label for="edit_sow_id">Sow ID:</label>
-                <input type="text" id="edit_sow_id" name="edit_sow_id" required>
+                <input type="text" id="edit_sow_id" name="edit_sow_id" required value="{{ edit_sow_id }}">
             </div>
             <div class="form-group">
                 <label for="edit_sow_dam">Dam:</label>
@@ -497,7 +511,7 @@
             </div>
             <div class="form-group">    
                 <label for="edit_sow_weight">Weight:</label>
-                <input type="number" id="edit_weight" name="edit_sow_weight" step="0.01">
+                <input type="number" id="edit_sow_weight" name="edit_sow_weight" step="0.01">
             </div>
             <div class="form-group">
                 <label for="edit_sow_remarks">Remarks:</label>
@@ -512,6 +526,21 @@
     </div>
 </div>
 
+
+<div id="sow_perf_overlay" class="sow_perf_overlay">
+    <div class="edit-pig-container rounded" style="width: 50%;">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                SOW PERFORMANCE
+            </span>
+        </div>
+        <div class="sow-performance-data" id="sow_performance_data">
+            <canvas id="myPieChart" style="width:40; height:20;"></canvas>
+        </div>
+        <button id="closeButton">Close</button>
+    </div>
+</div>
 
 
 

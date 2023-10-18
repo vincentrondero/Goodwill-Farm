@@ -437,7 +437,7 @@ $(document).ready(function() {
     });
     
     $(".delete_sow_button").click(function () {
-        var sowId = $(this).data("sow-id");  // Change "pig-id" to "sow-id"
+        var sowId = $(this).data("sow-id"); 
         var user_type = $(this).data("user-type"); 
         var deleteButton = $(this); 
         var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
@@ -463,89 +463,110 @@ $(document).ready(function() {
         }
     });
     // Add an event listener for the sow data edit button
-$(".edit_sow_button").click(function () {
-    var sowId = $(this).data("sow-id");
-    var userType = $(this).data("user-type");
-    console.log("User Type:", userType);
-
-    // Make an AJAX request to fetch the sow data based on the sow ID and user type
-    var updateSowUrl = '/get_sow_data/' + sowId + '/'
-
-    $.ajax({
-        url: updateSowUrl,
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            console.log("Data received from the server:", data);
-            if (data.success) {
-                // Populate the overlay fields with the sow data
-                $("#edit_sow_id").val(data.sow_data.sow_id);
-                $("#edit_sow_dam").val(data.sow_data.dam);
-                $("#edit_sow_dob").val(data.sow_data.dob);
-                $("#edit_sow_sire").val(data.sow_data.sire);
-                $("#edit_sow_pig_class").val(data.sow_data.pig_class);
-                $("#edit_sow_sex").val(data.sow_data.sex);
-                $("#edit_sow_count").val(data.sow_data.count);
-                $("#edit_sow_weight").val(data.sow_data.weight);
-                $("#edit_sow_remarks").val(data.sow_data.remarks);
-
-                // Show the sow data edit overlay
-                $("#edit_sow_overlay").show();
-            } else {
-                alert("Failed to fetch sow data. Please try again.");
+    $(".edit_sow_button").click(function () {
+        var sowId = $(this).data("sow-id");
+        var userType = $(this).data("user-type");
+        console.log("User Type:", userType);
+    
+        // Make an AJAX request to fetch the sow data based on the sow ID and user type
+        var updateSowUrl = '/get_sow_data/' + sowId + '/';
+    
+        $.ajax({
+            url: updateSowUrl,
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log("Data received from the server:", data);
+                if (data.success) {
+                    // Populate the overlay fields with the sow data
+                    $("#edit_sow_id").val(data.sow_data.sow_id);
+                    $("#edit_sow_dam").val(data.sow_data.dam);
+                    $("#edit_sow_dob").val(data.sow_data.dob);
+                    $("#edit_sow_sire").val(data.sow_data.sire);
+                    $("#edit_sow_pig_class").val(data.sow_data.pig_class);
+                    $("#edit_sow_sex").val(data.sow_data.sex);
+                    $("#edit_sow_count").val(data.sow_data.count);
+                    $("#edit_sow_weight").val(data.sow_data.weight);
+                    $("#edit_sow_remarks").val(data.sow_data.remarks);
+                    
+                    // Store the pk for later use in the update
+                    $("#edit_sow_pk").val(data.sow_data.pk);
+                    $("#edit_sow_form").attr("action", '/update_sow_data/' + userType + '/' + sowId + '/');
+                    // Show the sow data edit overlay
+                    $("#edit_sow_overlay").show();
+                } else {
+                    alert("Failed to fetch sow data. Please try again.");
+                }
+            },
+            error: function () {
+                alert("An error occurred while fetching sow data.");
             }
-        },
-        error: function () {
-            alert("An error occurred while fetching sow data.");
-        }
+        });
+        
+        // Event handler to close the overlay when "Cancel" button is clicked
+        $("#cancel-sow-button").click(function () {
+            // Hide the sow data edit overlay when the "Cancel" button is clicked
+            $("#edit_sow_overlay").hide();
+        });
     });
     
-    // Event handler to close the overlay when "Cancel" button is clicked
-    $("#cancel-sow-button").click(function () {
-        // Hide the sow data edit overlay when the "Cancel" button is clicked
-        $("#edit_sow_overlay").hide();
-    });
-});
+    // Add an event listener for the sow data save button
+    $(".save-sow-button").click(function () {
+        // Get the sow data from the overlay fields
 
-// Add an event listener for the sow data save button
-$(".save-sow-button").click(function () {
-    // Get the sow data from the overlay fields
-    var sowId = $("#edit_sow_id").val();
-    var updatedData = {
-        dam: $("#edit_sow_dam").val(),
-        dob: $("#edit_sow_dob").val(),
-        sire: $("#edit_sow_sire").val(),
-        pig_class: $("#edit_sow_pig_class").val(),
-        sex: $("#edit_sow_sex").val(),
-        count: $("#edit_sow_count").val(),
-        weight: $("#edit_sow_weight").val(),
-        remarks: $("#edit_sow_remarks").val(),
-        user_type: userType,
-        // Add more fields as needed
-    };
+    e.preventDefault(); // Prevent the default form submission
 
-    // Make an AJAX request to update the sow data
-    var updateSowUrl = '/update_sow_data/' + sowId + '/' + userType + '/';
+    // Store a reference to the button element that was clicked
+    var clickedButton = $(this);
 
-    $.ajax({
-        url: updateSowUrl,
-        method: 'POST',
-        data: updatedData,
-        dataType: 'json',
-        success: function (data) {
-            if (data.success) {
-                alert("Sow data updated successfully.");
-                // Optionally, hide the sow data edit overlay or perform other actions as needed
-                $("#edit_sow_overlay").hide();
-            } else {
-                alert("Failed to update sow data. Please try again.");
+    // Get sow ID from data attribute
+    var sowId = clickedButton.data("sow-id");
+    var userType = $(this).data("user-type");
+    
+        // Create the updated data including the pk
+        var updatedData = { 
+            pk: sowPk, // Include the primary key
+            sow_id: sowId,
+            dam: $("#edit_sow_dam").val(),
+            dob: $("#edit_sow_dob").val(),
+            sire: $("#edit_sow_sire").val(),
+            pig_class: $("#edit_sow_pig_class").val(),
+            sex: $("#edit_sow_sex").val(),
+            count: $("#edit_sow_count").val(),
+            weight: $("#edit_sow_weight").val(),
+            remarks: $("#edit_sow_remarks").val(),
+            user_type: userType,
+            // Add more fields as needed
+        };
+    
+        // Make an AJAX request to update the sow data
+        var updateSowUrl = '/update_sow_data/' + userType + '/' + sowId + '/';
+    
+        $.ajax({
+            url: updateSowUrl,
+            method: 'POST',
+            data: updatedData,
+            dataType: 'json',
+            // Include the CSRF token in the headers
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+            },
+            success: function (data) {
+                if (data.success) {
+                    alert("Sow data updated successfully.");
+                    // Optionally, hide the sow data edit overlay or perform other actions as needed
+                    $("#edit_sow_overlay").hide();
+                } else {
+                    alert("Failed to update sow data. Please try again.");
+                }
+            },
+            error: function () {
+                alert("An error occurred while updating sow data.");
             }
-        },
-        error: function () {
-            alert("An error occurred while updating sow data.");
-        }
+        });
     });
-});
+    
+
 
 $('#search-input').on('input', function () {
     var searchQuery = $(this).val();
@@ -872,7 +893,7 @@ document.addEventListener("DOMContentLoaded", function () {
               label: function (context) {
                 var label = context.label || '';
                 var value = context.parsed || 0;
-                return label + ': ' + value + '%';
+                return label + ': ' + value.toFixed(2) + '%';
               },
             },
           },
@@ -1008,3 +1029,287 @@ document.addEventListener("DOMContentLoaded", function () {
         },
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    var totalWeanlings = parseInt(document.getElementById("totalWeanlings").textContent);
+    var weanlingsData = JSON.parse(document.getElementById("weanlingsData").textContent);
+    var progressPercentage = (weanlingsData / totalWeanlings) * 100;
+
+    var ctx = document.getElementById('weanlingsProgressBar').getContext('2d');
+
+    var data = {
+        labels: ['Weanlings'],
+        datasets: [{
+            label: 'Progress',
+            data: [progressPercentage],
+            backgroundColor: ['#FF7373'],
+        }],
+    };
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: false,
+            indexAxis: 'y', // Set indexAxis to 'y' for a horizontal progress bar
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 100,
+                    display: false,
+                },
+            },
+           
+        },
+    });
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    var weightsData = JSON.parse(document.getElementById("average_weights").textContent);
+
+    // Initialize arrays to store the months and weights
+    var months = [];
+    var weights = [];
+
+    // Extract the month and average weight data from the JSON
+    for (var key in weightsData) {
+        if (weightsData.hasOwnProperty(key)) {
+            months.push(key);
+            weights.push(weightsData[key]);
+        }
+    }
+
+    // Create an array of all months of the year
+    const allMonths = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    // Initialize an array to store the average weights for each month
+    const formattedWeights = Array(12).fill(0);
+
+    // Map weights to the correct index in the formattedWeights array
+    months.forEach((month) => {
+        const [year, monthIndex] = month.split('-');
+        const index = parseInt(monthIndex, 10) - 1;
+        if (!isNaN(index)) {
+            formattedWeights[index] = weights[months.indexOf(month)];
+        }
+    });
+
+    // Create an array to store the labels for the bar chart
+    const labels = allMonths;
+
+    // Create the bar chart
+    var ctx = document.getElementById('weightBarChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Average Weights(KG)',
+                    data: formattedWeights,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                },
+            ],
+        },
+        options: {
+            scales: {
+                x: {    
+                    title: {
+                        display: true,
+                        text: 'Month',
+                    },
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Average Weight',
+                    },
+                },
+            },
+        },
+    });
+});
+document.addEventListener("DOMContentLoaded", function () {
+    var data = JSON.parse(document.getElementById("quantity_by_ration_data").textContent.replace(/'/g, '"'));
+
+    var rationLabels = Object.keys(data);
+    var quantityData = Object.values(data);
+
+    var ctx = document.getElementById('pieChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: rationLabels,
+            datasets: [{
+                data: quantityData,
+                backgroundColor: [
+                    '#FDE387',
+                    '#659D60',
+                    '#FF7373',
+                    '#127BBE',
+                    // Add more colors if you have more rations
+                ],
+            }],
+        },
+        options: {
+            responsive: true,
+        },
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    var expensesData = JSON.parse(document.getElementById("feed_expenses_dates").textContent);
+    var costsData = JSON.parse(document.getElementById("feed_expenses_costs").textContent);
+
+    var expensesByMonth = {};
+
+    expensesData.forEach(function (date, index) {
+        var monthYear = new Date(date).toLocaleString('default', { month: 'short' }) + ' ' + new Date(date).getFullYear();
+        if (expensesByMonth[monthYear] === undefined) {
+            expensesByMonth[monthYear] = costsData[index];
+        } else {
+            expensesByMonth[monthYear] += costsData[index];
+        }
+    });
+
+    // Create an array with all months of the year
+    const allMonths = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+
+    var months = allMonths.map(function (month) {
+        // Check if the month exists in the data, if not, set the expense to 0
+        var monthYear = month + ' ' + new Date().getFullYear();
+        return expensesByMonth[monthYear] || 0;
+    });
+
+    var ctx = document.getElementById('expensesBarChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: allMonths,
+            datasets: [{
+                label: 'Monthly Expenses (₱)',
+                data: months,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            }],
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Month',
+                    },
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Monthly Expenses (₱)',
+                    },
+                },
+            },
+        },
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Get references to the button and overlay elements
+    var buttons = document.querySelectorAll(".sow_perf_button");
+    var overlay = document.getElementById("sow_perf_overlay");
+    var dataContainer = overlay.querySelector(".sow-performance-data");
+    var closeButton = document.getElementById("closeButton"); // Move closeButton declaration here
+
+    // Add a click event listener to all the buttons
+    buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            // Extract the sow_id from the button's data attribute
+            var sowId = button.getAttribute("data-sow-id");
+
+            // AJAX request to fetch sow performance data
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/get_sow_performance_data/" + sowId + "/");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        var sowData = response.sow_perf_data_list; // Use the correct key
+
+                        // Check for an empty response (no data found)
+                        if (response.success && sowData && sowData.length > 0) {
+                            // Clear the "No data found" message
+                            dataContainer.innerHTML = "";
+
+                            // Create HTML content for sow performance data
+                            var htmlContent = "";
+                            sowData.forEach(function (sow) {
+                                htmlContent += "Pig ID: " + sow.id + "<br><br>";
+                                // Add more fields as needed
+                            });
+
+                            dataContainer.innerHTML = htmlContent;
+
+                            // Create the pie chart
+                            var chartCanvas = document.createElement('canvas');
+                            chartCanvas.id = 'myPieChart';
+                            dataContainer.appendChild(chartCanvas);
+
+                            var combinedData = {
+                                alive: 0,
+                                mk: 0,
+                                sb: 0,
+                                mffd: 0
+                            };
+
+                            sowData.forEach(function (sow) {
+                                combinedData.alive += sow.alive;
+                                combinedData.mk += sow.mk;
+                                combinedData.sb += sow.sb;
+                                combinedData.mffd += sow.mffd;
+                            });
+
+                            var pieChart = new Chart(document.getElementById('myPieChart'), {
+                                type: 'pie',
+                                data: {
+                                    labels: ['Alive', 'MK', 'SB', 'Mffd'],
+                                    datasets: [{
+                                        data: [combinedData.alive, combinedData.mk, combinedData.sb, combinedData.mffd],
+                                        backgroundColor: ['#FDE387', '#659D60', '#FF7373', '#127BBE'],
+                                    }]
+                                },
+                            });
+                        } else {
+                            dataContainer.innerHTML = "No sow performance data found.";
+                        }
+                    } else {
+                        console.log("Error: Failed to fetch data. Status code: " + xhr.status);
+                        // Display "No sow performance data found" in the HTML when there's an error
+                        dataContainer.innerHTML = "No sow performance data found.";
+                    }
+
+                    // Show the overlay
+                    overlay.style.display = "block";
+                }
+            };
+            xhr.send();
+        });
+    });
+
+    // Add a click event listener to the close button
+    closeButton.addEventListener("click", function () {
+  
+        overlay.style.display = "none";
+    });
+});
+

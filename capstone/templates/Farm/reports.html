@@ -11,8 +11,34 @@
 <div id="saleMonths" style="display: none;">{{ sale_months|safe }}</div>
 <div id="mortalityData" style="display: none;">{{ mortality_counts|safe }}</div>
 <div id="mortalityDates" style="display: none;">{{ mortality_dates|safe }}</div>
+<div id="totalWeanlings" style="display: none;">{{ weanlings_count|safe|default:"[]" }}</div>
+<div id="weanlingsData" style="display: none;">{{ unique_weanling_ids|safe|default:"[]" }}</div>
+<div id="average_weights" style="display: none;">{{ average_weights |safe|default:"[]" }}</div>
+<div id="quantity_by_ration_data"style="display: none;">{{ result| safe }}</div>
+<div id="quantity_by_ration_data"style="display: none;">{{ stock_prescriptions| safe }}</div>
+<div id="feed_expenses_dates">{{ feed_expenses_dates|safe }}</div>
+<div id="feed_expenses_costs">{{ feed_expenses_costs|safe }}</div>
 
 
+<div class="row mb-5 ms-5">
+    <div class="col-auto">
+        <div class="graph-container" style="height: 100%; width: 100%; margin-top: 2%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
+            <div class="rounded-top" style="background-color: #ff7b7b;">
+                <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 5%;">
+                <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                    FeedStock
+                </span>
+            </div>
+            <canvas id="pieChart" width="10%" height="10%"></canvas>
+            <p>Prescription:</p>
+                <ul>
+                {% for prescription in stock_prescriptions %}
+                    <li>{{ prescription }}</li>
+                {% endfor %}
+                </ul>
+        </div>
+    </div>
+</div>
 <div class="row mb-5 ms-5">
     <div class="col-auto">
         <div class="graph-container" style="height: 100%; width: 100%; margin-top: 2%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
@@ -25,8 +51,10 @@
             <canvas id="vaccinationProgress" width="700%" height="150%"  style="margin:2%;"></canvas>
         </div>
     </div>
-    <div class="col-auto ms-3">
-        <div class="graph-container" style="height: 130%; width: 100%; margin-top: 2%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
+</div>
+<div class="row mb-5 ms-5">
+    <div class="col-auto">
+        <div class="graph-container" style="height: 100%; width: 100%; margin-top: 2%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
             <div class="rounded-top" style="background-color: #ff7b7b;">
                 <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 5%;">
                 <span class="mx-3 pt-2 fs-5 text-white fw-bold">
@@ -37,6 +65,7 @@
         </div>
     </div>
 </div>
+
 <div class="row ms-5 mb-auto">
     <div class="col-auto">
         <div class="graph-container" style="height: 100%; width: 100%; margin-top:10%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
@@ -52,15 +81,73 @@
     <div class="col-auto">
         <div class="graph-container" style="height: 100%; width: 100%; margin-top:10%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
             <div class="rounded-top" style="background-color: #ff7b7b;">
-                <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 5%;">
+                <img src="{% static 'img/mortality_icon.png' %}" class="ms-2" style="width: 3%;">
                 <span class="mx-3 pt-2 fs-5 text-white fw-bold">
-                    Monthly Registration Count
+                    Monthly Mortality
                 </span>
             </div>
             <canvas id="mortalityAreaChart" width="710%" height="150%"></canvas>
+            <div class="px-3 py-3">
+                <!-- Display the monthly mortality analysis here -->
+                <p>Average Monthly Mortality Count: {{ mortality_rate|floatformat:"2" }}%</p>
+                <p>This month ({{ current_year_month }}): {{ average_monthly_mortality_rate|floatformat:"2" }}%</p>
+                <p>Prescription: {{ prescription }}</p>
+                <p>Top Causes of Mortality:</p>
+                <ul>
+                    {% for cause in top_mortality_causes %}
+                        <li>{{ cause.cause }}: {{ cause.count }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div class="row mb-5 ms-5">
+    <div class="col-auto">
+        <div class="graph-container" style="height: 100%; width: 100%; margin-top: 2%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
+            <div class="rounded-top" style="background-color: #ff7b7b;">
+                <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 5%;">
+                <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                    Vaccination Rate
+                </span>
+            </div>
+            <canvas id="weightBarChart" width="700%" height="150%"></canvas>
         </div>
     </div>
 </div>
 
 
+<div class="graph-containe col-auto">
+    <div class="graph-container" style="height: 10%; width: 100%; margin-top: 10%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
+        <!-- Include the feed prescription here -->
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                Feed Prescription
+            </span>
+        </div>
+        <div class="px-3 py-3">
+            <p>Total Pig Count: {{ total_pigs_for_feeds}}</p>
+            <p>Total Feed Needed: {{ total_feed_needed_formatted }} kilos</p>
+        </div>
+    </div>
+</div>
+<div class="col-auto">
+    <div class="graph-container" style="height: 100%; width: 100%; margin-top:10%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);">
+        <div class="rounded-top" style="background-color: #ff7b7b;">
+            <img src="{% static 'img/mortality_icon.png' %}" class="ms-2" style="width: 3%;">
+            <span class="mx-3 pt-2 fs-5 text-white fw-bold">
+                Monthly Mortality
+            </span>
+        </div>
+        <canvas id="weanlingsProgressBar" width="400" height="100"></canvas>
+        <div class="px-3 py-3">
+            <!-- Display the monthly mortality analysis here -->
+            <p>Prescription: {{ weanlings_prescription }}</p>
+        </div>
+    </div>
+</div>
+<canvas id="expensesBarChart" width="400" height="200"></canvas>
 {% endblock %}
