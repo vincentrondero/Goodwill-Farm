@@ -1225,6 +1225,118 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Get the values from the Django template
+    var vaccineCountsDict = JSON.parse(document.getElementById("vaccine_counts_dict").textContent);
+    var totalPigs = parseInt(document.getElementById("totalPigs").textContent);
+
+    // Calculate the percentages for each vaccine count
+    var percentages = {};
+    for (var key in vaccineCountsDict) {
+        percentages[key] = ((vaccineCountsDict[key] / totalPigs) * 100).toFixed(2);
+    }
+
+    // Separate the vaccine names and percentage counts into arrays
+    var vaccineNames = Object.keys(percentages);
+    var percentageCounts = Object.values(percentages);
+
+    // Define an array of colors
+    var colors = ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'];
+    // Add more colors as needed
+
+    // Create the labels for the bar chart (vaccine names)
+    var labels = vaccineNames;
+
+    // Create the bar chart
+    var ctx = document.getElementById('vaccine_counts_chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Percentage of Vaccinated Pigs',
+                data: percentageCounts,
+                backgroundColor: colors, 
+                borderColor: colors, 
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Percentage (%)'
+                    },
+                    suggestedMin: 0, // Set the minimum value for the x-axis
+                    suggestedMax: 100, // Set the maximum value for the x-axis
+                },
+                y: {
+                    beginAtZero: true,
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return context.dataset.label + ' ' + context.parsed.x + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Get the values from the Django template
+    var unvaccinatedCountsDict = JSON.parse(document.getElementById("unvaccinated_counts").textContent);
+    var vaccineNeededDict = JSON.parse(document.getElementById("vaccine_needed").textContent);
+
+    // Extract data from dictionaries
+    var unvaccinatedCounts = Object.values(unvaccinatedCountsDict);
+    var vaccineNeededCounts = Object.values(vaccineNeededDict);
+    var labels = Object.keys(unvaccinatedCountsDict); 
+
+    // Create the bar chart
+    var ctx = document.getElementById('vaccine_needed_bar_chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Unvaccinated Counts',
+                    data: unvaccinatedCounts,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Vaccine Needed',
+                    data: vaccineNeededCounts,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
     // Get references to the button and overlay elements
     var buttons = document.querySelectorAll(".sow_perf_button");
     var overlay = document.getElementById("sow_perf_overlay");
@@ -1236,7 +1348,7 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener("click", function () {
             // Extract the sow_id from the button's data attribute
             var sowId = button.getAttribute("data-sow-id");
-
+            console.log(sowId);
             // AJAX request to fetch sow performance data
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "/get_sow_performance_data/" + sowId + "/");
@@ -1251,13 +1363,11 @@ document.addEventListener("DOMContentLoaded", function () {
                             // Clear the "No data found" message
                             dataContainer.innerHTML = "";
 
-                            // Create HTML content for sow performance data
-                            var htmlContent = "";
-                            sowData.forEach(function (sow) {
-                                htmlContent += "Pig ID: " + sow.id + "<br><br>";
-                                // Add more fields as needed
-                            });
+                            // Extract pig_id from the first sow performance
+                            var pigId = sowData[0].pig_id;
 
+                            // Create HTML content for sow performance data
+                            var htmlContent = "Pig ID: " + pigId + "<br><br>";
                             dataContainer.innerHTML = htmlContent;
 
                             // Create the pie chart
@@ -1308,8 +1418,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Add a click event listener to the close button
     closeButton.addEventListener("click", function () {
-  
         overlay.style.display = "none";
     });
 });
-

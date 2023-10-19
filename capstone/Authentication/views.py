@@ -222,6 +222,22 @@ def reports(request, user_type):
     # Calculate the percentage of vaccinated pigs
     total_pigs = len(pig_data)
     percentage_vaccinated = (vaccinated_pigs / total_pigs) * 100
+    vaccine_counts = Vaccine.objects.values('vaccine').annotate(count=Count('pig_id', distinct=True))
+    all_vaccine_options = ["MH", "HPS", "PRRS", "PCV", "HCV1", "SIV", "APP", "HCV2", "PRV"]
+    vaccinated_per_vaccine_counts = Vaccine.objects.values('vaccine').annotate(count=Count('pig_id', distinct=True))
+    vaccine_counts_dict = {option: 0 for option in all_vaccine_options}
+    vaccine_needed = {}
+
+    for entry in vaccinated_per_vaccine_counts:
+        vaccine_counts_dict[entry['vaccine']] = entry['count']
+
+    for option in all_vaccine_options:
+        vaccinated_pigs_for_need = vaccine_counts_dict.get(option, 0)
+        vaccine_needed[option] = total_pigs - vaccinated_pigs_for_need
+
+    
+    # Update counts based on available data
+    unvaccinated_counts = {option: total_pigs - count for option, count in vaccine_counts_dict.items()}
 
     # Separate the dictionaries into lists for months and counts
     months, counts = zip(*monthly_counts.items())
@@ -283,15 +299,16 @@ def reports(request, user_type):
 
     for ration, difference in below_threshold_rations.items():
         if difference <= 0:
-            prescription = f"Warning! You have {difference} sacks of {ration} feeds.Order now!"
+            feeds_prescription = f"Warning! You have {difference} sacks of {ration} feeds.Order now!"
         else:
-            prescription = f"Warning! You have {difference} remaining sacks of {ration} feeds, Consider ordering."
+            feeds_prescription = f"Warning! You have {difference} remaining sacks of {ration} feeds, Consider ordering."
 
-        stock_prescriptions.append(prescription)
+        stock_prescriptions.append(feeds_prescription)
     
     feed_expenses = FeedsInventory.objects.values('date').annotate(total_cost=Sum('cost'))
     dates = [item['date'].strftime('%Y-%m-%d') for item in feed_expenses]
     total_costs = [float(item['total_cost']) for item in feed_expenses]
+
 
     context = {
         "user_type": user_type,
@@ -320,6 +337,9 @@ def reports(request, user_type):
         "stock_prescriptions":stock_prescriptions, 
         "feed_expenses_dates": json.dumps(dates),
         "feed_expenses_costs": json.dumps(total_costs),
+        'vaccine_needed': json.dumps(vaccine_needed),
+        "vaccine_counts_dict":json.dumps(vaccine_counts_dict),
+        "unvaccinated_counts": json.dumps(unvaccinated_counts),
 
     }
 
@@ -1023,6 +1043,7 @@ def get_sow_performance_data(request, pig_id):
             for sow_performance in sow_performances:
                 sow_perf_data = {
                     'id': sow_performance.id,
+                    'pig_id': sow.pig_id, 
                     'dam': sow_performance.dam,
                     'dob': sow_performance.dob,
                     'sire': sow_performance.sire,
