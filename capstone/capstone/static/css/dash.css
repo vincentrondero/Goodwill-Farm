@@ -566,3 +566,49 @@ button.success-button {
     z-index: 1000; 
     box-shadow: 2px #659D60;
 }
+
+.archive-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+}
+
+.archive-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.archive-buttons {
+    margin-top: 20px;
+}
+
+
+.menu_button {
+    background-color: transparent;
+    color: #ff7b7b;
+    border: 2px solid #ff7b7b;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.menu_button:hover {
+    background-color: #ff7b7b;
+    color: #fff;
+}
+
+.menu_button:active {
+    color: #ff7b7b;
+    background-color: #fff;
+}

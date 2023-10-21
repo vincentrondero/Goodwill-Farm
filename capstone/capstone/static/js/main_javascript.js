@@ -859,7 +859,83 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    // Get the overlay and buttons
+    var archiveOverlay = document.getElementById("archive-overlay");
+    var confirmButton = document.getElementById("confirm-archive");
+    var cancelButton = document.getElementById("cancel-archive");
 
+    // Get the archive_user buttons
+    var archiveUserButtons = document.querySelectorAll(".archive_user");
+
+    // Variable to store the user ID for archiving
+    var userIdToArchive = null;
+
+    // Function to send an AJAX request to update the user status
+    // Function to send an AJAX request to archive the user
+function archiveUser() {
+    // Check if a user ID is set
+    if (userIdToArchive) {
+        // Send an AJAX request to archive the user
+        fetch("/archive_user/" + userIdToArchive + "/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"), // Ensure you have a function to get the CSRF token
+                "Content-Type": "application/json",
+            },
+        })
+            .then(function (response) {
+                if (response.status === 200) {
+                    // Successfully archived, hide the overlay
+                    archiveOverlay.style.display = "none";
+                }
+            })
+            .catch(function (error) {
+                console.error("Error archiving user: " + error);
+            });
+    }
+}
+    // Add a click event listener to each archive_user button
+    archiveUserButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            // Get the user ID from the button's data attribute
+            userIdToArchive = button.getAttribute("data-user-id");
+
+            // Display the confirmation overlay
+            archiveOverlay.style.display = "block";
+        });
+    });
+
+    // Handle the "OK" button click
+    confirmButton.addEventListener("click", function () {
+        // Perform the archive action (send AJAX request)
+        archiveUser();
+    });
+
+    // Handle the "Cancel" button click
+    cancelButton.addEventListener("click", function () {
+        // Hide the overlay without archiving
+        archiveOverlay.style.display = "none";
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    var showSowButton = document.getElementById("showSowButton");
+    var showPigsButton = document.getElementById("showPigsButton");
+    var sowSection = document.getElementById("sowSection");
+    var pigsSection = document.getElementById("pigsSection");
+
+    // Add event listeners for the buttons
+    showSowButton.addEventListener("click", function () {
+        sowSection.style.display = "block";
+        pigsSection.style.display = "none";
+    });
+
+    showPigsButton.addEventListener("click", function () {
+        sowSection.style.display = "none";
+        pigsSection.style.display = "block";
+    });
+});
 
 document.addEventListener("DOMContentLoaded", function () {
     var totalPigs = parseInt(document.getElementById("totalPigs").textContent);
@@ -1308,13 +1384,6 @@ document.addEventListener("DOMContentLoaded", function () {
             labels: labels,
             datasets: [
                 {
-                    label: 'Unvaccinated Counts',
-                    data: unvaccinatedCounts,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                },
-                {
                     label: 'Vaccine Needed',
                     data: vaccineNeededCounts,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -1420,4 +1489,43 @@ document.addEventListener("DOMContentLoaded", function () {
     closeButton.addEventListener("click", function () {
         overlay.style.display = "none";
     });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    var pigSalesButton = document.getElementById("showPigSalesButton");
+    var vaccinationButton = document.getElementById("showVaccinationButton");
+    var feedsButton = document.getElementById("showFeedsButton");
+    var mortalityButton = document.getElementById("showMortalityButton");
+
+    var pigSalesSection = document.getElementById("pigSalesSection");
+    var vaccinationSection = document.getElementById("vaccinationSection");
+    var feedsSection = document.getElementById("feedsSection");
+    var mortalitySection = document.getElementById("mortalitySection");
+
+    pigSalesButton.addEventListener("click", function () {
+        showContent(pigSalesSection);
+    });
+
+    vaccinationButton.addEventListener("click", function () {
+        showContent(vaccinationSection);
+    });
+
+    feedsButton.addEventListener("click", function () {
+        showContent(feedsSection);
+    });
+
+    mortalityButton.addEventListener("click", function () {
+        showContent(mortalitySection);
+    });
+
+    function showContent(section) {
+        // Hide all sections
+        pigSalesSection.style.display = "none";
+        vaccinationSection.style.display = "none";
+        feedsSection.style.display = "none";
+        mortalitySection.style.display = "none";
+
+        // Show the selected section
+        section.style.display = "block";
+    }
 });

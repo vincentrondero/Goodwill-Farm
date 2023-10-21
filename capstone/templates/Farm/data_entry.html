@@ -100,7 +100,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="date" class="form-label">Date:</label>
-                        <input type="date" class="form-control" id="date" name="date">
+                        <input type="date" class="form-control" id="date" name="date" value="{{ date.today|date:'Y-m-d' }}">
                     </div>
                 <div class="d-flex justify-content-end">
                     <input class="shadow  custom_button" type="submit" value="Save" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">
@@ -194,15 +194,15 @@
                     <div class="col">
                         <div class="col-md-4">
                             <label for="bred">Date Bred:</label>
-                            <input type="text" class="form-control" id="bred" name="bred">
+                            <input type="date" class="form-control" id="bred" name="bred">
                         </div>
                         <div class="col-md-4">
                             <label for="due">Date Due:</label>
-                            <input type="text" class="form-control" id="due" name="due">
+                            <input type="date" class="form-control" id="due" name="due">
                         </div>
                         <div class="col-md-4">
                             <label for="farr">Date Farr:</label>
-                            <input type="text" class="form-control" id="farr" name="farr">
+                            <input type="date" class="form-control" id="farr" name="farr">
                         </div>
                     </div>
                 </div>
@@ -242,7 +242,7 @@
             <div class="col">
                 <div class="col g-2">
                     <label for="dateW">Date Weaned:</label>
-                    <input type="text" class="form-control" id="dateW" name="dateW">
+                    <input type="date" class="form-control" id="dateW" name="dateW">
                 </div>
                 
                 <div class="col g-2">
@@ -301,7 +301,7 @@
                     </div>
                     <div class="col-4 mt-4" style="transform: translateY(10%);">
                         <label for="date" class= "LDate">Date:</label>
-                        <input type="date" class= "InDate" id="date" name="date"><br><br>
+                        <input type="date" class= "InDate" id="date" name="date" value="{{ date.today|date:'Y-m-d' }}"><br><br>
                     </div>
                 </div>
 
@@ -372,7 +372,7 @@
                     </div>
                     <div class="col" style="transform: translateY(32%);">
                         <label for="date" class= "LDate">Date:</label>
-                        <input type="date" class= "InDate" id="date" name="date"><br>
+                        <input type="date" class= "InDate" id="date" name="date" value="{{ date.today|date:'Y-m-d' }}"><br>
                     </div>
                 </div>
                 
@@ -462,7 +462,7 @@
                     </div>
                     <div>
                         <label for="date" class= "LDate">Date:</label>
-                        <input type="date" class= "InDate" id="date" name="date"><br><br>
+                        <input type="date" class= "InDate" id="date" name="date" value="{{ date.today|date:'Y-m-d' }}"><br><br>
                     </div>
                 </div>
     
@@ -503,7 +503,7 @@
                     </div>
                     <div class="col" style="transform: translateY(35%);">
                         <label for="date" class="LDate">Date:</label>
-                        <input type="date" class="InDate" id="date" name="date"><br>
+                        <input type="date" class="InDate" id="date" name="date" value="{{ date.today|date:'Y-m-d' }}"><br>
                     </div>
                 </div>
                 <div class="d-flex flex-column align-items-end" style="width: 40%;">
@@ -513,8 +513,15 @@
                     </div>
                     <div>
                         <label for="cause" class="LCause">Cause:</label>
-                        <input type="text" class="InCause" id="cause" name="cause"><br><br>
-                    </div>
+                        <select class="form-select" id="cause" name="cause">
+                            <option value="Heat Stress">Heat Stress</option>
+                            <option value="Injuries">Injuries</option>
+                            <option value="Congenital Abnormalities">Congenital Abnormalities</option>
+                            <option value="Pneumonia">Pneumonia</option>
+                            <option value="Eating Disorder">Eating Disorder</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>                    
                     <div>
                         <label for="location" class="LLocation">Location:</label>
                         <input type="text" class="InLocation" id="location" name="location"><br><br>

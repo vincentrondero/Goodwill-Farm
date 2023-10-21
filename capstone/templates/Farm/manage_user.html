@@ -67,9 +67,8 @@
         </div>
     </div>
 </div>
-
 <div class="col" style="height: 16rem;">
-    <div class="row gap-4">
+    <div class="row gap-4" style="display: flex;">
         <div style="width: 22rem; margin-left: 1%; background-color: #F7D355;">
             <div class="card-body card-font">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -77,10 +76,23 @@
                         <img src="{% static 'img/user_profile.png' %}" style="height: 120px;" alt="...">
                     </div>
                     <div>
-                        <span style="font-size: 90px; color: #FFFF;">{{ users_count }}</span> <!-- Display the count here -->
+                        <span style="font-size: 90px; color: #FFFF;">{{ users_count }}</span>
                     </div>
                 </div>
-                <p class="px-3" style="text-align:left; color: #FFFF; font-size: 24px;"> Users</p>
+                <p class="px-3" style="text-align:left; color: #FFFF; font-size: 24px;"> Active Users</p>
+            </div>
+        </div>
+        <div style="width: 22rem; margin-left: 1%; background-color: #F7D355;">
+            <div class="card-body card-font">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <img src="{% static 'img/user_profile.png' %}" style="height: 120px;" alt="...">
+                    </div>
+                    <div>
+                        <span style="font-size: 90px; color: #FFFF;">{{ users__in_archive_count }}</span>
+                    </div>
+                </div>
+                <p class="px-3" style="text-align:left; color: #FFFF; font-size: 24px;"> Archive Users</p>
             </div>
         </div>
     </div>
@@ -88,10 +100,10 @@
 
 
 
-
+<div>Active User</div>
 <div class="row py-3">
     <table style="border-collapse: collapse; margin-left: 1%; width: 98%;">
-        <tr id="table_header" style="background-color: #FF7373; color: white;">
+        <tr class="table_header" style="background-color: #FF7373; color: white;">
             <th>Name</th>
             <th>Name</th>
             <th>User Name</th>
@@ -100,7 +112,7 @@
             <th>Action</th>
         </tr>
         {% for user in users %}
-        <tr id="table_content" style="background-color:#FDF0F0">
+        <tr class="table_content" style="background-color:#FDF0F0">
             <td style="padding-left: 10px;">{{ user.firstname }}</td>
             <td style="padding-left: 10px;">{{ user.lastname }}</td>
             <td style="padding-left: 10px;">{{ user.username }}</td>
@@ -111,7 +123,45 @@
                 <button class="icon-button edit_button" data-user-id="{{ user.pk }}">
                     <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
                 </button>
-                <button class="icon-button delete_button" data-user-id="{{ user.id }}" data-user-type="{{ user_type }}">
+                <button class="icon-button archive_user" data-user-id="{{ user.pk }}">
+                    <img src="{% static 'img/archive_icon.png' %}" style="height: 24px;" alt="...">
+                </button>
+                <button class="icon-button delete_button" data-user-id="{{ user.id }}" data-user-type="{{ user_type }}" style="display:none;">
+                    <img src="{% static 'img/trash_can.png' %}" style="height: 24px;" alt="...">
+                </button>              
+            </td>                    
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div>Archive User</div>
+<div class="row py-3">
+    <table style="border-collapse: collapse; margin-left: 1%; width: 98%;">
+        <tr class="table_header" style="background-color: #FF7373; color: white;">
+            <th>Name</th>
+            <th>Name</th>
+            <th>User Name</th>
+            <th>Role</th>
+            <th>Date Added</th>
+            <th>Action</th>
+        </tr>
+        {% for user in users_in_archive %}
+        <tr class="table_content" style="background-color:#FDF0F0">
+            <td style="padding-left: 10px;">{{ user.firstname }}</td>
+            <td style="padding-left: 10px;">{{ user.lastname }}</td>
+            <td style="padding-left: 10px;">{{ user.username }}</td>
+            <td style="padding-left: 10px;">{{ user.role }}</td>
+            <td style="padding-left: 10px;">{{ user.date }}</td>
+            <td>
+                {% csrf_token %}
+                <button class="icon-button edit_button" data-user-id="{{ user.pk }}">
+                    <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
+                </button>
+                <button class="icon-button archive_user" data-user-id="{{ user.pk }}">
+                    <img src="{% static 'img/archive_icon.png' %}" style="height: 24px;" alt="...">
+                </button>
+                <button class="icon-button delete_button" data-user-id="{{ user.id }}" data-user-type="{{ user_type }}" style="display:none;">
                     <img src="{% static 'img/trash_can.png' %}" style="height: 24px;" alt="...">
                 </button>              
             </td>                    
@@ -168,6 +218,16 @@
         </form>
     </div>
 </div>
+</div>
+
+<div class="archive-overlay" id="archive-overlay">
+    <div class="archive-popup">
+        <p>Are you sure you want to archive this user?</p>
+        <div class="archive-buttons">
+            <button id="confirm-archive" class="shadow save-button custom_button" style="border-radius: 20px; width: 120px; background-color: #ff7b7b; color: #FFFFFF;">OK</button>
+            <button id="cancel-archive" class="shadow custom_button cancel-button" style="border-radius: 20px; width: 120px;">Cancel</button>
+        </div>
+    </div>
 </div>
 
 
