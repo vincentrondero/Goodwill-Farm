@@ -14,9 +14,13 @@
     </form>   
 </div>
 <div id="search-results" style="background-color: #FFFFFF;display: none; height: 200px; width: 10%; overflow-y: auto; position: absolute; right: 8%; top:12%; z-index:3000;"></div>
-<div>
-    <button id="showSowButton" class="menu_button">Show Sow</button>
-    <button id="showPigsButton" class="menu_button">Show Pigs</button>
+<div class="row d-flex">
+    <div class="col">
+        <button id="showPigsButton" class="menu_button" style="width: 100%;">Show Pigs</button>
+    </div>
+    <div class="col">
+        <button id="showSowButton" class="menu_button" style="width: 100%;;">Show Sow</button>
+    </div>
 </div>
 
 <div id="sowSection" style="display: none;">
@@ -561,14 +565,13 @@
         </div>
         <div class="sow-performance-data" id="sow_performance_data" style="height: 20%">
             {{ sow_perf_data.sow_no }}
-            <canvas id="myPieChart" height="50%"></canvas>
+            <canvas id="myPieChart" width="400" height="400"></canvas>
+            <canvas id="myLineChart" width="400" height="400"></canvas>
         </div>
         <div class="d-flex justify-content-end">
             <input class="shadow custom_button" type="button" id="closeButton" value="Close" style="border-radius: 20px; width: 120px; transform: translateY(-15%);">
         </div>
     </div>
 </div>
-
-
 
 {% endblock %}

@@ -3,17 +3,17 @@
 {% block content %}
 <div>Reports</div>
 
-<div id="months" style="display: none;">{{ months|safe }}</div>
-<div id="counts" style="display: none;">{{ counts|safe|default:"[]" }}</div>
+<div id="months"  style="display: none;">{{ months|safe }}</div>
+<div id="counts"  style="display: none;">{{ counts|safe|default:"[]" }}</div>
 <div id="totalPigs" style="display: none;">{{ total_pigs }}</div>
 <div id="vaccinatedPigs" style="display: none;">{{ vaccinated_pigs }}</div>
 <div id="salesData" style="display: none;">{{ sale_counts|safe }}</div>
-<div id="saleMonths" style="display: none;">{{ sale_months|safe }}</div>
+<div id="saleMonths" style="display: none;" >{{ sale_months|safe }}</div>
 <div id="mortalityData" style="display: none;">{{ mortality_counts|safe }}</div>
 <div id="mortalityDates" style="display: none;">{{ mortality_dates|safe }}</div>
 <div id="totalWeanlings" style="display: none;">{{ weanlings_count|safe|default:"[]" }}</div>
 <div id="weanlingsData" style="display: none;">{{ unique_weanling_ids|safe|default:"[]" }}</div>
-<div id="average_weights" style="display: none;">{{ average_weights |safe|default:"[]" }}</div>
+<div id="average_weights"  style="display: none;">{{ average_weights |safe|default:"[]" }}</div>
 <div id="quantity_by_ration_data"style="display: none;">{{ result| safe }}</div>
 <div id="quantity_by_ration_data"style="display: none;">{{ stock_prescriptions| safe }}</div>
 <div id="feed_expenses_dates" style="display: none;">{{ feed_expenses_dates|safe }}</div>
@@ -23,62 +23,97 @@
 <div id="vaccine_needed" style="display: none;">{{ vaccine_needed|safe }}</div>
 
 
-<div>
-    <button id="showPigSalesButton" class="custom_button mx-2">Pig Sales</button>
-    <button id="showVaccinationButton" class="custom_button mx-2">Vaccination</button>
-    <button id="showFeedsButton" class="custom_button mx-2">Feeds</button>
-    <button id="showMortalityButton" class="custom_button mx-2">Mortality</button>
+<div class="d-flex justify-content-around">
+    <button id="showPigSalesButton" class="menu_button mx-2" style="width: 70%;">Pig Sales</button>
+    <button id="showVaccinationButton" class="menu_button mx-2" style="width: 70%;">Vaccination</button>
+    <button id="showFeedsButton" class="menu_button mx-2" style="width: 70%;">Feeds</button>
+    <button id="showMortalityButton" class="menu_button mx-2" style="width: 70%;">Mortality</button>
 </div>
 
 <div id="pigSalesSection">
-    <canvas id="salesLineChart" width="500%" height="230%"></canvas>
-    <canvas id="pigBarChart" width="500%" height="170%"></canvas>
-    <canvas id="weightBarChart" width="400%" height="150%"></canvas>
-    <canvas id="weanlingsProgressBar" width="400" height="100"></canvas>
+    <div class="row mt-5">
+        <div class="col">
+            <select id="selectYear"></select>
+            <canvas id="salesLineChart"></canvas>
+        </div>
+        <div class="col">
+            <select id="selectPigBarYear"></select>
+            <canvas id="pigBarChart" width="500" height="270"></canvas>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <select id="selected_year_for_weight"></select>
+            <canvas id="weightBarChart"></canvas>
+        </div>        
+        <div class="col">
+            <canvas id="weanlingsProgressBar" width="400" height="100"></canvas>
+        </div>
+    </div>
 </div>
 
 <div id="vaccinationSection" style="display: none;">
-    <canvas id="vaccinationProgress" width="700%" height="150%"  style="margin:2%;"></canvas>
-    <canvas id="vaccine_needed_bar_chart" width="400" height="200"></canvas>
-    <canvas id="vaccine_counts_chart" width="40%" height="10%"></canvas>
+    <div class="row mt-3">
+        <div class="col">
+            <canvas id="vaccinationProgress" width="400" height="150"  style="margin:2%;"></canvas>
+        </div>
+        <div class="col">
+            <div class="row">
+                <canvas id="vaccine_needed_bar_chart" width="590" height="330"></canvas>
+            </div>
+            <div class="row">
+                <canvas id="vaccine_counts_chart" width="590" height="330"></canvas>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="feedsSection" style="display: none;">
-
-    <div style="height: 20%">
-        <canvas id="pieChart" width="150%" height="150%"></canvas>
+    <div class="row mt-3">
+        <div class="col">
+            <div>
+                <canvas id="pieChart" width="550" height="250"></canvas>
+            </div>
+        </div>
+        <div class="col">
+            <div class="mt-3 pe-2">
+                <p>Prescription:</p>
+                <ul>
+                    {% for prescription in stock_prescriptions %}
+                    <li>{{ prescription }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="mt-3 pe-2">
-        <p>Prescription:</p>
-        <ul>
-            {% for prescription in stock_prescriptions %}
-            <li>{{ prescription }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-       
-    <span class="mx-3 pt-2 fs-5 text-white fw-bold">
-        Feed Prescription
-    </span>
-
-    <div class="px-3 py-3">
-        <p>Total Suckling Count: {{ pig_list_28_days}}</p>
-        <p>Total Feed Needed: {{ total_feed_suckling_formatted }} kilos</p>
-        <p>Total Weanling Count: {{ pig_list_28_to_88_days}}</p>
-        <p>Total Feed Needed: {{ total_feed_weanling_formatted }} kilos</p>
-        <p>Total Grower Count: {{ pig_list_88_to_148_days}}</p>
-        <p>Total Feed Needed: {{ total_feed_grower_formatted }} kilos</p>
-        <p>Total Pig Count: {{pig_list_greater_than_148_days }}</p>
-        <p>Total Fattener Needed: {{ total_feed_fattener_formatted}} kilos</p>
-    </div>
-    <div style="height: 20%; transform: translateY(-2%)">
-        <canvas id="expensesBarChart" width="500" height="150"></canvas>
+    
+    <div class="row mt-3">
+        <div class="col">
+            <div style="height: 20%; transform: translateY(-2%)">
+                <canvas id="expensesBarChart" width="500" height="150"></canvas>
+            </div>
+        </div>
+        <div class="col">
+            <span class="mx-3 pt-2 fs-5 fw-bold">
+                Feed Prescription
+            </span>
+            <div class="px-3 py-3">
+                <p>Total Suckling Count: {{ pig_list_28_days}}</p>
+                <p>Total Feed Needed: {{ total_feed_suckling_formatted }} kilos</p>
+                <p>Total Weanling Count: {{ pig_list_28_to_88_days}}</p>
+                <p>Total Feed Needed: {{ total_feed_weanling_formatted }} kilos</p>
+                <p>Total Grower Count: {{ pig_list_88_to_148_days}}</p>
+                <p>Total Feed Needed: {{ total_feed_grower_formatted }} kilos</p>
+                <p>Total Pig Count: {{pig_list_greater_than_148_days }}</p>
+                <p>Total Fattener Needed: {{ total_feed_fattener_formatted}} kilos</p>
+            </div>
+        </div>
     </div>
 </div>
 
 
 <div id="mortalitySection" style="display: none;">
-    <div class="col-4">
+    <div class="col-4 mt-5">
         <div class="graph-container" style="height: 93%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); overflow: scroll;">
             <div class="rounded-top" style="background-color: #ff7b7b;">
                 <img src="{% static 'img/mortality_icon.png' %}" class="ms-2" style="width: 3%;">

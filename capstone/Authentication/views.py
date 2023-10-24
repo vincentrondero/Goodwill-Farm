@@ -21,6 +21,7 @@ from datetime import date as today_date, timedelta
 from django.db.models.functions import ExtractDay
 from django.db.models import Sum, F
 from django.utils import timezone
+import pandas as pd
 
 
 def add_pigs(request, user_type):
@@ -200,14 +201,14 @@ def reports(request, user_type):
 
     pig_sales_data = PigSale.objects.values('date__year', 'date__month').annotate(average_weight=Avg('weight'))
     average_weights = {f"{data['date__year']}-{data['date__month']}": float(data['average_weight']) for data in pig_sales_data}
-    mortality_data = MortalityForm.objects.all()
 
     monthly_mortality_counts = defaultdict(int)
     top_mortality_causes = []
+    mortality_data = MortalityForm.objects.all()
 
     for mortality in mortality_data:
-        mortality_date = mortality.date  # Adjust this to your actual field name
-        year_month_day = mortality_date.strftime("%Y-%m")
+        mortality_date = mortality.date
+        year_month = mortality_date.strftime("%Y-%m")
         monthly_mortality_counts[year_month] += 1
         top_mortality_causes.append(mortality.cause)
 

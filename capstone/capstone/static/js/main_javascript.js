@@ -614,65 +614,6 @@ $('#search-input').on('input', function () {
 });
 
 
-   // Parse the months and counts data
-const monthsData = JSON.parse(document.getElementById("months").textContent);
-const countsData = JSON.parse(document.getElementById("counts").textContent);
-
-// Create an array of all months of the year
-const allMonths = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-];
-
-// Initialize an array to store the counts for each month
-const counts = Array(12).fill(0); // Initialize with zeros for all months
-
-// Fill in the counts based on the data you have
-monthsData.forEach((monthYear, index) => {
-  const [year, month] = monthYear.split('-'); // Split the "YYYY-MM" format
-  const monthIndex = parseInt(month, 10) - 1; // Adjust for 0-based indexing
-  if (!isNaN(monthIndex)) {
-    counts[monthIndex] = countsData[index];
-  }
-});
-
-console.log("Counts:", counts);
-
-// Create a bar chart using the data
-const ctx = document.getElementById("pigBarChart").getContext("2d");
-new Chart(ctx, {
-  type: "bar",
-  data: {
-    labels: allMonths,
-    datasets: [
-      {
-        label: "Pig Registration Count",
-        data: counts,
-        backgroundColor: "#FF7373",
-        borderColor: "#FF7373   ",
-        borderWidth: 1,
-      },
-    ],
-  },
-  options: {
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Month",
-        },
-      },
-      y: {
-        beginAtZero: true,
-        title: {
-          display: false,
-          text: "Count",
-        },
-      },
-    },
-  },
-});
-
 
 });
     
@@ -983,63 +924,119 @@ document.addEventListener("DOMContentLoaded", function () {
   document.addEventListener("DOMContentLoaded", function () {
     var saleMonthsData = JSON.parse(document.getElementById("saleMonths").textContent);
     var saleCountsData = JSON.parse(document.getElementById("salesData").textContent);
-  
-    // Create an array of all months of the year
-    const allMonths = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
-  
-    // Initialize an array to store the counts for each month
-    const counts = Array(12).fill(0);
-  
-    // Map sale months to the correct index in the counts array
-    saleMonthsData.forEach((monthYear, index) => {
-      const [year, month] = monthYear.split('-');
-      const monthIndex = parseInt(month, 10) - 1;
-      if (!isNaN(monthIndex)) {
-        counts[monthIndex] = saleCountsData[index];
-      }
+
+    // Create a year selection dropdown
+    var selectYear = document.getElementById("selectYear");
+
+    // Create an array to store unique years from the data
+    var years = [...new Set(saleMonthsData.map(monthYear => monthYear.split("-")[0]))];
+
+    // Add the "All Years" option
+    years.unshift("All Years");
+
+    // Populate the dropdown with the year options
+    years.forEach(function (year) {
+        var option = document.createElement("option");
+        option.value = year;
+        option.text = year;
+        selectYear.appendChild(option);
     });
-  
-    // Create an array to store the labels for the line chart
-    const labels = allMonths;
-  
-    // Create the line chart
-    var ctx = document.getElementById('salesLineChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Monthly Sales',
-            data: counts,
-            fill: false,
-            borderColor: 'rgba(255, 99, 132, 1)',
-          },
-        ],
-      },
-      options: {
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: 'Month',
+
+    // Set the default selection to the current year
+    var currentYear = new Date().getFullYear();
+    selectYear.value = currentYear;
+
+    // Create the initial line chart for the current year
+    var selectedYear = currentYear;
+    var selectedData = filterDataByYear(saleMonthsData, saleCountsData, selectedYear);
+    createChart(selectedData);
+
+    // Function to update the chart based on the selected year
+    function updateChart() {
+        selectedYear = selectYear.value;
+        selectedData = filterDataByYear(saleMonthsData, saleCountsData, selectedYear);
+        createChart(selectedData);
+    }
+
+    // Add an event listener to the select element
+    selectYear.addEventListener("change", updateChart);
+
+    // Function to filter the data by the selected year
+    function filterDataByYear(saleMonthsData, saleCountsData, selectedYear) {
+        if (selectedYear === "All Years") {
+            // Aggregate data for all years
+            var aggregatedData = Array(12).fill(0);
+            saleMonthsData.forEach(function (monthYear, index) {
+                const month = parseInt(monthYear.split("-")[1], 10) - 1;
+                aggregatedData[month] += saleCountsData[index];
+            });
+            return aggregatedData.map((monthCount, index) => ({
+                monthYear: years[0] + "-" + (index + 1).toString().padStart(2, '0'),
+                monthCount: monthCount,
+            }));
+        } else {
+            return saleMonthsData
+                .filter(monthYear => monthYear.startsWith(selectedYear))
+                .map(monthYear => {
+                    const index = saleMonthsData.indexOf(monthYear);
+                    const monthCount = saleCountsData[index];
+                    return { monthYear, monthCount };
+                });
+        }
+    }
+
+    // Function to create a line chart with the given data
+    function createChart(data) {
+        var chartData = Array(12).fill(0);
+
+        data.forEach(function (item) {
+            const [year, month] = item.monthYear.split('-');
+            const monthIndex = parseInt(month, 10) - 1;
+            if (!isNaN(monthIndex)) {
+                chartData[monthIndex] = item.monthCount;
+            }
+        });
+
+        var ctx = document.getElementById('salesLineChart').getContext('2d');
+        if (window.salesChart) {
+            // Destroy the previous chart to clear it
+            window.salesChart.destroy();
+        }
+        window.salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [
+                    {
+                        label: 'Monthly Sales',
+                        data: chartData,
+                        fill: false,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                    },
+                ],
             },
-          },
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Count',
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month',
+                        },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Count',
+                        },
+                    },
+                },
             },
-          },
-        },
-      },
-    });
-  });
-  
+        });
+    }
+});
+
+
   document.addEventListener("DOMContentLoaded", function () {
     var mortalityDatesData = JSON.parse(document.getElementById("mortalityDates").textContent);
     var mortalityCountsData = JSON.parse(document.getElementById("mortalityData").textContent);
@@ -1051,30 +1048,30 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
     // Initialize an array to store the counts for each month
-    const counts = Array(12).fill(0);
+    const mortalityCounts = Array(12).fill(0);
 
     // Map mortality data to the correct index in the counts array
     mortalityDatesData.forEach((monthYear, index) => {
         const [year, month] = monthYear.split('-');
         const monthIndex = parseInt(month, 10) - 1;
         if (!isNaN(monthIndex)) {
-            counts[monthIndex] = mortalityCountsData[index];
+            mortalityCounts[monthIndex] = mortalityCountsData[index];
         }
     });
 
     // Create an array to store the labels for the line chart
-    const labels = allMonths;
+    const mortalityLabels = allMonths;
 
     // Create the line chart for mortality data
-    var ctx = document.getElementById('mortalityAreaChart').getContext('2d');
-    new Chart(ctx, {
+    var mortalityCtx = document.getElementById('mortalityAreaChart').getContext('2d');
+    new Chart(mortalityCtx, {
         type: 'line',
         data: {
-            labels: labels,
+            labels: mortalityLabels,
             datasets: [
                 {
                     label: 'Mortality Count',
-                    data: counts,
+                    data: mortalityCounts,
                     fill: true,
                     borderColor: '#F7D355',
                     backgroundColor: '#F7D355',
@@ -1140,78 +1137,118 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-
 document.addEventListener("DOMContentLoaded", function () {
-    var weightsData = JSON.parse(document.getElementById("average_weights").textContent);
+    // Extract the JSON data from the <div> element
+    var weightsDataDiv = document.getElementById("average_weights");
+    var weightsData = JSON.parse(weightsDataDiv.textContent);
 
-    // Initialize arrays to store the months and weights
-    var months = [];
-    var weights = [];
+    // Extract the months and years as an array of strings from the same <div>
+    var weightMonthsData = Object.keys(weightsData);
 
-    // Extract the month and average weight data from the JSON
-    for (var key in weightsData) {
-        if (weightsData.hasOwnProperty(key)) {
-            months.push(key);
-            weights.push(weightsData[key]);
-        }
-    }
+    // Create a year selection dropdown
+    var selectYearForWeight = document.getElementById("selected_year_for_weight");
 
-    // Create an array of all months of the year
-    const allMonths = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
+    // Create an array to store unique years from the data
+    var weightYears = [...new Set(weightMonthsData.map(monthYear => monthYear.split("-")[0]))];
 
-    // Initialize an array to store the average weights for each month
-    const formattedWeights = Array(12).fill(0);
-
-    // Map weights to the correct index in the formattedWeights array
-    months.forEach((month) => {
-        const [year, monthIndex] = month.split('-');
-        const index = parseInt(monthIndex, 10) - 1;
-        if (!isNaN(index)) {
-            formattedWeights[index] = weights[months.indexOf(month)];
-        }
+    // Populate the dropdown with the year options
+    weightYears.forEach(function (year) {
+        var option = document.createElement("option");
+        option.value = year;
+        option.text = year;
+        selectYearForWeight.appendChild(option);
     });
 
-    // Create an array to store the labels for the bar chart
-    const labels = allMonths;
+    // Set the default selection to the current year
+    var currentYear = new Date().getFullYear();
+    selectYearForWeight.value = currentYear;
 
-    // Create the bar chart
-    var ctx = document.getElementById('weightBarChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Average Weights(KG)',
-                    data: formattedWeights,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                },
-            ],
-        },
-        options: {
-            scales: {
-                x: {    
-                    title: {
-                        display: true,
-                        text: 'Month',
+    // Create the initial bar chart for the current year
+    var selectedYearForWeight = currentYear;
+    var selectedWeightData = filterWeightDataByYear(weightMonthsData, weightsData, selectedYearForWeight);
+    createWeightChart(selectedWeightData);
+
+    // Function to update the chart based on the selected year
+    function updateWeightChart() {
+        selectedYearForWeight = selectYearForWeight.value;
+        console.log("Selected Year:", selectedYearForWeight);
+
+        selectedWeightData = filterWeightDataByYear(weightMonthsData, weightsData, selectedYearForWeight);
+        console.log("Selected Weight Data:", selectedWeightData);
+        createWeightChart(selectedWeightData);
+    }
+
+    // Add an event listener to the select element
+    selectYearForWeight.addEventListener("change", updateWeightChart);
+
+    // Function to filter the data by the selected year
+    function filterWeightDataByYear(monthsData, weightsData, selectedYear) {
+        return monthsData
+            .filter((monthYear) => monthYear.startsWith(selectedYear))
+            .map((monthYear) => {
+                const year = monthYear.split("-")[0];
+                const month = monthYear.split("-")[1];
+                const weight = weightsData[monthYear] || 0; // Use 0 as the default value
+                return { monthYear, weight };
+            });
+    }
+
+    function createWeightChart(data) {
+        var formattedWeights = Array(12).fill(0);
+
+        data.forEach(function (item) {
+            const [year, month] = item.monthYear.split('-');
+            const monthIndex = parseInt(month, 10) - 1;
+            if (!isNaN(monthIndex)) {
+                formattedWeights[monthIndex] = item.weight;
+            }
+        });
+
+        var ctx = document.getElementById('weightBarChart').getContext('2d');
+        if (window.weightChart) {
+            // Destroy the previous chart to clear it
+            window.weightChart.destroy();
+        }
+        window.weightChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    "January", "February", "March", "April", "May", "June", "July",
+                    "August", "September", "October", "November", "December"
+                ],
+                datasets: [
+                    {
+                        label: 'Average Weights(KG)',
+                        data: formattedWeights,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
                     },
-                },
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Average Weight',
+                ],
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month',
+                        },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Average Weight',
+                        },
                     },
                 },
             },
-        },
-    });
+        });
+    }
 });
+
+
+
 document.addEventListener("DOMContentLoaded", function () {
     var data = JSON.parse(document.getElementById("quantity_by_ration_data").textContent.replace(/'/g, '"'));
 
@@ -1401,16 +1438,118 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+document.addEventListener("DOMContentLoaded", function () {
+    var monthsHTML = JSON.parse(document.getElementById("months").textContent);
+    var countsHTML = JSON.parse(document.getElementById("counts").textContent);
+    var pigBarChart = null; // Store the chart instance
+
+    // Create a year selection dropdown
+    var selectYear = document.getElementById("selectPigBarYear");
+
+    // Create an array to store unique years from the data
+    var years = [...new Set(monthsHTML.map(monthYear => monthYear.split("-")[0]))];
+
+    // Add the "All Years" option
+    years.unshift("All Years");
+
+    // Populate the dropdown with the year options
+    years.forEach(function (year) {
+        var option = document.createElement("option");
+        option.value = year;
+        option.text = year;
+        selectYear.appendChild(option);
+    });
+
+    // Set the default selection to the current year
+    var currentYear = new Date().getFullYear();
+    selectYear.value = currentYear;
+
+    // Function to update the chart based on the selected year
+    function updateChart() {
+        var selectedYear = selectYear.value;
+        var selectedData = filterDataByYear(monthsHTML, countsHTML, selectedYear);
+        createBarChart(selectedData);
+    }
+
+    // Add an event listener to the select element
+    selectYear.addEventListener("change", updateChart);
+
+    // Function to filter the data by the selected year
+    // Function to filter the data by the selected year
+    function filterDataByYear(monthsData, countsData, selectedYear) {
+        if (selectedYear === "All Years") {
+            return monthsData.map((monthYear, index) => {
+                return { monthYear, monthCount: countsData[index] };
+            });
+        } else {
+            return monthsData
+                .map((monthYear, index) => {
+                    if (monthYear.startsWith(selectedYear)) {
+                        return { monthYear, monthCount: countsData[index] };
+                    }
+                })
+                .filter(item => item); // Remove undefined values
+        }
+    }
 
 
+    // Function to create a bar chart with the given data
+    function createBarChart(data) {
+        // Extract month and count data for the selected year
+        var chartData = Array(12).fill(0);
 
+        data.forEach(function (item) {
+            if (item.monthYear) {
+                const [year, month] = item.monthYear.split('-');
+                const monthIndex = parseInt(month, 10) - 1;
+                if (!isNaN(monthIndex)) {
+                    chartData[monthIndex] = item.monthCount;
+                }
+            }
+        });
+
+        var ctx = document.getElementById('pigBarChart').getContext('2d');
+        
+        // Destroy the previous chart if it exists
+        if (pigBarChart) {
+            pigBarChart.destroy();
+        }
+
+        // Create a new chart
+        pigBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [
+                    {
+                        label: 'Monthly Counts',
+                        data: chartData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Initial chart creation
+    updateChart();
+});
 
 document.addEventListener("DOMContentLoaded", function () {
     // Get references to the button and overlay elements
     var buttons = document.querySelectorAll(".sow_perf_button");
     var overlay = document.getElementById("sow_perf_overlay");
     var dataContainer = overlay.querySelector(".sow-performance-data");
-    var closeButton = document.getElementById("closeButton"); // Move closeButton declaration here
+    var closeButton = document.getElementById("closeButton");
 
     // Add a click event listener to all the buttons
     buttons.forEach(function (button) {
@@ -1440,9 +1579,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             dataContainer.innerHTML = htmlContent;
 
                             // Create the pie chart
-                            var chartCanvas = document.createElement('canvas');
-                            chartCanvas.id = 'myPieChart';
-                            dataContainer.appendChild(chartCanvas);
+                            var pieChartCanvas = document.createElement('canvas');
+                            pieChartCanvas.id = 'myPieChart';
+                            dataContainer.appendChild(pieChartCanvas);
 
                             var combinedData = {
                                 alive: 0,
@@ -1458,7 +1597,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 combinedData.mffd += sow.mffd;
                             });
 
-                            var pieChart = new Chart(document.getElementById('myPieChart'), {
+                            var pieChart = new Chart(pieChartCanvas, {
                                 type: 'pie',
                                 data: {
                                     labels: ['Alive', 'MK', 'SB', 'Mffd'],
@@ -1468,6 +1607,35 @@ document.addEventListener("DOMContentLoaded", function () {
                                     }]
                                 },
                             });
+
+                            // Create the line chart
+                            var lineChartCanvas = document.createElement('canvas');
+                            lineChartCanvas.id = 'myLineChart';
+                            dataContainer.appendChild(lineChartCanvas);
+
+                            // Replace this with your line chart data
+                            // Extract the data for the line chart from the sow performance data
+                                var lineChartData = {
+                                    labels: sowData.map(function (sow) {
+                                        // Use the 'date_farr' field for the X-axis labels
+                                        return sow.date_farr;
+                                    }),
+                                    datasets: [{
+                                        label: 'Average Litter Size',
+                                        data: sowData.map(function (sow) {
+                                            // Use the 'ave_litter_size' field for the Y-axis data
+                                            return sow.ave_litter_size;
+                                        }),
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        fill: false
+                                    }]
+                                };
+
+                                var lineChart = new Chart(lineChartCanvas, {
+                                    type: 'line',
+                                    data: lineChartData,
+                                });
+
                         } else {
                             dataContainer.innerHTML = "No sow performance data found.";
                         }
@@ -1490,6 +1658,7 @@ document.addEventListener("DOMContentLoaded", function () {
         overlay.style.display = "none";
     });
 });
+
 
 document.addEventListener("DOMContentLoaded", function () {
     var pigSalesButton = document.getElementById("showPigSalesButton");
