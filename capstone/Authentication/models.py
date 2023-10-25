@@ -45,6 +45,7 @@ class Pig(models.Model):
     
     verif_by = models.CharField(max_length=255)
     date = models.DateField(default=date.today) 
+    barcode_image = models.BinaryField(null=True, blank=True) 
 
 class Sow(models.Model):
     pig_id = models.CharField(max_length=255, null=True)

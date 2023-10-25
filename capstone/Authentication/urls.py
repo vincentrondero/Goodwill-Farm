@@ -30,6 +30,7 @@ urlpatterns = [
     path('save_weanling/<str:user_type>/', views.save_weanling, name='save_weanling'),
     path('add_sp/<str:user_type>/', views.add_sp, name='add_sp'),
     path('search_suggestions/', views.search_suggestions, name='search_suggestions'),
+    path('search_sow_suggestions/', views.search_sow_suggestions, name='search_sow_suggestions'),
     path('add_feed_stock_update/<str:user_type>/', views.add_feed_stock_update, name='add_feed_stock_update'),
     path('get_sow_performance_data/<int:pig_id>/', views.get_sow_performance_data, name='get_sow_performance_data'),
     path('archive_user/<int:user_id>/', views.archive_user, name='archive_user'),

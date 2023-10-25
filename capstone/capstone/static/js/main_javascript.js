@@ -340,7 +340,6 @@ $(document).ready(function() {
         var pigId = $(this).data("pig-id");
         var userType = $(this).data("user-type");
         console.log("User Type:", userType);
-
     
         // Make an AJAX request to fetch the pig data based on the pig ID and user type
         var updatePigUrl = '/get_pig_data/' + pigId + '/';
@@ -362,6 +361,25 @@ $(document).ready(function() {
                     $("#edit_weight").val(data.pig_data.weight);
                     $("#edit_remarks").val(data.pig_data.remarks);
     
+                    // Set the source of the barcode image
+                    var binaryData = data.pig_data.barcode_image;
+                    console.log(binaryData);
+    
+                    if (binaryData) {
+                        // Ensure that binaryData is a valid base64 string
+                        try {
+                            var base64String = atob(binaryData);
+                            $("#edit_barcode").attr("src", "data:image/png;base64," + base64String);
+                            console.log("Image is valid and loaded.");
+                        } catch (e) {
+                            console.log("Invalid base64 data.");
+                        }
+                    } else {
+                        // Display "No barcode found" in the barcode field
+                        $("#edit_barcode").text("No barcode found");
+                        console.log("No barcode found.");
+                    }
+    
                     // Store the pig ID in a data attribute for the Save Pig button
                     $(".save-pig-button").data("pig-id", pigId);
                 } else {
@@ -375,6 +393,7 @@ $(document).ready(function() {
         });
     });
     
+
     // Click event handler for the save button
     $(".save-pig-button").click(function (e) {
         e.preventDefault(); // Prevent the default form submission
@@ -613,6 +632,150 @@ $('#search-input').on('input', function () {
     }
 });
 
+
+$('#search-sow-input').on('input', function () {
+    var searchQuery = $(this).val();
+    if (searchQuery) {
+        $.ajax({
+            url: '/search_sow_suggestions/',
+            data: { 'search_query': searchQuery },
+            dataType: 'json',
+            success: function (data) {
+                if (data.suggestions.length > 0) {
+                    // Clear any previous results
+                    $('#search-sow-results').empty();
+
+                    // Iterate over the suggestions
+                    data.suggestions.forEach(function (suggestion) {
+                        // Create a button for each suggestion
+                        var suggestionButton = $('<button class="result-button" style="display: block; width: 100%; border: none; height: 15%; color:#FF7373; padding:1%; background-color:#FFFFFF;"></button>');
+                    
+                        // Set button text to pig_id
+                        suggestionButton.text(suggestion.pig_id);
+
+                        // Add a click event handler to suggestionButton
+                        suggestionButton.click(function () {
+                            var sowId = suggestion.pk;
+                            console.log(sowId)
+
+                            // Use the same code to open the overlay for sow performance data
+                            var overlay = document.getElementById("sow_perf_overlay");
+                            var dataContainer = overlay.querySelector(".sow-performance-data");
+
+                            // AJAX request to fetch sow performance data
+                            var xhr = new XMLHttpRequest();
+                            xhr.open("GET", "/get_sow_performance_data/" + sowId + "/");
+                            xhr.onreadystatechange = function () {
+                                if (xhr.readyState === 4) {
+                                    if (xhr.status === 200) {
+                                        var response = JSON.parse(xhr.responseText);
+                                        var sowData = response.sow_perf_data_list; // Use the correct key
+
+                                        // Check for an empty response (no data found)
+                                        if (response.success && sowData && sowData.length > 0) {
+                                            // Clear the "No data found" message
+                                            dataContainer.innerHTML = "";
+
+                                            // Extract pig_id from the first sow performance
+                                            var pigId = sowData[0].pig_id;
+
+                                            // Create HTML content for sow performance data
+                                            var htmlContent = "Pig ID: " + pigId + "<br><br>";
+                                            dataContainer.innerHTML = htmlContent;
+
+                                            // Create the pie chart
+                                            var pieChartCanvas = document.createElement('canvas');
+                                            pieChartCanvas.id = 'myPieChart';
+                                            dataContainer.appendChild(pieChartCanvas);
+
+                                            var combinedData = {
+                                                alive: 0,
+                                                mk: 0,
+                                                sb: 0,
+                                                mffd: 0
+                                            };
+
+                                            sowData.forEach(function (sow) {
+                                                combinedData.alive += sow.alive;
+                                                combinedData.mk += sow.mk;
+                                                combinedData.sb += sow.sb;
+                                                combinedData.mffd += sow.mffd;
+                                            });
+
+                                            var pieChart = new Chart(pieChartCanvas, {
+                                                type: 'pie',
+                                                data: {
+                                                    labels: ['Alive', 'MK', 'SB', 'Mffd'],
+                                                    datasets: [{
+                                                        data: [combinedData.alive, combinedData.mk, combinedData.sb, combinedData.mffd],
+                                                        backgroundColor: ['#FDE387', '#659D60', '#FF7373', '#127BBE'],
+                                                    }]
+                                                },
+                                            });
+
+                                            // Create the line chart
+                                            var lineChartCanvas = document.createElement('canvas');
+                                            lineChartCanvas.id = 'myLineChart';
+                                            dataContainer.appendChild(lineChartCanvas);
+
+                                            // Replace this with your line chart data
+                                            // Extract the data for the line chart from the sow performance data
+                                            var lineChartData = {
+                                                labels: sowData.map(function (sow) {
+                                                    // Use the 'date_farr' field for the X-axis labels
+                                                    return sow.date_farr;
+                                                }),
+                                                datasets: [{
+                                                    label: 'Average Litter Size',
+                                                    data: sowData.map(function (sow) {
+                                                        // Use the 'ave_litter_size' field for the Y-axis data
+                                                        return sow.ave_litter_size;
+                                                    }),
+                                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                                    fill: false
+                                                }]
+                                            };
+
+                                            var lineChart = new Chart(lineChartCanvas, {
+                                                type: 'line',
+                                                data: lineChartData,
+                                            });
+
+                                        } else {
+                                            dataContainer.innerHTML = "No sow performance data found.";
+                                        }
+                                    } else {
+                                        console.log("Error: Failed to fetch data. Status code: " + xhr.status);
+                                        // Display "No sow performance data found" in the HTML when there's an error
+                                        dataContainer.innerHTML = "No sow performance data found.";
+                                    }
+
+                                    // Show the overlay
+                                    overlay.style.display = "block";
+                                }
+                            };
+                            xhr.send();
+                        });
+
+
+
+                        // Append the button to the search results div
+                        $('#search-sow-results').append(suggestionButton);
+                    });
+
+                    // Show the search results
+                    $('#search-sow-results').show();
+                } else {
+                    // No results, hide the search results
+                    $('#search-sow-results').hide();
+                }
+            }
+        });
+    } else {
+        // Empty search query, hide the search results
+        $('#search-sow-results').hide();
+    }
+});
 
 
 });
@@ -1698,3 +1861,26 @@ document.addEventListener("DOMContentLoaded", function () {
         section.style.display = "block";
     }
 });
+
+$(document).ready(function () {
+    $("#print-button").click(function () {
+      // Get the barcode source
+      var barcodeSrc = $("#edit_barcode").attr("src");
+      
+      if (barcodeSrc) {
+        // Open a new window or tab with just the barcode image
+        var printWindow = window.open("", "_blank");
+        printWindow.document.open();
+        printWindow.document.write("<html><head><title>Barcode Print</title></head><body>");
+        printWindow.document.write("<img src='" + barcodeSrc + "' alt='Barcode Image' />");
+        printWindow.document.write("</body></html>");
+        printWindow.document.close();
+  
+        // Print the newly opened window or tab
+        printWindow.print();
+      } else {
+        alert("No barcode found.");
+      }
+    });
+  });
+

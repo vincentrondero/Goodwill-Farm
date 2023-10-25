@@ -22,13 +22,34 @@ from django.db.models.functions import ExtractDay
 from django.db.models import Sum, F
 from django.utils import timezone
 import pandas as pd
+from barcode import Code128
+import barcode
+from barcode import generate
+from barcode.writer import ImageWriter
+from io import BytesIO
+import base64
+from django.http import HttpResponse
+
+def generate_barcode(pig_id):
+    # Create a Code128 barcode with the pig_id
+    code128 = barcode.get_barcode_class('code128')
+    code = code128(pig_id, writer=barcode.writer.ImageWriter(format='PNG'))
+    
+    # Render the barcode to an image and save it to a BytesIO buffer
+    buffer = BytesIO()
+    code.write(buffer)
+    buffer.seek(0)  # Reset the buffer position
+
+    # Read the BytesIO buffer and encode the image in base64
+    barcode_image = base64.b64encode(buffer.getvalue())
+
+    return barcode_image
 
 
 def add_pigs(request, user_type):
     context = {
         'user_type': user_type,
     }
-
     if request.method == 'POST':
         # Handle form submission
         pig_id = request.POST.get("pigID")
@@ -43,11 +64,16 @@ def add_pigs(request, user_type):
         verif_by = request.POST.get("verifBy")
         birthdate = request.POST.get("date")
 
+        if not pig_id or pig_id.strip() == "":
+            # Handle the case where pig_id is missing or empty
+            return HttpResponse("Pig ID is required.")
+
         try:
             count = int(count)
             weight = float(weight)
         except (ValueError, TypeError):
-            pass
+            # Handle conversion errors
+            return HttpResponse("Invalid count or weight.")
 
         # Create a Pig object and save it to the database
         pig = Pig(
@@ -61,10 +87,11 @@ def add_pigs(request, user_type):
             weight=weight,
             remarks=remarks,
             verif_by=verif_by,
-            date=birthdate
+            date=birthdate,
+            barcode_image=generate_barcode(pig_id)
         )
         pig.save()
-
+    
         # Redirect to prevent form resubmission
         return redirect('Add_Pigs', user_type=user_type)
 
@@ -95,10 +122,10 @@ def add_pigs(request, user_type):
         'pig_list': pig_list,
         'sow_list': sow_list,
         'pig_list_all':pig_list_all,
+
     })
 
     return render(request, 'Farm/add_pigs.html', context)
-
 
 
 def Login(request):
@@ -254,6 +281,35 @@ def reports(request, user_type):
     pig_list_28_to_88_days = Pig.objects.filter(dob__gte=eighty_eight_days_ago, dob__lt=twenty_eight_days_ago).exclude(exclude_q).count() 
     pig_list_88_to_148_days = Pig.objects.filter(dob__gte=one_forty_eight_days_ago, dob__lt=eighty_eight_days_ago).exclude(exclude_q).count() 
     pig_list_greater_than_148_days = Pig.objects.filter(dob__lt=one_forty_eight_days_ago).exclude(exclude_q).count() 
+    # Assuming your ration options are "Booster," "Starter," "Pre-Starter," and "Grower"
+# Adjust the filtering based on these ration options
+
+    # For Booster
+    booster_option = "Booster"
+    feed_stock_updates_booster = FeedStockUpdate.objects.filter(ration=booster_option)
+    total_quantity_booster = FeedsInventory.objects.filter(feeds_ration=booster_option).aggregate(Sum('quantity'))['quantity__sum']
+    total_quantity_booster = total_quantity_booster or 0
+    # For Starter
+    starter_option = "Starter"
+    feed_stock_updates_starter = FeedStockUpdate.objects.filter(ration=starter_option)
+    total_quantity_starter = FeedsInventory.objects.filter(feeds_ration=starter_option).aggregate(Sum('quantity'))['quantity__sum']
+    total_quantity_starter = total_quantity_starter or 0
+    # For Pre-Starter
+    pre_starter_option = "Pre-Starter"
+    feed_stock_updates_pre_starter = FeedStockUpdate.objects.filter(ration=pre_starter_option)
+    total_quantity_pre_starter = FeedsInventory.objects.filter(feeds_ration=pre_starter_option).aggregate(Sum('quantity'))['quantity__sum']
+    total_quantity_pre_starter = total_quantity_pre_starter or 0
+    # For Grower
+    grower_option = "Grower"
+    feed_stock_updates_grower = FeedStockUpdate.objects.filter(ration=grower_option)
+    total_quantity_grower = FeedsInventory.objects.filter(feeds_ration=grower_option).aggregate(Sum('quantity'))['quantity__sum']
+    total_quantity_grower = total_quantity_grower or 0
+    
+    # Calculate the differences based on the specific ration options
+    difference_booster = (total_quantity_booster - sum(feed_stock_update.count_update for feed_stock_update in feed_stock_updates_booster)) * 25
+    difference_starter = (total_quantity_starter - sum(feed_stock_update.count_update for feed_stock_update in feed_stock_updates_starter))* 25
+    difference_pre_starter = (total_quantity_pre_starter - sum(feed_stock_update.count_update for feed_stock_update in feed_stock_updates_pre_starter))* 25
+    difference_grower = total_quantity_grower - sum(feed_stock_update.count_update for feed_stock_update in feed_stock_updates_grower)* 25
 
     consumption_rate_suckling = 1.5
     consumption_rate_weanlings = 2.5
@@ -261,16 +317,41 @@ def reports(request, user_type):
     consumption_rate_fattener= 6
 
     total_pigs_for_feeds= Pig.objects.exclude(exclude_q).count() 
-    total_feed_needed_suckling = pig_list_28_days * consumption_rate_suckling
-    total_feed_needed_weanling = pig_list_28_to_88_days * consumption_rate_weanlings
-    total_feed_needed_grower = pig_list_88_to_148_days * consumption_rate_grower
-    total_feed_needed_fattener = pig_list_greater_than_148_days * consumption_rate_fattener
+    total_feed_needed_suckling = pig_list_28_days * consumption_rate_suckling * 30 
+    total_feed_needed_weanling = pig_list_28_to_88_days * consumption_rate_weanlings*30
+    total_feed_needed_grower = pig_list_88_to_148_days * consumption_rate_grower*30
+    total_feed_needed_fattener = pig_list_greater_than_148_days * consumption_rate_fattener*30
 
     # You can round the result or format it as needed
     total_feed_suckling_formatted = "{:.2f}".format(total_feed_needed_suckling )
     total_feed_weanling_formatted = "{:.2f}".format(total_feed_needed_weanling )
     total_feed_grower_formatted = "{:.2f}".format(total_feed_needed_grower )
     total_feed_fattener_formatted = "{:.2f}".format(total_feed_needed_fattener)
+
+
+   # Calculate the total_feed_needed_suckling_deficit
+    total_feed_needed_suckling_deficit = max(pig_list_28_days * consumption_rate_suckling * 30 - difference_booster, 0)
+    total_feed_needed_weanling_deficit = max((pig_list_28_to_88_days *  consumption_rate_weanlings * 30) - difference_pre_starter , 0)
+    total_feed_needed_grower_deficit = max(pig_list_88_to_148_days * consumption_rate_grower * 30 -  difference_starter, 0)
+    total_feed_needed_fattener_deficit = max(pig_list_greater_than_148_days * consumption_rate_fattener * 30 -  difference_grower, 0)
+
+    # Format the deficit
+    total_feed_suckling_deficit_formatted = "{:.2f}".format(total_feed_needed_suckling_deficit)
+    total_feed_weanling_deficit_formatted = "{:.2f}".format(total_feed_needed_weanling_deficit)
+    total_feed_grower_deficit_formatted = "{:.2f}".format(total_feed_needed_grower_deficit)
+    total_feed_fattener_deficit_formatted = "{:.2f}".format(total_feed_needed_fattener_deficit)
+
+    total_feed_needed_suckling_cost = total_feed_needed_suckling_deficit * 64
+    total_feed_needed_weanling_cost = total_feed_needed_weanling_deficit * 64
+    total_feed_needed_grower_cost =  total_feed_needed_grower_deficit * 60
+    total_feed_needed_fattener_cost =  total_feed_needed_fattener_deficit * 56
+
+    # Format the cost results
+    total_feed_suckling_cost_formatted = "{:.2f}".format(total_feed_needed_suckling_cost)
+    total_feed_weanling_cost_formatted = "{:.2f}".format(total_feed_needed_weanling_cost)
+    total_feed_grower_cost_formatted = "{:.2f}".format(total_feed_needed_grower_cost)
+    total_feed_fattener_cost_formatted = "{:.2f}".format(total_feed_needed_fattener_cost)
+
 
     weanlings_count = Pig.objects.filter(dob__gte=twenty_eight_days_ago).exclude(exclude_q).count()
     unique_weanling_ids = Weanling.objects.values('pig_id').annotate(count=Count('pig_id')).count()
@@ -366,6 +447,19 @@ def reports(request, user_type):
         'vaccine_needed': json.dumps(vaccine_needed),
         "vaccine_counts_dict":json.dumps(vaccine_counts_dict),
         "unvaccinated_counts": json.dumps(unvaccinated_counts),
+        "total_feed_suckling_cost_formatted":total_feed_suckling_cost_formatted,
+        "total_feed_weanling_cost_formatted":total_feed_weanling_cost_formatted,
+        "total_feed_grower_cost_formatted":total_feed_grower_cost_formatted,
+        "total_feed_fattener_cost_formatted":total_feed_fattener_cost_formatted,
+        "difference_booster":difference_booster,
+        "difference_starter":difference_starter,
+        "difference_pre_starter": difference_pre_starter,
+        "difference_grower":difference_grower,
+        "total_feed_suckling_deficit_formatted":total_feed_suckling_deficit_formatted,
+        "total_feed_weanling_deficit_formatted":total_feed_weanling_deficit_formatted,
+        "total_feed_grower_deficit_formatted": total_feed_grower_deficit_formatted,
+        "total_feed_fattener_deficit_formatted":total_feed_fattener_deficit_formatted,
+
 
     }
 
@@ -593,7 +687,7 @@ def get_pig_data(request, pig_id):
     try:
         # Retrieve the pig data based on pig_id
         pig = Pig.objects.get(pk=pig_id)
-        
+        print(len(pig.barcode_image)) 
         # Serialize the pig data into a dictionary
         pig_data = {
             'pig_id': pig.pig_id,
@@ -605,6 +699,7 @@ def get_pig_data(request, pig_id):
             'count': pig.count,
             'weight': str(pig.weight),  # Convert DecimalField to string
             'remarks': pig.remarks,
+            'barcode_image': base64.b64encode(pig.barcode_image.tobytes()).decode()
             # Add more fields as needed
         }
         
@@ -753,8 +848,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render
 from .models import Sow
-
-def update_sow_data(request, pig_id,user_type):
+def update_sow_data(request, pig_id, user_type):
     if request.method == 'POST':
         data = request.POST  
         
@@ -776,38 +870,22 @@ def update_sow_data(request, pig_id,user_type):
                 sow.save()
 
             # Debug: Add print statements or use Django's logging
-            print("Sow updated successfully.")
-            return render(request, 'Farm/success_overlay.html', {'user_type': user_type})
+            print("Sow updated successfully")
+            return redirect('Add_Pigs', user_type=user_type)
 
-            # Prepare the updated sow data as a dictionary
-            updated_sow_data = {
-                'pig_id': sow.pig_id,
-                'dam': sow.dam,
-                'dob': sow.dob,
-                'sire': sow.sire,
-                'pig_class': sow.pig_class,
-                'sex': sow.sex,
-                'count': sow.count,
-                'weight': str(sow.weight),
-                'remarks': sow.remarks,
-                # Add more fields as needed
-            }
-
-            return JsonResponse({'success': True, 'updated_sow_data': updated_sow_data})
         except Sow.DoesNotExist:
             # Debug: Print error message
             print("Sow not found.")
-
             return JsonResponse({'success': False, 'error': 'Sow not found'})
+
         except Exception as e:
             # Debug: Print error message
             print(f"Error: {str(e)}")
-
             return JsonResponse({'success': False, 'error': str(e)})
 
     return render(request, 'Farm/add_pigs.html', {"user_type": user_type})
 
-    
+  
 def save_feeds_inventory(request, user_type):
     if request.method == 'POST':
         feeds_brand = request.POST.get('feedsB')
@@ -1043,18 +1121,25 @@ def add_sp(request, user_type):
 
 def search_suggestions(request):
     search_query = request.GET.get('search_query', '')
-    
+
     # Search for pig_id in the Pig model, excluding those with PigSale or MortalityForm
     pig_results = Pig.objects.filter(pig_id__icontains=search_query).exclude(
         Q(pigsale__isnull=False) | Q(mortality_forms__isnull=False)
     ).values('pig_id')
 
-    # Search for pig_id in the Sow model
-    sow_results = Sow.objects.filter(pig_id__icontains=search_query).values('pig_id')
+    # Extract pig_id values
+    suggestions = [result['pig_id'] for result in pig_results]
 
-    # Combine and extract pig_id values
-    results = list(pig_results) + list(sow_results)
-    suggestions = [result['pig_id'] for result in results]
+    return JsonResponse({'suggestions': suggestions})
+
+def search_sow_suggestions(request):
+    search_query = request.GET.get('search_query', '')
+
+    # Search for pig_id in the Sow model and fetch both pig_id and pk
+    sow_results = Sow.objects.filter(pig_id__icontains=search_query).values('pk', 'pig_id')
+
+    # Extract pig_id and pk values
+    suggestions = list(sow_results)
 
     return JsonResponse({'suggestions': suggestions})
 

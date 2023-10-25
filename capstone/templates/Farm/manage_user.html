@@ -158,7 +158,7 @@
                 <button class="icon-button edit_button" data-user-id="{{ user.pk }}">
                     <img src="{% static 'img/edit_icon.png' %}" style="height: 24px;" alt="...">
                 </button>
-                <button class="icon-button archive_user" data-user-id="{{ user.pk }}">
+                <button class="icon-button archive_user" data-user-id="{{ user.pk }}" style="display:none;">
                     <img src="{% static 'img/archive_icon.png' %}" style="height: 24px;" alt="...">
                 </button>
                 <button class="icon-button delete_button" data-user-id="{{ user.id }}" data-user-type="{{ user_type }}" style="display:none;">

@@ -612,3 +612,17 @@ button.success-button {
     color: #ff7b7b;
     background-color: #fff;
 }
+
+/* print.css */
+@media print {
+    /* Hide all elements except the barcode */
+    body * {
+      display: none;
+    }
+  
+    /* Display the barcode element */
+    #edit_barcode {
+      display: block;
+    }
+  }
+  
