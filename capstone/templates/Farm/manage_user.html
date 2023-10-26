@@ -1,13 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div>Manage User</div>
-<div class="navbar mb-2">
+<div class="navbar my-1 d-flex flex-row justify-content-between">
     <button class="custom_button" id="openOverlayButton" style="border-radius: 20px; width: 120px; height: 30px; background-color: #FFFFFF; color: #ff7b7b;" >ADD USERS</button>
-    <div class="search-container">
-        <input type="text" placeholder="Search...">
-        <button type="submit">Search</button>
-    </div>
 </div>
 
 <div id="overlay">
@@ -76,20 +71,20 @@
                         <img src="{% static 'img/user_profile.png' %}" style="height: 120px;" alt="...">
                     </div>
                     <div>
-                        <span style="font-size: 90px; color: #FFFF;">{{ users_count }}</span>
+                        <span style="font-size: 90px; color: #FFFF;">{{ users_count }}/{{ all_user }}</span>
                     </div>
                 </div>
                 <p class="px-3" style="text-align:left; color: #FFFF; font-size: 24px;"> Active Users</p>
             </div>
         </div>
-        <div style="width: 22rem; margin-left: 1%; background-color: #F7D355;">
+        <div style="width: 22rem; margin-left: 1%; background-color: #FDE387;">
             <div class="card-body card-font">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <img src="{% static 'img/user_profile.png' %}" style="height: 120px;" alt="...">
                     </div>
                     <div>
-                        <span style="font-size: 90px; color: #FFFF;">{{ users__in_archive_count }}</span>
+                        <span style="font-size: 90px; color: #FFFF;">{{ users__in_archive_count }}/{{ all_user }}</span>
                     </div>
                 </div>
                 <p class="px-3" style="text-align:left; color: #FFFF; font-size: 24px;"> Archive Users</p>
@@ -200,7 +195,7 @@
                 <br>
                 <div>
                     <label for="role" class="LRole">Role:</label>
-                    <input type="text" name="role" id="edit_role" value="">
+                    <input type="text" name="role" id="edit_role" value=""   readonly>
                 </div>
                 <br>
                 <div>

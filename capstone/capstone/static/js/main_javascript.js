@@ -1171,10 +1171,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                 datasets: [
                     {
-                        label: 'Monthly Sales',
+                        label: 'Pig Sold Count',
                         data: chartData,
                         fill: false,
-                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderColor: '#FF7373',
+                        backgroundColor: '#FF7373',
+                        borderWidth: 1
                     },
                 ],
             },
@@ -1199,10 +1201,32 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-
-  document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     var mortalityDatesData = JSON.parse(document.getElementById("mortalityDates").textContent);
     var mortalityCountsData = JSON.parse(document.getElementById("mortalityData").textContent);
+
+    // Get your existing select element
+    var selectMortalityYear = document.getElementById("selectMortalityYear");
+
+    // Create an array to store unique years from the data
+    var mortalityYears = [...new Set(mortalityDatesData.map(date => date.split('-')[0]))];
+
+    // Add the "All Years" option
+    mortalityYears.unshift("All Years");
+
+    // Populate the dropdown with the year options
+    mortalityYears.forEach(function (year) {
+        var option = document.createElement("option");
+        option.value = year;
+        option.text = year;
+        selectMortalityYear.appendChild(option);
+    });
+
+    // Store the default year as the current year
+    var defaultYear = new Date().getFullYear();
+
+    // Set the default selection to the current year
+    selectMortalityYear.value = defaultYear.toString();
 
     // Create an array of all months of the year
     const allMonths = [
@@ -1210,34 +1234,39 @@ document.addEventListener("DOMContentLoaded", function () {
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
 
-    // Initialize an array to store the counts for each month
-    const mortalityCounts = Array(12).fill(0);
+    // Function to map the data to the corresponding months
+    function mapDataToMonths(selectedYear) {
+        const monthsData = Array(12).fill(0);
 
-    // Map mortality data to the correct index in the counts array
-    mortalityDatesData.forEach((monthYear, index) => {
-        const [year, month] = monthYear.split('-');
-        const monthIndex = parseInt(month, 10) - 1;
-        if (!isNaN(monthIndex)) {
-            mortalityCounts[monthIndex] = mortalityCountsData[index];
-        }
-    });
+        mortalityDatesData.forEach((monthYear, index) => {
+            const [year, month] = monthYear.split('-');
+            if (year == selectedYear) {
+                const monthIndex = parseInt(month, 10) - 1;
+                if (!isNaN(monthIndex)) {
+                    monthsData[monthIndex] += mortalityCountsData[index];
+                }
+            }
+        });
 
-    // Create an array to store the labels for the line chart
-    const mortalityLabels = allMonths;
+        return monthsData;
+    }
+
+    // Initialize the chart with the current year
+    var currentYearCounts = mapDataToMonths(defaultYear);
 
     // Create the line chart for mortality data
     var mortalityCtx = document.getElementById('mortalityAreaChart').getContext('2d');
-    new Chart(mortalityCtx, {
+    var mortalityChart = new Chart(mortalityCtx, {
         type: 'line',
         data: {
-            labels: mortalityLabels,
+            labels: allMonths,
             datasets: [
                 {
                     label: 'Mortality Count',
-                    data: mortalityCounts,
+                    data: currentYearCounts,
                     fill: true,
                     borderColor: '#F7D355',
-                    backgroundColor: '#F7D355',
+                    backgroundColor: 'rgba(247, 211, 85, 0.5)',
                 },
             ],
         },
@@ -1264,7 +1293,35 @@ document.addEventListener("DOMContentLoaded", function () {
             },
         },
     });
+
+    // Function to update the mortality chart based on the selected year
+    function updateMortalityChart() {
+        var selectedYear = selectMortalityYear.value;
+        var filteredMortalityCounts = [];
+
+        if (selectedYear === "All Years") {
+            // If "All Years" is selected, sum counts across all years
+            for (var i = 0; i < currentYearCounts.length; i++) {
+                filteredMortalityCounts.push(currentYearCounts[i]);
+            }
+        } else {
+            // Get the counts for the selected year
+            filteredMortalityCounts = mapDataToMonths(selectedYear);
+        }
+
+        // Update the chart data
+        mortalityChart.data.datasets[0].data = filteredMortalityCounts;
+        mortalityChart.update();
+    }
+
+    // Add an event listener to the select element
+    selectMortalityYear.addEventListener("change", updateMortalityChart);
 });
+
+
+
+
+
 
 document.addEventListener("DOMContentLoaded", function () {
     var totalWeanlings = parseInt(document.getElementById("totalWeanlings").textContent);
@@ -1383,9 +1440,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     {
                         label: 'Average Weights(KG)',
                         data: formattedWeights,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1,
+                        backgroundColor: 'rgba(247, 211, 85, 0.5)',
+                        borderColor: '#FDE387',
+                        borderWidth: 3,
                     },
                 ],
             },
@@ -1469,15 +1526,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var ctx = document.getElementById('expensesBarChart').getContext('2d');
     new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: allMonths,
             datasets: [{
                 label: 'Monthly Expenses (₱)',
                 data: months,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
+                backgroundColor: '#BC4749',
+                borderColor: '#BC4749',
+                borderWidth: 2,
             }],
         },
         options: {
@@ -1516,7 +1573,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var percentageCounts = Object.values(percentages);
 
     // Define an array of colors
-    var colors = ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)'];
+    var colors = ['#F75555', '#FF7373', '#F7D355', '#FDE387','#F8B9B9','#F2E8CF'];
     // Add more colors as needed
 
     // Create the labels for the bar chart (vaccine names)
@@ -1530,6 +1587,7 @@ document.addEventListener("DOMContentLoaded", function () {
             labels: labels,
             datasets: [{
                 label: 'Percentage of Vaccinated Pigs',
+                display: false,
                 data: percentageCounts,
                 backgroundColor: colors, 
                 borderColor: colors, 
@@ -1543,7 +1601,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Percentage (%)'
+                        text: 'Progress (%)'
                     },
                     suggestedMin: 0, // Set the minimum value for the x-axis
                     suggestedMax: 100, // Set the maximum value for the x-axis
@@ -1586,9 +1644,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 {
                     label: 'Vaccine Needed',
                     data: vaccineNeededCounts,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
+                    backgroundColor: 'rgba(188, 71, 73, 0.5)',
+                    borderColor: '#FF7373',
+                    borderWidth: 2
                 }
             ]
         },
@@ -1680,15 +1738,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Create a new chart
         pigBarChart = new Chart(ctx, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                 datasets: [
                     {
                         label: 'Monthly Counts',
                         data: chartData,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: '#BC4749',
+                        borderColor: '#BC4749',
                         borderWidth: 1
                     },
                 ],
@@ -1706,6 +1764,117 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initial chart creation
     updateChart();
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    var pigSalesData = JSON.parse(document.getElementById("pig_sales_monthly_data").textContent);
+    console.log(pigSalesData);
+    // Get your existing select element
+    var selectPigSalesYear = document.getElementById("selectPigSalesYear");
+
+    // Create an array to store unique years from the data
+    var pigSalesYears = [...new Set(pigSalesData.map(sale => sale.year))];
+
+    // Add the "All Years" option
+    pigSalesYears.unshift("All Years");
+
+    // Populate the dropdown with the year options
+    pigSalesYears.forEach(function (year) {
+        var option = document.createElement("option");
+        option.value = year;
+        option.text = year;
+        selectPigSalesYear.appendChild(option);
+    });
+
+    // Set the default selection to the current year
+    var currentYear = new Date().getFullYear();
+    selectPigSalesYear.value = currentYear;
+
+    // Create the initial line chart for the current year
+    var selectedPigSalesYear = currentYear;
+    var selectedPigSalesData = filterPigSalesDataByYear(pigSalesData, selectedPigSalesYear);
+    createPigSalesChart(selectedPigSalesData);
+
+    // Function to update the pig sales chart based on the selected year
+    function updatePigSalesChart() {
+        selectedPigSalesYear = selectPigSalesYear.value;
+        selectedPigSalesData = filterPigSalesDataByYear(pigSalesData, selectedPigSalesYear);
+        createPigSalesChart(selectedPigSalesData);
+    }
+
+    // Add an event listener to the select element
+    selectPigSalesYear.addEventListener("change", updatePigSalesChart);
+
+    // Function to filter the pig sales data by the selected year
+    function filterPigSalesDataByYear(pigSalesData, selectedYear) {
+        if (selectedYear === "All Years") {
+            // Sum the data for each month across all years
+            var aggregatedPigSalesData = Array(12).fill(0);
+
+            pigSalesData.forEach(function (item) {
+                const month = item.month - 1;
+                aggregatedPigSalesData[month] += item.total_price;
+            });
+
+            return aggregatedPigSalesData.map((totalSales, index) => ({
+                month: index + 1,
+                total_price: totalSales,
+            }));
+        } else {
+            return pigSalesData.filter(sale => sale.year === parseInt(selectedYear));
+        }
+    }
+
+    // Function to create the pig sales line chart with the given data
+    function createPigSalesChart(data) {
+        // Extract total_price values per month
+        var pigSalesChartData = Array(12).fill(0);
+
+        data.forEach(function (item) {
+            const month = item.month - 1; // Months are 0-indexed in JavaScript
+            pigSalesChartData[month] = item.total_price;
+        });
+
+        var ctx = document.getElementById('pigMonthlySalesChart').getContext('2d');
+        if (window.pigSalesChart) {
+            // Destroy the previous chart to clear it
+            window.pigSalesChart.destroy();
+        }
+        window.pigSalesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [
+                    {
+                        label: 'Monthly Pig Sales Capital Gain (₱)',
+                        data: pigSalesChartData,
+                        fill: false,
+                        backgroundColor: '#386641',
+                        borderColor: '#386641',
+                        borderWidth: 1
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month',
+                        },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Total Sales (₱)',
+                        },
+                    },
+                },
+            },
+        });
+    }
+});
+
 
 document.addEventListener("DOMContentLoaded", function () {
     // Get references to the button and overlay elements
@@ -1827,11 +1996,13 @@ document.addEventListener("DOMContentLoaded", function () {
     var pigSalesButton = document.getElementById("showPigSalesButton");
     var vaccinationButton = document.getElementById("showVaccinationButton");
     var feedsButton = document.getElementById("showFeedsButton");
+    var weanlingButton = document.getElementById("showWeanlingButton"); // New button
     var mortalityButton = document.getElementById("showMortalityButton");
 
     var pigSalesSection = document.getElementById("pigSalesSection");
     var vaccinationSection = document.getElementById("vaccinationSection");
     var feedsSection = document.getElementById("feedsSection");
+    var weanlingSection = document.getElementById("weanlingSection"); // New section
     var mortalitySection = document.getElementById("mortalitySection");
 
     pigSalesButton.addEventListener("click", function () {
@@ -1846,6 +2017,10 @@ document.addEventListener("DOMContentLoaded", function () {
         showContent(feedsSection);
     });
 
+    weanlingButton.addEventListener("click", function () { 
+        showContent(weanlingSection); 
+    });
+
     mortalityButton.addEventListener("click", function () {
         showContent(mortalitySection);
     });
@@ -1855,12 +2030,14 @@ document.addEventListener("DOMContentLoaded", function () {
         pigSalesSection.style.display = "none";
         vaccinationSection.style.display = "none";
         feedsSection.style.display = "none";
+        weanlingSection.style.display = "none"; 
         mortalitySection.style.display = "none";
 
         // Show the selected section
         section.style.display = "block";
     }
 });
+
 
 $(document).ready(function () {
     $("#print-button").click(function () {
@@ -1883,4 +2060,67 @@ $(document).ready(function () {
       }
     });
   });
+
+function openVaccineOverlay(pigId) {
+    var overlay = document.getElementById("vaccine-overlay");
+    var vaccineInfo = document.getElementById("vaccine-info");
+
+    // Clear any previous data
+    vaccineInfo.innerHTML = "";
+
+    // Make an AJAX request to fetch vaccine data for the pig
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/get_vaccine_data/" + pigId + "/");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            var vaccineData = response.vaccine_data;
+
+            if (vaccineData.length > 0) {
+                // Create a table to display the data
+                var table = document.createElement("table");
+                table.classList.add("vaccine-table");
+
+                // Create the table headers
+                var headerRow = table.insertRow(0);
+                var headers = ["Date", "Vaccine", "Purpose", "Dosage"];
+                for (var i = 0; i < headers.length; i++) {
+                    var headerCell = document.createElement("th");
+                    headerCell.textContent = headers[i];
+                    headerRow.appendChild(headerCell);
+                }
+
+                // Populate the table with vaccine data
+                for (var i = 0; i < vaccineData.length; i++) {
+                    var rowData = vaccineData[i];
+                    var row = table.insertRow(i + 1); // +1 to skip the header row
+
+                    // Create table cells for each data point
+                    var dateCell = row.insertCell(0);
+                    var vaccineCell = row.insertCell(1);
+                    var purposeCell = row.insertCell(2);
+                    var dosageCell = row.insertCell(3);
+
+                    // Populate table cells with data
+                    dateCell.textContent = rowData.date;
+                    vaccineCell.textContent = rowData.vaccine;
+                    purposeCell.textContent = rowData.purpose;
+                    dosageCell.textContent = rowData.dosage;
+                }
+
+                vaccineInfo.appendChild(table);
+            } else {
+                vaccineInfo.innerHTML = "No vaccine data found for this pig.";
+            }
+
+            overlay.style.display = "block";
+        }
+    };
+    xhr.send();
+}
+
+function closeVaccineOverlay() {
+    var overlay = document.getElementById("vaccine-overlay");
+    overlay.style.display = "none";
+}
 

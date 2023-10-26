@@ -149,19 +149,25 @@ def index(request, user_type):
     eighty_eight_days_ago = date.today() - timedelta(days=88)
     pig_list_88_days = Pig.objects.filter(dob__gte=eighty_eight_days_ago).exclude(exclude_q)
     pig_list_more_88_days = Pig.objects.filter(dob__lt=eighty_eight_days_ago).exclude(exclude_q)
+    pig_sales_price = PigSale.objects.values('date__year', 'date__month').annotate(total_price=Sum('price')).order_by('date__year', 'date__month')
+    pig_sales_monthly_data = [{'year': sale['date__year'],'month': sale['date__month'],'total_price': float(sale['total_price']) }for sale in pig_sales_price]
     
     today = date.today()
     today_tasks = Task.objects.filter(due_date=today)
     checked_tasks = Task.objects.filter(is_done=True)
+    all_pigs = Pig.objects.count()
+
     
     return render(request, 'Farm/index.html', {
         "today_tasks": today_tasks,
         "checked_tasks": checked_tasks,
         "user_type": user_type,
+        "all_pigs":all_pigs,
         "pig_list_88_days": pig_list_88_days,
         "pig_list_more_88_days": pig_list_more_88_days,
         "feed_stock": feed_stock,
         "remaining_feed_quantity": remaining_feed_quantity,
+        "pig_sales_monthly_data":json.dumps(list(pig_sales_monthly_data)),
     })
 
 
@@ -190,13 +196,14 @@ def manage_user(request, user_type):
             # Redirect to the same page to prevent form resubmission
             return redirect('manage_user', user_type=user_type)
      # Retrieve a queryset of User objects from your database
+    all_user = User.objects.count()
     users = User.objects.filter(archive_user='False')
     users_in_archive = User.objects.filter(archive_user='True')
     users_count = User.objects.filter(role='user',  archive_user=False).count()
     users__in_archive_count = User.objects.filter(role='user',  archive_user=True).count()
 
     # Render the manage_user page
-    return render(request, 'Farm/manage_user.html', {"users": users,"user_type": user_type, "users_count" :users_count, "users_in_archive":users_in_archive, "users__in_archive_count":users__in_archive_count})
+    return render(request, 'Farm/manage_user.html', {"users": users,"user_type": user_type, "users_count" :users_count, "users_in_archive":users_in_archive, "users__in_archive_count":users__in_archive_count, "all_user":all_user})
 
 from collections import defaultdict
 from datetime import datetime
@@ -228,6 +235,10 @@ def reports(request, user_type):
 
     pig_sales_data = PigSale.objects.values('date__year', 'date__month').annotate(average_weight=Avg('weight'))
     average_weights = {f"{data['date__year']}-{data['date__month']}": float(data['average_weight']) for data in pig_sales_data}
+    pig_sales_price = PigSale.objects.values('date__year', 'date__month').annotate(total_price=Sum('price')).order_by('date__year', 'date__month')
+    pig_sales_monthly_data = [{'year': sale['date__year'],'month': sale['date__month'],'total_price': float(sale['total_price']) }for sale in pig_sales_price]
+    print( pig_sales_monthly_data)
+
 
     monthly_mortality_counts = defaultdict(int)
     top_mortality_causes = []
@@ -416,6 +427,7 @@ def reports(request, user_type):
         "counts": json.dumps(list(counts)),
         "sale_months": json.dumps(list(sale_months)),
         "sale_counts": json.dumps(list(sale_counts)),
+        "pig_sales_monthly_data":json.dumps(list(pig_sales_monthly_data)),
         "mortality_dates": json.dumps(list(mortality_dates)),
         "mortality_counts": json.dumps(list(mortality_counts)),
         "percentage_vaccinated": percentage_vaccinated,
@@ -1205,3 +1217,20 @@ def archive_user(request, user_id):
 
     # Handle other HTTP methods if needed
     return JsonResponse({'message': 'Invalid request method'}, status=400)
+
+def get_vaccine_data(request, pig_id):
+    # Query the Vaccine model to get vaccine data for the pig with the given ID
+    vaccines = Vaccine.objects.filter(pig__pig_id=pig_id)
+    
+    # Serialize the vaccine data as a list of dictionaries
+    vaccine_data = [
+        {
+            'date': vaccine.date,
+            'vaccine': vaccine.vaccine,
+            'purpose': vaccine.purpose,
+            'dosage': vaccine.dosage,
+        }
+        for vaccine in vaccines
+    ]
+
+    return JsonResponse({'vaccine_data': vaccine_data})
