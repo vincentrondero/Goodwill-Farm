@@ -11,7 +11,10 @@
                 <p class="px-1 fs-3 text-white"> Pigs </p>
             </div>
             <div class="py-3 my-3">
-                <span class="text-white p-0 fw-bold" style="font-size:500%">{{ pig_list_more_88_days.count }}/{{ all_pigs }}</span>
+                <span class="text-white p-0 fw-bold" style="font-size:500%">
+                    <span class="larger-text">{{ pig_list_more_88_days.count }}</span>/<span class="smaller-text"  style="font-size: 50%; color:#D9D9D9;" >{{ all_pigs }}</span>
+                </span>
+                
             </div>
         </div>
       </div>
@@ -22,7 +25,9 @@
                 <p class="px-1 fs-3 text-white"> Piglets </p>
             </div>  
             <div class="py-3 my-3">
-                <span class="text-white p-0 fw-bold" style="font-size:500%">{{ pig_list_88_days.count }}/{{ all_pigs }}</span>
+                <span class="text-white p-0 fw-bold" style="font-size:500%">
+                    <span class="larger-text">{{ pig_list_88_days.count }}</span>/<span class="smaller-text" style="font-size: 50%; color:#D9D9D9;">{{ all_pigs }}</span>
+                </span>                
             </div>
         </div>
       </div>
@@ -67,10 +72,10 @@
           </span>
         </button>
       </div>
-        <div style="height:100%; width=20%;" >
-            <select class="mt-2 ms-2 rounded" id="selectPigSalesYear"></select>
-            <canvas class="ms-2" id="pigMonthlySalesChart" width="100" height="20"></canvas>
-        </div>
+      <div style="height:100%; width: 20%; transform: translateY(160%);">
+        <select class="mt-2 ms-2 rounded" id="selectPigSalesYear"></select>
+        <canvas class="ms-2" id="pigMonthlySalesChart" width="600" height="150"></canvas>
+    </div>
   </div>
 </div>
 

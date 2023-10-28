@@ -1240,7 +1240,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         mortalityDatesData.forEach((monthYear, index) => {
             const [year, month] = monthYear.split('-');
-            if (year == selectedYear) {
+            if (year == selectedYear || selectedYear === "All Years") {
                 const monthIndex = parseInt(month, 10) - 1;
                 if (!isNaN(monthIndex)) {
                     monthsData[monthIndex] += mortalityCountsData[index];
@@ -1297,17 +1297,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to update the mortality chart based on the selected year
     function updateMortalityChart() {
         var selectedYear = selectMortalityYear.value;
-        var filteredMortalityCounts = [];
-
-        if (selectedYear === "All Years") {
-            // If "All Years" is selected, sum counts across all years
-            for (var i = 0; i < currentYearCounts.length; i++) {
-                filteredMortalityCounts.push(currentYearCounts[i]);
-            }
-        } else {
-            // Get the counts for the selected year
-            filteredMortalityCounts = mapDataToMonths(selectedYear);
-        }
+        var filteredMortalityCounts = mapDataToMonths(selectedYear);
 
         // Update the chart data
         mortalityChart.data.datasets[0].data = filteredMortalityCounts;
@@ -1492,7 +1482,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }],
         },
         options: {
-            responsive: true,
+            responsive: false,
         },
     });
 });
@@ -1538,6 +1528,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }],
         },
         options: {
+            responsive: false,
             scales: {
                 x: {
                     title: {
@@ -1855,6 +1846,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 ],
             },
             options: {
+                responsive: false,
                 scales: {
                     x: {
                         title: {
@@ -1958,7 +1950,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                             // Use the 'ave_litter_size' field for the Y-axis data
                                             return sow.ave_litter_size;
                                         }),
-                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        borderColor: '#FF7373',
+                                        backgroundColor:'#FF7373',
                                         fill: false
                                     }]
                                 };
@@ -2083,7 +2076,7 @@ function openVaccineOverlay(pigId) {
 
                 // Create the table headers
                 var headerRow = table.insertRow(0);
-                var headers = ["Date", "Vaccine", "Purpose", "Dosage"];
+                var headers = ["Date", "Vaccine", "Purpose", "Dosage(mg)"];
                 for (var i = 0; i < headers.length; i++) {
                     var headerCell = document.createElement("th");
                     headerCell.textContent = headers[i];

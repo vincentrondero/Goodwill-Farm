@@ -9,7 +9,7 @@
 <div id="salesData" style="display: none;">{{ sale_counts|safe }}</div>
 <div id="saleMonths" style="display: none;" >{{ sale_months|safe }}</div>
 <div id="mortalityData" style="display: none;">{{ mortality_counts|safe }}</div>
-<div id="mortalityDates" >{{ mortality_dates|safe }}</div>
+<div id="mortalityDates" style="display: none;">{{ mortality_dates|safe }}</div>
 <div id="totalWeanlings" style="display: none;">{{ weanlings_count|safe|default:"[]" }}</div>
 <div id="weanlingsData" style="display: none;">{{ unique_weanling_ids|safe|default:"[]" }}</div>
 <div id="average_weights"  style="display: none;">{{ average_weights |safe|default:"[]" }}</div>
@@ -64,7 +64,7 @@
                 <div class="rounded-top w-100" style="background-color: #ff7b7b;">
                     <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
                     <span class="mx-3 pt-2 fs-5 text-white fw-bold" style="width:100px;">
-                        AVERAGE WEIGHT ON PIG SALE
+                        AVERAGE WEIGHT ON PIG SALE 
                     </span>
                 </div>
                 <select class="mt-2 ms-2 rounded" id="selected_year_for_weight"></select>
@@ -97,7 +97,7 @@
                     <div class="rounded-top w-100" style="background-color: #ff7b7b;">
                         <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
                         <span class="mx-3 pt-2 fs-5 text-white fw-bold" style="width:100px;">
-                            VACCINATED PER VACCINE
+                            VACCINATED PER VACCINE</span>
                     </div>
                     <canvas id="vaccine_counts_chart" width="590" height="280"></canvas>
                 </div>
@@ -121,7 +121,7 @@
     <div class="row">
         <div class="col-5 ms-5">
             <div>
-                <canvas class="d-flex justify-content-around ms-5" id="pieChart" width="100" height="200"></canvas>
+                <canvas class="d-flex justify-content-around ms-5" id="pieChart" width="300" height="200"></canvas>
             </div>
         </div>
         <div class="col-6">
@@ -135,41 +135,40 @@
     </div>
     <div class="row mt-2">
         <div class="col-3">
-            <div class="graph-container rounded" style="height: 80%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); overflow: scroll;">
+            <div class="graph-container rounded" style="height: 100%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); overflow: scroll;">
                 <div class="mt-2 mx-2">
-                    <p>Total Suckling Count: {{ pig_list_28_days}}</p>
-                    <p>Total Feed Needed: {{total_feed_suckling_formatted}} kilos</p>
-                    <p>Total Feed Available: {{ difference_booster }} kilos</p>
+                    <p>Suckling Count: {{ pig_list_28_days}}</p>
+                    <p>Booster Feed Needed(KG): {{total_feed_suckling_formatted}} kilos</p>
+                    <p>Feed Available(KG): {{ difference_booster }} kilos</p>
                     <p>Feeds Deficit: {{ total_feed_suckling_deficit_formatted }} kilos which cost  ₱{{ total_feed_suckling_cost_formatted }}</p>
                 </div>
             </div>
         </div>
         <div class="col-3">
-            <div class="graph-container rounded" style="height: 80%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); overflow: scroll;">
+            <div class="graph-container rounded" style="height: 100%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); overflow: scroll;">
                 <div class="mt-2 mx-2">
-                    <p>Total Weanling Count: {{ pig_list_28_to_88_days}}</p>
-                    <p>Total Feed Needed: {{ total_feed_weanling_formatted }} kilos</p>
-                    <p>Total Feed Available: {{difference_pre_starter }} kilos</p>
+                    <p>Weanling Count: {{ pig_list_28_to_88_days}}</p>
+                    <p>Pre-Starter Feed Needed(KG): {{ total_feed_weanling_formatted }} kilos</p>
+                    <p>Feed Available (KG): {{difference_pre_starter }} kilos</p>
                     <p>Feeds Deficit: {{total_feed_weanling_deficit_formatted }} kilos which cost  ₱{{ total_feed_weanling_cost_formatted}}</p>
                 </div>
             </div>
         </div>
         <div class="col-3">
-            <div class="graph-container rounded" style="height: 80%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); overflow: scroll;">
+            <div class="graph-container rounded" style="height: 100%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); overflow: scroll;">
                 <div class="mt-2 mx-2">
-                    <p>Total Grower Count: {{ pig_list_88_to_148_days}}</p>
-                    <p>Total Feed Needed: {{ total_feed_grower_formatted }} kilos</p>
-                    <p>Total Feed Available: {{ difference_starter }} kilos</p>
+                    <p>Grower Count: {{ pig_list_88_to_148_days}}</p>
+                    <p>Grower Feed Needed(KG): {{ total_feed_grower_formatted }} kilos</p>
+                    <p>Feed Available(KG): {{ difference_starter }} kilos</p>
                     <p>Feeds Deficit: {{ total_feed_grower_deficit_formatted }} kilos which cost  ₱{{ total_feed_grower_cost_formatted}}</p>
-                    <p>Total Feed Cost: {{ total_feed_grower_deficit_formatted }}</p>
                 </div>
             </div>
         </div>
         <div class="col-3">
-            <div class="graph-container rounded" style="height: 80%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); overflow: scroll;">
+            <div class="graph-container rounded" style="height: 100%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); overflow: scroll;">
                 <div class="mt-2 mx-2">
-                    <p>Total Pig Count: {{pig_list_greater_than_148_days }}</p>
-                    <p>Total Fattener Needed: {{ total_feed_fattener_formatted}} kilos</p>
+                    <p>Fattener Count: {{pig_list_greater_than_148_days }}</p>
+                    <p>Fattener Feeds Needed: {{ total_feed_fattener_formatted}} kilos</p>
                     <p>Total Feed Available: {{ difference_grower }} kilos</p>
                     <p>Feeds Deficit: {{ total_feed_fattener_deficit_formatted }} kilos which cost  ₱{{total_feed_fattener_cost_formatted}}</p>
                 </div>
@@ -177,7 +176,7 @@
         </div>
     </div>
     <div class="row-1">
-        <div class="graph-container rounded" style="height: 33%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); transform: translateY(-12%);">
+        <div class="graph-container rounded mt-5" style="height: 33%; width: 100%; box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); transform: translateY(-12%);">
             <div class="rounded-top" style="background-color: #ff7b7b; width: 100%;">
                 <img src="{% static 'img/pig_logo.png' %}" class="ms-2" style="width: 3%;">
                 <span class="mx-3 pt-2 fs-5 text-white fw-bold" style="width:100px;">

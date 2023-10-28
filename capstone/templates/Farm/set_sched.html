@@ -22,7 +22,7 @@
                 <input class="duedate" type="date" id="duedate" name="duedate"><br><br>
 
                 <label class="duetime" for="duetime">Due Time:</label>
-                <input class="duetime" type="text" id="duetime" name="duetime"><br><br>
+                <input class="duetime" type="time" id="duetime" name="duetime"><br><br>
 
                 <label class="desc" for="desc">Description:</label>
                 <input type="text" class="desc" id="desc" name="desc"><br><br>
@@ -66,26 +66,47 @@
 
 <div class="container">
     <div class="row">
-        <div class=" col-md-6 custom_todo_box"  id="sample">
+        <div class="col-md-6 custom_todo_box" id="sample">
             <h4>To Do</h4>
             {% for task in todo_tasks %}
-            <div class="card mb-2 custom_todo">
-                <div class="card-body" >
-                    {{ task.task_name }}
+            <div class="card mb-3 custom_todo">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="card-title">{{ task.task_name }}</h5>
+                            <p class="card-text">{{ task.description }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="due-details">
+                                <p class="card-text"> {{ task.due_date }} {{ task.due_time }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-        <div class="col-md-6 custom_todo_box" id="doneTasks">
+        <div class="col-md-6 custom_todo_box" id="sample">
             <h4>Done</h4>
             {% for task in done_tasks %}
             <div class="card mb-3 custom_done">
                 <div class="card-body">
-                    {{ task.task_name }}
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="card-title">{{ task.task_name }}</h5>
+                            <p class="card-text">{{ task.description }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="due-details">
+                                <p class="card-text"> {{ task.due_date }} {{ task.due_time }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             {% endfor %}
         </div>
+             
     </div>
 </div>
 
